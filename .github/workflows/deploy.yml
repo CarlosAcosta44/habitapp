@@ -12,6 +12,21 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependencias
+        run: |
+          cd frontend
+          npm install
+
+      - name: Build React
+        run: |
+          cd frontend
+          npm run build
+
       - name: Configurar AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
