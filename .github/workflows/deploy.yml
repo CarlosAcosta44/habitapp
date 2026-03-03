@@ -15,7 +15,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '24'
+          node-version: '20'sd
 
       - name: Instalar dependencias
         run: |
