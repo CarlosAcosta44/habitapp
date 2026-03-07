@@ -26,6 +26,9 @@ jobs:
         run: |
           cd frontend
           npm run build
+        
+        env:
+          VITE_STORAGE_URL: ${{ secrets.VITE_STORAGE_URL }}
 
       - name: Configurar AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
