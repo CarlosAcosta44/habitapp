@@ -2,8 +2,14 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,jsx}",   // Vite escanea estos archivos para purgar CSS
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: { extend: {} },
+  theme: {
+    extend: {
+      fontFamily: {
+        syne: ['Syne', 'sans-serif'],
+      },
+    },
+  },
   plugins: [],
 }
