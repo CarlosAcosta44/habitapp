@@ -71,7 +71,7 @@ function App() {
       )}
 
       <header className="text-white py-8 text-center">
-        <h1 className="text-black font-extrabold font-syne text-6xl">10 Hábitos que <span className='text-orange-500'>Transforman</span> tu Vida</h1>
+        <h1 className="text-black font-extrabold font-syne text-6xl">10 Hábitos que <span className='text-green-500'>Transforman</span> tu Vida</h1>
         <p className="mt-2 text-gray-600">Pequeñas acciones consistentes producen resultados extraordinarios. Explora cada hábito.</p>
       </header>
 
