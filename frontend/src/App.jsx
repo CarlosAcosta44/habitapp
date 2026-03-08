@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { habits, getImageUrl, getPdfUrl } from './services/habitsService';
+import { habits, getImageUrl, getPdfUrl, getVideoUrl } from './services/habitsService';
 
 
 function Modal({ habit, onClose }) {
