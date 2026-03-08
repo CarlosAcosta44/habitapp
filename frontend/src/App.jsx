@@ -86,6 +86,21 @@ function App() {
         </div>
       </main>
 
+        <section className="max-w-4xl mx-auto px-4 py-10">
+          <h2 className="text-3xl font-bold font-syne text-center text-black mb-2">
+            Aprende a <span className="text-green-500">construir</span> hábitos
+          </h2>
+          <p className="text-center text-gray-500 mb-6">Mira este video y descubre cómo pequeños cambios transforman tu vida</p>
+          
+          <video
+            className="w-full rounded-2xl shadow-xl"
+            controls
+            src={getVideoUrl("video.mp4")}
+          >
+            Tu navegador no soporta videos
+          </video>
+        </section>
+
       <footer className="text-center py-6 text-gray-400 text-sm">
         HabitApp © 2026 - AWS Academy
       </footer>

@@ -15,7 +15,7 @@ export function getPdfUrl(file){
 
 
 export const habits = [
-    { id: 1, file: "correr.jpg", name: "Ejercicio", desc: "30 minutos de movimiento diario mejoran el estado de ánimo y la longevidad.", meta: "30 min/día", beneficio: "Vitalidad", pdf: "correr.pdf" },
+    { id: 1, file: "ejercicio.jpg", name: "Ejercicio", desc: "30 minutos de movimiento diario mejoran el estado de ánimo y la longevidad.", meta: "30 min/día", beneficio: "Vitalidad", pdf: "ejercicio.pdf" },
     { id: 2, file: "agua.jpg", name: "Hidratación", desc: "Tomar 2 litros de agua al día mejora la concentración y la salud en general.", meta: "Todo el día", beneficio: "Piel y mente clara", pdf: "agua.pdf"},
     { id: 3, file: "sueno.jpg", name: "Sueño", desc: "Dormir 7-8 horas con un horario fijo restaura el cuerpo y consolida la memoria.", meta: "7-8 horas", beneficio: "Recuperación total", pdf: "sueno.pdf"},
     { id: 4, file: "meditacion.jpg", name: "Meditación", desc: "10 minutos de meditación al día reducen el estrés y mejoran el enfoque mental.", meta: "10 min/día", beneficio: "Paz interior", pdf: "meditacion.pdf" },
