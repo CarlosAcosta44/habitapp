@@ -56,7 +56,7 @@ El diagrama completo se encuentra en [`/docs/arquitectura/diagrama-arquitectura.
 
 ---
 
-## 🧩 Patrones de Diseño
+## Patrones de Diseño
 
 ### Component Pattern
 React organiza la UI en componentes reutilizables e independientes.
@@ -149,7 +149,7 @@ La UI depende de abstracciones (funciones del servicio), no de implementaciones 
 
 ---
 
-## ⚡ CI/CD con GitHub Actions
+## CI/CD con GitHub Actions
 
 ### Flujo de Despliegue
 
@@ -197,7 +197,7 @@ jobs:
 
 ---
 
-## ☁️ Tipo de Despliegue
+## Tipo de Despliegue
 
 | Concepto | Valor |
 |----------|-------|
@@ -210,9 +210,9 @@ jobs:
 
 ---
 
-## 🚀 Guía de Inicio
+## Guía de Inicio
 
-### ⚠️ Cada sesión de AWS Academy
+### Cada sesión de AWS Academy
 
 1. Actualiza los secrets en GitHub con las nuevas credenciales de AWS
 2. Verifica que los buckets S3 y Elastic Beanstalk existan
@@ -268,7 +268,7 @@ habitapp/
 
 ---
 
-## 👥 Equipo
+## Equipo
 
 | Integrante | Rol |
 |-----------|-----|
