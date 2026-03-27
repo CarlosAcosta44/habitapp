@@ -35,10 +35,9 @@ Next.js es un framework de React orientado a producción que permite construir a
 | Característica | Beneficio para el proyecto |
 |----------------|---------------------------|
 | **App Router** | Gestión de rutas clara y escalable por módulos (gestión, seguimiento, comunidad) |
-| **Server Components** | Mejor rendimiento al reducir el JavaScript enviado al cliente |
-| **API Routes** | Endpoints internos sin necesidad de un backend separado para lógica ligera |
-| **SSR / SSG** | Carga rápida de páginas públicas (artículos, ranking, foros) con SEO optimizado |
-| **Middleware** | Control de acceso por rol (Usuario, Entrenador, Administrador) a nivel de rutas |
+| **Static Export (SSG)** | Generación estática que permite desplegar nativamente toda la aplicación en un bucket de Amazon S3 |
+| **Client-side Rendering** | Interacción en tiempo real y carga dinámica de datos directamente desde Supabase |
+| **React Components** | Reutilización de componentes de interfaz para mayor velocidad de desarrollo |
 | **TypeScript nativo** | Tipado estricto para mayor confiabilidad del código |
 
 ### Estructura de módulos en Next.js
@@ -106,12 +105,10 @@ Amazon Web Services (AWS) es la plataforma de servicios en la nube más utilizad
 
 | Servicio AWS | Uso en el proyecto |
 |-------------|-------------------|
-| **AWS Amplify** | Despliegue continuo de la aplicación Next.js con CI/CD integrado |
-| **Amazon CloudFront** | CDN global para distribución rápida de assets estáticos y páginas |
-| **Amazon S3** | Respaldo y almacenamiento adicional de archivos estáticos y backups |
-| **Amazon SES** | Envío de correos transaccionales (recuperación de contraseña, notificaciones) |
-| **AWS IAM** | Gestión de permisos y acceso seguro a los recursos de la nube |
-| **Amazon CloudWatch** | Monitoreo de logs, métricas y alertas de la aplicación en producción |
+| **Amazon S3** | Alojamiento de la aplicación web estática (Next.js Static Export) para el frontend |
+| **Amazon CloudFront** | (Opcional) CDN global para enrutamiento HTTPS y distribución de assets en S3 |
+| **AWS IAM** | Gestión de los permisos necesarios (roles y políticas) para administrar de forma segura los buckets |
+| **AWS Academy** | Entorno educativo bajo el cual se utilizarán los recursos, limitando el uso a servicios core como S3 |
 
 ### Arquitectura de despliegue
 
@@ -119,26 +116,22 @@ Amazon Web Services (AWS) es la plataforma de servicios en la nube más utilizad
 Usuario Final
      │
      ▼
-CloudFront (CDN)
+Amazon S3 (Hosting de Bucket Estático)
+     │ (Next.js App exportada)
      │
-     ├──► AWS Amplify (Next.js App)
-     │         │
-     │         ▼
-     │    Supabase (DB + Auth + Storage)
+     ├──► Supabase (DB + Auth + Storage)
+     │         ▲
+     │         │ Consultas directas desde el cliente
      │
-     └──► Amazon S3 (Assets estáticos)
-               │
-               ▼
-          Amazon SES (Emails)
 ```
 
 ### Flujo de despliegue
 
-1. El equipo hace `push` a la rama `main` en GitHub.
-2. AWS Amplify detecta el cambio y ejecuta el pipeline de build automáticamente.
-3. Next.js es compilado y desplegado en los servidores de Amplify.
-4. CloudFront distribuye el contenido globalmente con baja latencia.
-5. CloudWatch monitorea el estado de la aplicación en tiempo real.
+1. El equipo finaliza una funcionalidad y genera la versión de producción (`next build`).
+2. Se genera el "Static HTML Export" de Next.js configurado en las pruebas locales.
+3. Se copian los archivos estáticos generados en la carpeta de salida (por lo general `out/`).
+4. Se suben manualmente al bucket de almacenamiento público configurado en Amazon S3.
+5. La aplicación queda disponible públicamente a través del endpoint del web hosting de Amazon S3.
 
 ### Rol en el proyecto
 
@@ -184,7 +177,7 @@ develop
 
 - Aloja el repositorio oficial del proyecto.
 - Coordina el flujo de trabajo entre los miembros del equipo.
-- Integra con AWS Amplify para despliegues automáticos.
+- Contiene el código base listo para ser exportado a AWS S3.
 - Mantiene el historial completo de cambios del código.
 
 ---
@@ -194,6 +187,7 @@ develop
 ### ¿Qué es?
 
 Gitflow es una estrategia de gestión de ramas (branching strategy) que define un modelo estricto y predecible para organizar el desarrollo, las releases y las correcciones de errores de un proyecto.
+*Nota importante: Este proceso se realizará de forma totalmente manual creando las ramas correspondientes (`main`, `develop`, `feature/`, etc.) mediante los comandos estándar de Git o la interfaz de GitHub, sin requerir la instalación de herramientas adicionales o plugins de git-flow.*
 
 ### ¿Por qué lo usamos?
 
@@ -395,11 +389,11 @@ Merge a develop tras aprobación (Gitflow)
 Release branch → QA → Merge a main (Gitflow)
           │
           ▼
-AWS Amplify detecta push a main → Build automático
+Build manual de la aplicación Next.js (Static Export)
           │
           ▼
-CloudFront distribuye la nueva versión globalmente (AWS)
+Subida manual de los archivos estáticos al Bucket de Amazon S3
           │
           ▼
-Supabase sirve datos en tiempo real a los usuarios finales
+Aplicación disponible para usuarios consultando y guardando datos en Supabase
 ```

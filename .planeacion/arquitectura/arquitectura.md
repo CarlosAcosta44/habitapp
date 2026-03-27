@@ -1,166 +1,75 @@
-# 🏗️ Arquitectura del Sistema — Hábitos Saludables
+---
 
-> Documento técnico que describe la arquitectura, capas, stack tecnológico y estructura del sistema.
+# Especificación de Arquitectura de Software
+## Proyecto: Sistema de Gestión de Hábitos Saludables
+
+### 1. Resumen de la Arquitectura
+El proyecto implementa una **Arquitectura de Capas Basada en Funciones (Feature-Based Layered Architecture)** sobre el framework **Next.js**. Esta estructura separa las responsabilidades en niveles lógicos, facilitando el mantenimiento de los esquemas de base de datos (`gestion`, `seguimiento`, `comunidad`) y optimizando el renderizado mediante **React Server Components**.
 
 ---
 
-## 📐 Tipo de Arquitectura
+### 2. Capas del Sistema (Estratificación)
 
-El sistema sigue una arquitectura MVC por capas (Layered MVC), separando responsabilidades en capas bien definidas que facilitan el mantenimiento, la escalabilidad y las pruebas del sistema.
-┌─────────────────────────────────────┐
-│           Cliente / Browser         │  ← Capa de Presentación
-├─────────────────────────────────────┤
-│         Controladores (API)         │  ← Capa de Control
-├─────────────────────────────────────┤
-│       Lógica de Negocio / Servicios │  ← Capa de Servicios
-├─────────────────────────────────────┤
-│         Modelos / Repositorios      │  ← Capa de Datos
-├─────────────────────────────────────┤
-│          Base de Datos              │  ← Capa de Persistencia
-└─────────────────────────────────────┘
+El flujo de datos es unidireccional y sigue una jerarquía estricta para evitar el acoplamiento:
+
+
+
+1.  **Capa de Presentación (UI):** Localizada en `src/app`. Utiliza **Route Groups** para separar contextos visuales (Autenticación vs. Dashboard) sin afectar la limpieza de las URLs.
+2.  **Capa de Orquestación (Actions):** Localizada en `features/x/actions.ts`. Actúa como el controlador que valida permisos y coordina las llamadas a los servicios.
+3.  **Capa de Dominio/Datos (Services):** Localizada en `features/x/services.ts`. Es la única con acceso directo al cliente de Supabase y contiene la lógica de negocio.
+4.  **Capa de Persistencia (Supabase):** Base de Datos PostgreSQL con lógica embebida (Triggers y Functions) para la gestión automática de puntos y seguridad.
+
 ---
 
-## 🧩 Módulos del Sistema
-Sistema de Hábitos Saludables
+### 3. Estructura de Directorios (File Tree)
+
+```text
+src/
+├── app/                  # VISTAS Y RUTAS
+│   ├── (auth)/           # Grupo: Autenticación (Login, Registro)
+│   │   ├── layout.tsx    # Diseño limpio y centrado
+│   │   └── login/        # page.tsx (URL: /login)
+│   ├── (dashboard)/      # Grupo: Aplicación Principal
+│   │   ├── layout.tsx    # Diseño con Sidebar y navegación protegida
+│   │   ├── habitos/      # Gestión de hábitos del usuario
+│   │   ├── comunidad/    # Foros y artículos
+│   │   └── entrenamiento/# Rutinas y seguimiento coach
+│   └── api/              # Endpoints para integraciones externas
 │
-├── 📁 Módulo de Gestión
-│     ├── Usuarios
-│     ├── Roles (usuario, entrenador, administrador)
-│     ├── Notificaciones
-│     └── Sistema de Puntos
+├── features/             # LÓGICA POR DOMINIO (Features)
+│   ├── auth/             # Lógica de ingreso y sesiones
+│   ├── habitos/          # Gestión de puntos y cumplimiento
+│   ├── comunidad/        # Gestión de foros y comentarios
+│   └── entrenamiento/    # Relación usuario-entrenador
+│       ├── actions.ts    # Controladores (Server Actions)
+│       ├── services.ts   # Capa de Acceso a Datos (DAL)
+│       └── components/   # Componentes exclusivos del dominio
 │
-├── 📁 Módulo de Seguimiento
-│     ├── Hábitos
-│     ├── Registros Diarios
-│     ├── Perfiles de Salud
-│     ├── Rutinas
-│     └── Relación Usuario–Entrenador
+├── core/                 # CONFIGURACIÓN NUCLEO
+│   ├── supabase/         # Clientes de Supabase (Server/Client)
+│   └── utils/            # Funciones de ayuda globales
 │
-└── 📁 Módulo de Comunidad
-      ├── Foros
-      ├── Comentarios
-      ├── Artículos
-      └── Reacciones
----
-
-## 🔄 Flujo General del Sistema
-Usuario
-  │
-  ▼
-[Interfaz Web / App]
-  │
-  ▼
-[Controlador / Endpoint API]
-  │
-  ├──► Autenticación y autorización (rol del usuario)
-  │
-  ▼
-[Capa de Servicios]
-  │
-  ├──► Lógica de hábitos, puntos, comunidad, etc.
-  │
-  ▼
-[Capa de Datos / Repositorios]
-  │
-  ▼
-[Base de Datos]
-  │
-  └──► Triggers automáticos:
-        ├── Creación de perfil al registrarse
-        └── Asignación de puntos al completar hábito
----
-
-## 🛠️ Stack Tecnológico
-
-| Capa | Tecnología | Notas |
-|---|---|---|
-| Frontend | Por definir | Interfaz web / app del usuario |
-| Backend | Por definir | API REST o GraphQL |
-| Base de Datos | Por definir | Relacional recomendada (PostgreSQL / MySQL) |
-| Autenticación | Por definir | JWT / OAuth2 |
-| Hosting / Deploy | Por definir | Cloud o servidor propio |
+├── middleware.ts         # GUARDIA DE SEGURIDAD (Protección de rutas)
+└── types/                # TIPADO (Interfaces generadas de la DB)
+```
 
 ---
 
-## 🗄️ Estructura de la Base de Datos
+### 4. Estrategia de Autenticación y Seguridad
 
-### Módulo de Gestión
+Para garantizar la integridad de los datos de salud y comunidad, se implementa una seguridad en dos niveles:
 
-| Tabla | Descripción |
-|---|---|
-| usuarios | Información base de todos los usuarios |
-| roles | Tipos de rol: usuario, entrenador, administrador |
-| usuario_rol | Relación entre usuario y rol asignado |
-| notificaciones | Alertas y mensajes del sistema |
-| puntos | Historial de puntos acumulados por usuario |
+1.  **Middleware de Next.js:** Intercepta cada petición a las rutas dentro de `(dashboard)`. Si no detecta una sesión activa de Supabase, redirige automáticamente al usuario a `(auth)/login`.
+2.  **Row Level Security (RLS):** En la base de datos, cada tabla tiene políticas que aseguran que, por ejemplo, Pipe solo pueda ver sus propios hábitos y no los de Ana, independientemente de lo que pida el frontend.
 
-### Módulo de Seguimiento
 
-| Tabla | Descripción |
-|---|---|
-| habitos | Catálogo de hábitos disponibles |
-| habitos_usuario | Hábitos asignados a cada usuario |
-| registros_diarios | Cumplimiento diario de hábitos |
-| perfil_salud | Datos de salud del usuario (peso, edad, etc.) |
-| rutinas | Rutinas creadas por entrenadores |
-| entrenador_usuario | Relación entre entrenador y sus clientes |
-
-### Módulo de Comunidad
-
-| Tabla | Descripción |
-|---|---|
-| foros | Categorías o temas de discusión |
-| publicaciones | Posts dentro de los foros |
-| comentarios | Respuestas a publicaciones |
-| articulos | Contenido educativo publicado |
-| reacciones | Likes o reacciones a publicaciones y artículos |
 
 ---
 
-## ⚙️ Automatizaciones (Triggers)
+### 5. Beneficios de la Arquitectura Propuesta
 
-| # | Trigger | Evento | Acción |
-|---|---|---|---|
-| 1 | trg_crear_perfil | INSERT en usuarios | Crea automáticamente el perfil de salud del usuario |
-| 2 | trg_asignar_puntos | INSERT en registros_diarios | Asigna puntos al usuario al completar un hábito |
-
----
-
-## 🔐 Roles y Permisos
-
-| Rol | Acceso |
-|---|---|
-| Usuario | Gestionar sus hábitos, ver ranking, participar en comunidad |
-| Entrenador | Todo lo anterior + crear rutinas y gestionar clientes |
-| Administrador | Acceso total: usuarios, contenido, configuración del sistema |
+* **Escalabilidad:** Al estar basado en "Features", añadir un nuevo esquema (ej. `tienda`) no requiere modificar el código existente.
+* **Separación de Contextos:** El uso de `(auth)` y `(dashboard)` permite manejar layouts independientes de forma nativa en Next.js, mejorando la experiencia de usuario (UX).
+* **Optimización SEO y Carga:** El uso de Server Components permite que el primer renderizado ocurra en el servidor, mejorando la velocidad percibida.
 
 ---
-
-> Carlos:
-## 📁 Estructura de Carpetas
-/sistema-habitos-saludables
-│
-├── /frontend
-│     ├── /components
-│     ├── /pages
-│     ├── /services
-│     └── /assets
-│
-├── /backend
-│     ├── /controllers
-│     ├── /services
-│     ├── /models
-│     ├── /routes
-│     └── /middlewares
-│
-├── /database
-│     ├── /migrations
-│     ├── /seeds
-│     └── /triggers
-│
-└── /docs
-      ├── arquitectura.md
-      └── planeacion.md
----
-
-*Documento de arquitectura — Sistema de Hábitos Saludables*
