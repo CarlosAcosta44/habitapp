@@ -136,7 +136,7 @@
 | ID | Requerimiento |
 |----|---------------|
 | RNF-03.1 | La interfaz debe ser responsiva y funcionar correctamente en dispositivos móviles y escritorio |
-| RNF-03.2 | El diseño debe seguir la paleta de colores y componentes definidos en el skill `habit-ui-components` |
+| RNF-03.2 | El diseño debe seguir la paleta de colores y componentes definidos para el proyecto |
 | RNF-03.3 | Los formularios deben mostrar mensajes de error claros por campo cuando la validación falle |
 | RNF-03.4 | Las acciones destructivas (eliminar hábito) deben solicitar confirmación al usuario |
 
@@ -150,7 +150,7 @@
 | RNF-04.2 | Toda la lógica de acceso a datos debe estar encapsulada en repositorios — nunca en componentes |
 | RNF-04.3 | Toda la lógica de negocio debe estar en la capa de servicios — nunca en Server Actions directamente |
 | RNF-04.4 | Los tipos de Supabase deben regenerarse (`supabase gen types`) cada vez que cambie el schema |
-| RNF-04.5 | Los skills de Claude Code deben mantenerse actualizados con los cambios de arquitectura del proyecto |
+| RNF-04.5 | La documentación del proyecto (carpeta .planeacion) debe mantenerse actualizada con los cambios de arquitectura |
 
 ---
 
@@ -174,15 +174,14 @@
 
 ---
 
-## 4. Resumen de Módulos y Skills Asociados
+## 4. Resumen de Módulos y Componentes Asociados
 
-| Módulo | Funcionalidad | Skill de Claude Code |
-|--------|--------------|----------------------|
-| Autenticación | Login, registro, sesión, middleware | `habit-auth-setup` |
-| Dominio | Tipos, entidades, DTOs, Result\<T\> | `habit-domain-types` |
-| Base de datos | Schema SQL, RLS, triggers, tipos TS | `supabase-habit-schema` |
-| Acceso a datos | Repositorios Supabase | `habit-repository-pattern` |
-| Negocio | Servicios, validaciones, toggle | `habit-service-layer` |
-| Mutaciones | Server Actions, formularios Zod | `habit-server-actions` |
-| Interfaz | Componentes, páginas, HabitCard | `habit-ui-components` |
-| Rachas | Streaks, heatmap, estadísticas | `habit-streak-stats` |
+| Módulo | Funcionalidad | Descripción Arquitectónica |
+|--------|--------------|----------------------------|
+| Autenticación | Login, registro, control de vista | Supabase Auth + Rutas protegidas |
+| Dominio | Tipos, entidades TypeScript | Modelos derivados de la BD |
+| Base de datos | Schema SQL, RLS, triggers | Scripts SQL documentados en `.planeacion` |
+| Acceso a datos | Consultas a Supabase | `@supabase/supabase-js` y funciones JS |
+| Mutaciones | Formularios y envío de datos | Llamadas a funciones de Supabase DB |
+| Interfaz | Componentes, páginas | Componentes de UI de React / Next.js |
+| Rachas | Cálculo y estadísticas | Consultas interactuando con la BD |
