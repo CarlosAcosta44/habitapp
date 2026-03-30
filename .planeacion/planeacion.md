@@ -15,16 +15,53 @@ Este documento centraliza y resume el contexto del proyecto basándose en los do
 ---
 
 ## 🏗️ 2. Arquitectura y Stack Tecnológico
-El proyecto se basa en una **Arquitectura de Capas Basada en Funciones (Feature-Based Layered Architecture)**.
+El proyecto se basa en una **Arquitectura de 4 Capas por Dominio (Feature-Based Layered Architecture)**.
 
 - **Frontend:** Next.js 14+ (App Router) con estilización a través de **Tailwind CSS**. Uso de React Server Components, Server Actions y separaciones por dominios (features).
-- **Gestión de Estado:** Arquitectura minimalista y sin dependencias extra (sin Redux, etc.). El estado pesado (hábitos, rachas, puntos) se gestiona vía *Server Actions* y la caché nativa de Next.js conectada a Supabase. Se limita el uso de estado en cliente (*React Context*) a lo estrictamente necesario, como la información de autenticación del usuario.
-- **Diseño UI/UX:** Enfoque orientado a móviles (similar a una App nativa), complementado por referencias de IA para la adaptación a escritorio. Los prototipos se ubican en la carpeta de la documentación (`/Diseños`).
-- **Backend (BaaS):** Supabase (PostgreSQL, Auth, Storage, Edge Functions). Centraliza toda la persistencia, seguridad (RLS), y lógica mediante triggers.
-- **Infraestructura:** Despliegue estático en Amazon Web Services (AWS S3) generando un "Static HTML Export".
-- **Colaboración:** Git/GitHub usando Gitflow manual y control de versiones con Git Semántico.
+- **Gestión de Estado:** Arquitectura minimalista sin dependencias extra (sin Redux, Zustand, etc.). El estado pesado (hábitos, rachas, puntos) se gestiona vía *Server Actions* y la caché nativa de Next.js. *React Context* se usa solo para datos de sesión del usuario autenticado.
+- **Diseño UI/UX:** Enfoque orientado a móviles (similar a una App nativa), con adaptación a escritorio. Los prototipos están en la carpeta de documentación (`/Diseños`).
+- **Backend (BaaS):** Supabase (PostgreSQL, Auth, Storage, Edge Functions). Única fuente de verdad para persistencia con seguridad por RLS y automatizaciones mediante triggers.
+- **Validación:** Zod en las Server Actions para validar la entrada antes de tocar la lógica de negocio.
+- **Manejo de Errores:** Patrón `Result<T>` en servicios y repositorios — sin excepciones no capturadas, los errores son valores explícitos.
+- **Infraestructura:** Despliegue estático en Amazon Web Services (AWS S3) con Static HTML Export de Next.js.
+- **Colaboración:** Git/GitHub con Gitflow manual y commits semánticos.
 
-Las capas fluyen unidireccionalmente: `UI (app/) -> Actions -> Services -> Supabase`.
+### Flujo de Capas (unidireccional y estricto)
+
+```
+UI / Page (Server Component)
+  └── Server Action       ← Valida sesión + valida datos con Zod
+        └── Service        ← Lógica de negocio y reglas de dominio
+              └── Repository ← Única capa que habla con Supabase
+                    └── Supabase (PostgreSQL + RLS + Triggers)
+```
+
+### Estructura de Carpetas
+
+```
+src/
+├── app/                   # Rutas y páginas (Next.js App Router)
+│   ├── (auth)/            # Grupo público: login, registro
+│   └── (dashboard)/       # Grupo protegido: hábitos, comunidad
+├── actions/               # Server Actions (controladores)
+├── services/              # Lógica de negocio por dominio
+├── repositories/          # Acceso a datos — solo queries a Supabase
+├── lib/supabase/          # Clientes de Supabase (server, client, middleware)
+├── types/
+│   ├── database.types.ts  # Generado por Supabase CLI (no editar)
+│   ├── domain/            # Entidades, DTOs e interfaces del negocio
+│   └── common/            # Result<T>, paginación y utilidades
+└── middleware.ts           # Protección de rutas por sesión
+```
+
+### Reglas entre capas
+
+| Capa | Puede llamar a | No puede llamar a |
+|---|---|---|
+| **UI / Page** | Actions, muestra datos | Services, Repositories, Supabase |
+| **Server Action** | Service | Repository, Supabase directo |
+| **Service** | Repository | Otro Service, Supabase directo |
+| **Repository** | Supabase Client | Nada más |
 
 ---
 
