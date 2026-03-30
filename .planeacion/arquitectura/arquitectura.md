@@ -4,20 +4,28 @@
 ## Proyecto: Sistema de Gestión de Hábitos Saludables
 
 ### 1. Resumen de la Arquitectura
-El proyecto implementa una **Arquitectura de Capas Basada en Funciones (Feature-Based Layered Architecture)** sobre el framework **Next.js**. Esta estructura separa las responsabilidades en niveles lógicos, facilitando el mantenimiento de los esquemas de base de datos (`gestion`, `seguimiento`, `comunidad`) y optimizando el renderizado mediante **React Server Components**.
+El proyecto implementa una **Arquitectura de 4 Capas por Dominio** sobre el framework **Next.js 14+**, con **Tailwind CSS** como sistema de estilos. Esta estructura separa las responsabilidades en niveles lógicos y estrictos, garantizando que cada capa solo se comunique con la inmediatamente inferior, evitando el acoplamiento y facilitando el mantenimiento.
 
 ---
 
-### 2. Capas del Sistema (Estratificación)
+### 2. Flujo de Capas (Unidireccional y Estricto)
 
-El flujo de datos es unidireccional y sigue una jerarquía estricta para evitar el acoplamiento:
+```
+UI / Page (Server Component)
+  └── Server Action       ← Valida sesión + valida datos con Zod
+        └── Service        ← Lógica de negocio y reglas de dominio
+              └── Repository ← Única capa que habla con Supabase
+                    └── Supabase (PostgreSQL + RLS + Triggers)
+```
 
+#### Responsabilidad de cada capa
 
-
-1.  **Capa de Presentación (UI):** Localizada en `src/app`. Utiliza **Route Groups** para separar contextos visuales (Autenticación vs. Dashboard) sin afectar la limpieza de las URLs.
-2.  **Capa de Orquestación (Actions):** Localizada en `features/x/actions.ts`. Actúa como el controlador que valida permisos y coordina las llamadas a los servicios.
-3.  **Capa de Dominio/Datos (Services):** Localizada en `features/x/services.ts`. Es la única con acceso directo al cliente de Supabase y contiene la lógica de negocio.
-4.  **Capa de Persistencia (Supabase):** Base de Datos PostgreSQL con lógica embebida (Triggers y Functions) para la gestión automática de puntos y seguridad.
+| Capa | Responsabilidad | No puede hacer |
+|---|---|---|
+| **UI / Page** | Renderizar datos, enviar formularios | Llamar a Services, Repositories o Supabase |
+| **Server Action** | Verificar sesión, validar con Zod, llamar al Service | Llamar a Repositories o Supabase directamente |
+| **Service** | Lógica de negocio, reglas de dominio, coordinar Repositories | Llamar a Supabase directamente ni a otros Services |
+| **Repository** | Ejecutar queries a Supabase, devolver `Result<T>` | Contener lógica de negocio |
 
 ---
 
@@ -25,51 +33,107 @@ El flujo de datos es unidireccional y sigue una jerarquía estricta para evitar 
 
 ```text
 src/
-├── app/                  # VISTAS Y RUTAS
-│   ├── (auth)/           # Grupo: Autenticación (Login, Registro)
-│   │   ├── layout.tsx    # Diseño limpio y centrado
-│   │   └── login/        # page.tsx (URL: /login)
-│   ├── (dashboard)/      # Grupo: Aplicación Principal
-│   │   ├── layout.tsx    # Diseño con Sidebar y navegación protegida
-│   │   ├── habitos/      # Gestión de hábitos del usuario
-│   │   ├── comunidad/    # Foros y artículos
-│   │   └── entrenamiento/# Rutinas y seguimiento coach
-│   └── api/              # Endpoints para integraciones externas
+├── app/                        # RUTAS Y PÁGINAS (Next.js App Router)
+│   ├── (auth)/                 # Grupo: Autenticación (Login, Registro)
+│   │   ├── layout.tsx          # Diseño limpio y centrado
+│   │   ├── login/page.tsx      # URL: /login
+│   │   └── register/page.tsx   # URL: /register
+│   ├── (dashboard)/            # Grupo: Aplicación Principal (protegida)
+│   │   ├── layout.tsx          # Layout con Sidebar y navegación
+│   │   ├── habitos/page.tsx    # Vista diaria de hábitos
+│   │   ├── comunidad/          # Foros, artículos, ranking
+│   │   └── perfil/page.tsx     # Perfil del usuario
+│   └── admin/                  # Panel de administrador
 │
-├── features/             # LÓGICA POR DOMINIO (Features)
-│   ├── auth/             # Lógica de ingreso y sesiones
-│   ├── habitos/          # Gestión de puntos y cumplimiento
-│   ├── comunidad/        # Gestión de foros y comentarios
-│   └── entrenamiento/    # Relación usuario-entrenador
-│       ├── actions.ts    # Controladores (Server Actions)
-│       ├── services.ts   # Capa de Acceso a Datos (DAL)
-│       └── components/   # Componentes exclusivos del dominio
+├── actions/                    # SERVER ACTIONS (Controladores)
+│   ├── auth.actions.ts         # Login, registro, logout
+│   ├── habit.actions.ts        # Crear, editar, archivar hábitos
+│   ├── habit-record.actions.ts # Toggle de cumplimiento diario
+│   ├── profile.actions.ts      # Actualizar perfil
+│   └── community.actions.ts    # Foros, comentarios, artículos
 │
-├── core/                 # CONFIGURACIÓN NUCLEO
-│   ├── supabase/         # Clientes de Supabase (Server/Client)
-│   └── utils/            # Funciones de ayuda globales
+├── services/                   # CAPA DE DOMINIO (Lógica de Negocio)
+│   ├── habit.service.ts
+│   ├── habit-record.service.ts
+│   ├── user-profile.service.ts
+│   ├── gamification.service.ts
+│   ├── streak.service.ts
+│   └── community.service.ts
 │
-├── middleware.ts         # GUARDIA DE SEGURIDAD (Protección de rutas)
-└── types/                # TIPADO (Interfaces generadas de la DB)
+├── repositories/               # ACCESO A DATOS (Solo queries a Supabase)
+│   ├── habit.repository.ts
+│   ├── habit-record.repository.ts
+│   ├── user-profile.repository.ts
+│   ├── gamification.repository.ts
+│   └── community.repository.ts
+│
+├── lib/
+│   └── supabase/               # CLIENTES DE SUPABASE
+│       ├── server.ts           # Para Server Components y Actions
+│       ├── client.ts           # Para Client Components
+│       └── middleware.ts       # Para el middleware de rutas
+│
+├── types/                      # TIPADO GLOBAL
+│   ├── database.types.ts       # Generado por Supabase CLI (no editar manualmente)
+│   ├── domain/                 # Entidades y DTOs del negocio
+│   │   ├── user.types.ts
+│   │   ├── habit.types.ts
+│   │   ├── record.types.ts
+│   │   ├── gamification.types.ts
+│   │   └── community.types.ts
+│   └── common/
+│       ├── result.types.ts     # Patrón Result<T>
+│       └── pagination.types.ts
+│
+├── components/                 # COMPONENTES REUTILIZABLES DE UI
+│   ├── layout/                 # Sidebar, Topbar, etc.
+│   ├── habits/                 # HabitCard, DailyProgress, StreakBadge
+│   └── forms/                  # Formularios reutilizables
+│
+└── middleware.ts               # GUARDIA DE SEGURIDAD (Protección de rutas)
 ```
 
 ---
 
-### 4. Estrategia de Autenticación y Seguridad
+### 4. Patrones Clave
 
-Para garantizar la integridad de los datos de salud y comunidad, se implementa una seguridad en dos niveles:
+#### Patrón Result\<T\>
+Toda operación de repositorio o servicio que puede fallar devuelve `Result<T>` en lugar de lanzar excepciones. Hace los errores explícitos y predecibles.
 
-1.  **Middleware de Next.js:** Intercepta cada petición a las rutas dentro de `(dashboard)`. Si no detecta una sesión activa de Supabase, redirige automáticamente al usuario a `(auth)/login`.
-2.  **Row Level Security (RLS):** En la base de datos, cada tabla tiene políticas que aseguran que, por ejemplo, Pipe solo pueda ver sus propios hábitos y no los de Ana, independientemente de lo que pida el frontend.
+```typescript
+// src/types/common/result.types.ts
+export type Result<T> = { ok: true; data: T } | { ok: false; error: string; code?: string }
+```
 
+#### Validación con Zod (en Server Actions)
+Toda entrada de usuario se valida con Zod antes de pasarla al servicio:
+```typescript
+const schema = z.object({ name: z.string().min(1).max(100) })
+const parsed = schema.safeParse(Object.fromEntries(formData))
+if (!parsed.success) return { ok: false, fieldErrors: parsed.error.flatten().fieldErrors }
+```
 
+#### Inyección del Cliente Supabase
+Los repositorios reciben el cliente de Supabase como parámetro (no lo crean internamente). El servicio es quien lo crea con `await createClient()`.
 
 ---
 
-### 5. Beneficios de la Arquitectura Propuesta
+### 5. Estrategia de Autenticación y Seguridad
 
-* **Escalabilidad:** Al estar basado en "Features", añadir un nuevo esquema (ej. `tienda`) no requiere modificar el código existente.
-* **Separación de Contextos:** El uso de `(auth)` y `(dashboard)` permite manejar layouts independientes de forma nativa en Next.js, mejorando la experiencia de usuario (UX).
-* **Optimización SEO y Carga:** El uso de Server Components permite que el primer renderizado ocurra en el servidor, mejorando la velocidad percibida.
+Se implementa seguridad en dos niveles:
+
+1. **Middleware de Next.js (`src/middleware.ts`):** Intercepta cada petición. Si no detecta sesión activa, redirige a `/login`. Si hay sesión y el usuario intenta acceder a `/login`, redirige al dashboard.
+2. **Row Level Security (RLS) en Supabase:** Cada tabla tiene políticas que garantizan que los usuarios solo accedan a sus propios datos, independientemente de lo que pida el frontend.
+3. **Verificación en cada Server Action:** Además del middleware, cada mutación verifica la sesión con `supabase.auth.getUser()` antes de ejecutar.
+
+---
+
+### 6. Beneficios de la Arquitectura
+
+* **Separación de responsabilidades:** Cada capa tiene un único propósito claro y no conoce los detalles de implementación de las demás.
+* **Testabilidad:** Los repositorios se pueden mockear fácilmente para probar los servicios sin base de datos.
+* **Mantenibilidad:** Si Supabase cambia su API o se migra a otra DB, solo se modifican los repositorios.
+* **Seguridad:** Las Server Actions nunca exponen la lógica de negocio al cliente y siempre validan la sesión.
+* **Escalabilidad:** Agregar un nuevo módulo (ej. `tienda`) solo requiere crear sus propios archivos de types, repository, service y actions sin tocar el código existente.
 
 ---
