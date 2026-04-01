@@ -200,9 +200,9 @@ main ─────────────────────────
   │
   └── develop ────────────────────────────── (integración continua)
         │
-        ├── feature/cu1-crear-perfil
-        ├── feature/cu13-registrar-habito
-        ├── feature/cu28-participar-foros
+        ├── feature/auth-setup
+        ├── feature/habit-daily-tracking
+        ├── feature/community-forums
         │
         ├── release/v1.0.0 ──────────────── (preparación de release)
         │
@@ -223,10 +223,11 @@ main ─────────────────────────
 
 ```bash
 # Features (nuevas funcionalidades)
-feature/cu1-crear-perfil
-feature/cu13-registrar-cumplimiento-habito
-feature/cu28-participar-foros
-feature/cu33-crear-foros
+feature/auth-setup
+feature/habit-daily-tracking
+feature/community-forums
+feature/forum-creation
+feature/base-app-config
 
 # Releases
 release/v1.0.0
@@ -309,23 +310,23 @@ Git Semántico (o Conventional Commits) es una especificación para los mensajes
 ### Ejemplos aplicados al proyecto
 
 ```bash
-# Módulo: Gestión de usuarios
-feat(auth): implementar CU1 - registro y creación de perfil de usuario
-feat(auth): agregar CU2 - flujo completo de inicio de sesión con Supabase
-fix(auth): corregir redireccionamiento tras recuperación de contraseña (CU3)
-feat(usuarios): implementar CU9 - eliminación de usuario por administrador
+# Módulo: Autenticación
+feat(auth): configurar clientes Supabase SSR y middleware de protección de rutas
+feat(auth): agregar vistas de login y registro con Server Actions
+fix(auth): corregir redireccionamiento tras recuperación de contraseña
+feat(auth): implementar eliminación de usuario por administrador
 
 # Módulo: Seguimiento de hábitos
-feat(habitos): agregar CU13 - registro de cumplimiento diario de hábito
-feat(habitos): implementar CU14 - generación automática de racha por trigger
-feat(notificaciones): agregar CU16 y CU17 - configuración y envío de recordatorios
-feat(reportes): implementar CU18 - panel de reportes y estadísticas de progreso
+feat(habitos): agregar registro de cumplimiento diario con toggle optimista
+feat(habitos): implementar generación automática de racha por trigger
+feat(notificaciones): agregar configuración y envío de recordatorios
+feat(reportes): implementar panel de reportes y estadísticas de progreso
 
 # Módulo: Comunidad
-feat(foros): implementar CU33 - creación de foros por usuario
-feat(ranking): agregar CU24 - visualización del ranking global con puntos
-fix(comunidad): corregir conteo de puntos al participar en foros (CU32)
-feat(admin): implementar CU37 - eliminación de usuario o publicación inapropiada
+feat(foros): implementar creación de foros por usuario
+feat(ranking): agregar visualización del ranking global con puntos
+fix(comunidad): corregir conteo de puntos al participar en foros
+feat(admin): implementar eliminación de usuario o publicación inapropiada
 ```
 
 ### Versionado semántico resultante
