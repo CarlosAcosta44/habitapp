@@ -27,7 +27,7 @@ export default async function DashboardLayout({
           </h2>
         </div>
         <nav className="flex-1 px-4 space-y-2">
-          <Link href="/dashboard/habitos" className="block px-4 py-3 rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400 font-medium">
+          <Link href="/habitos" className="block px-4 py-3 rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400 font-medium">
             🎯 Mis Hábitos
           </Link>
           <Link href="/comunidad" className="block px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 font-medium">

@@ -1,3 +1,7 @@
+// ⚠️ Este archivo es un stub temporal.
+// Reemplazar con los tipos reales ejecutando:
+//   npx supabase gen types typescript --project-id <id> > src/types/database.types.ts
+
 export type Json =
   | string
   | number
@@ -6,22 +10,29 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
-    Tables: {
-      [key: string]: any
-    }
-    Views: {
-      [key: string]: any
-    }
-    Functions: {
-      [key: string]: any
-    }
-    Enums: {
-      [key: string]: any
-    }
-    CompositeTypes: {
-      [key: string]: any
-    }
+    Tables: Record<string, {
+      Row: Record<string, unknown>
+      Insert: Record<string, unknown>
+      Update: Record<string, unknown>
+      Relationships: unknown[]
+    }>
+    Views: Record<string, {
+      Row: Record<string, unknown>
+    }>
+    Functions: Record<string, {
+      Args: Record<string, unknown>
+      Returns: unknown
+    }>
+    Enums: Record<string, string[]>
+    CompositeTypes: Record<string, Record<string, unknown>>
   }
 }
+
+export type Tables<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Row']
+
+export type Enums<T extends keyof Database['public']['Enums']> =
+  Database['public']['Enums'][T]
+
