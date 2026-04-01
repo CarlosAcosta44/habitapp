@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password']
-const PROTECTED_PREFIX = ['/dashboard', '/habitos', '/comunidad', '/admin']
+const PROTECTED_PREFIX = ['/habitos', '/comunidad', '/perfil', '/admin', '/entrenador']
 
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request)
@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
   // Si ya está autenticado e intenta ir a login/register → dashboard
   if (user && isPublicRoute) {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard/habitos'
+    url.pathname = '/habitos'
     return NextResponse.redirect(url)
   }
 

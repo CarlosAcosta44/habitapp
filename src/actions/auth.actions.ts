@@ -17,7 +17,7 @@ export async function loginAction(formData: FormData) {
   }
 
   revalidatePath('/', 'layout')
-  redirect('/dashboard/habitos')
+  redirect('/habitos')
 }
 
 export async function registerAction(formData: FormData) {
