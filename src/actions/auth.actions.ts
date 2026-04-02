@@ -37,8 +37,6 @@ export async function registerAction(formData: FormData) {
     return { error: error.message }
   }
 
-  // En la vida real mandaría correo, aquí redirijo y le informo si usaran confirmación de correo.
-  // Por ahora lo simplificamos y si es exitoso redirigimos de vuelta a login o dashboard si confirmación está deshabilitada.
   redirect('/login?message=Registro exitoso. Revisa tu email para confirmar o inicia sesión directamente.')
 }
 
@@ -47,4 +45,35 @@ export async function logoutAction() {
   await supabase.auth.signOut()
   revalidatePath('/', 'layout')
   redirect('/login')
+}
+
+export async function resetPasswordAction(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+
+  // Dirigimos al callback primero para capturar e intercambiar el código por la sesión.
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `http://localhost:3000/auth/callback?next=/update-password`,
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { success: 'Revisa tu correo para continuar con el restablecimiento de tu contraseña.' }
+}
+
+export async function updatePasswordAction(formData: FormData) {
+  const supabase = await createClient()
+  const password = formData.get('password') as string
+
+  const { error } = await supabase.auth.updateUser({
+    password: password
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  redirect('/habitos')
 }
