@@ -1,0 +1,176 @@
+/**
+ * @file src/modules/habitos/habito.actions.ts
+ * @description Server Actions para el módulo de Hábitos.
+ *
+ * Flujo de cada action:
+ * 1. Obtener sesión del usuario autenticado
+ * 2. Extraer y validar datos del FormData con Zod
+ * 3. Llamar al servicio con los datos validados
+ * 4. Revalidar cache y retornar resultado
+ *
+ * @directive "use server" — OBLIGATORIO en Server Actions
+ */
+
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect }       from "next/navigation";
+import { z }              from "zod";
+import { createClient }   from "@/lib/supabase/server";
+import { HabitoService }  from "./habito.service";
+
+const service = new HabitoService();
+
+// ─── Schemas de validación Zod ────────────────────────────────────────────────
+const CreateHabitoSchema = z.object({
+  nombre:      z.string().min(3,  "El nombre debe tener al menos 3 caracteres")
+                         .max(45, "El nombre no puede superar 45 caracteres"),
+  descripcion: z.string().max(200).optional(),
+  fechaInicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida"),
+  fechaFin:    z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
+  puntos:      z.coerce.number().min(1, "Mínimo 1 punto").max(100, "Máximo 100 puntos"),
+  idCategoria: z.string().uuid("Categoría inválida"),
+});
+
+const UpdateHabitoSchema = CreateHabitoSchema.partial().extend({
+  estado: z.enum(["Activo", "Inactivo", "Completado"]).optional(),
+});
+
+// ─── Tipo de retorno estándar para useActionState ─────────────────────────────
+export type ActionState = {
+  success:  boolean;
+  message:  string;
+  errors?:  Record<string, string[]>;
+};
+
+// ─── createHabitoAction ───────────────────────────────────────────────────────
+export async function createHabitoAction(
+  _prevState: ActionState | null,
+  formData:   FormData
+): Promise<ActionState> {
+  // 1. Verificar sesión
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return { success: false, message: "No autorizado" };
+
+  // 2. Extraer y validar datos
+  const rawData = {
+    nombre:      formData.get("nombre"),
+    descripcion: formData.get("descripcion"),
+    fechaInicio: formData.get("fechaInicio"),
+    fechaFin:    formData.get("fechaFin") || undefined,
+    puntos:      formData.get("puntos"),
+    idCategoria: formData.get("idCategoria"),
+  };
+
+  const validation = CreateHabitoSchema.safeParse(rawData);
+  if (!validation.success) {
+    return {
+      success: false,
+      message: "Por favor corrige los errores del formulario",
+      errors:  validation.error.flatten().fieldErrors,
+    };
+  }
+
+  // 3. Llamar al servicio
+  const result = await service.create({
+    ...validation.data,
+    descripcion: validation.data.descripcion ?? null,
+    fechaFin:    validation.data.fechaFin    ?? null,
+    estado:      "Activo",
+    idUsuario:   session.user.id,
+  });
+
+  if (!result.success) {
+    return { success: false, message: result.error };
+  }
+
+  // 4. Revalidar y retornar
+  revalidatePath("/dashboard/habitos");
+  return { success: true, message: "Hábito creado exitosamente" };
+}
+
+// ─── updateHabitoAction ───────────────────────────────────────────────────────
+export async function updateHabitoAction(
+  _prevState: ActionState | null,
+  formData:   FormData
+): Promise<ActionState> {
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return { success: false, message: "No autorizado" };
+
+  const id = formData.get("id") as string;
+  if (!id) return { success: false, message: "ID del hábito requerido" };
+
+  const rawData = {
+    nombre:      formData.get("nombre"),
+    descripcion: formData.get("descripcion"),
+    fechaFin:    formData.get("fechaFin") || undefined,
+    puntos:      formData.get("puntos"),
+    idCategoria: formData.get("idCategoria"),
+    estado:      formData.get("estado"),
+  };
+
+  const validation = UpdateHabitoSchema.safeParse(rawData);
+  if (!validation.success) {
+    return {
+      success: false,
+      message: "Por favor corrige los errores del formulario",
+      errors:  validation.error.flatten().fieldErrors,
+    };
+  }
+
+  const result = await service.update(id, {
+    ...validation.data,
+    fechaFin: validation.data.fechaFin ?? null,
+  });
+
+  if (!result.success) {
+    return { success: false, message: result.error };
+  }
+
+  revalidatePath("/dashboard/habitos");
+  return { success: true, message: "Hábito actualizado exitosamente" };
+}
+
+// ─── deleteHabitoAction ───────────────────────────────────────────────────────
+export async function deleteHabitoAction(
+  _prevState: ActionState | null,
+  formData:   FormData
+): Promise<ActionState> {
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return { success: false, message: "No autorizado" };
+
+  const id = formData.get("id") as string;
+  if (!id) return { success: false, message: "ID del hábito requerido" };
+
+  const result = await service.delete(id);
+  if (!result.success) {
+    return { success: false, message: result.error };
+  }
+
+  revalidatePath("/dashboard/habitos");
+  return { success: true, message: "Hábito eliminado exitosamente" };
+}
+
+// ─── completarHabitoAction ────────────────────────────────────────────────────
+export async function completarHabitoAction(
+  _prevState: ActionState | null,
+  formData:   FormData
+): Promise<ActionState> {
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return { success: false, message: "No autorizado" };
+
+  const id = formData.get("id") as string;
+  if (!id) return { success: false, message: "ID del hábito requerido" };
+
+  const result = await service.completar(id);
+  if (!result.success) {
+    return { success: false, message: result.error };
+  }
+
+  revalidatePath("/dashboard/habitos");
+  return { success: true, message: "¡Hábito completado! 🎉" };
+}
