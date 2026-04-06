@@ -16,6 +16,8 @@ import type {
   Comentario,
   ComentarioConAutor,
   Articulo,
+  HabitoPopular,
+  EntrenadorPublico,
   CreateComentarioDTO,
   CreateReaccionDTO,
 } from "./types";
@@ -146,13 +148,13 @@ export class ComunidadRepository {
     );
 
     // ── Anidar respuestas en sus comentarios padre ─────────────────────────
-    const padres = todos.filter((c) => !c.idComentarioPadre);
-    const hijos  = todos.filter((c) =>  c.idComentarioPadre);
+    const padres = todos.filter((c: ComentarioConAutor) => !c.idComentarioPadre);
+    const hijos  = todos.filter((c: ComentarioConAutor) =>  c.idComentarioPadre);
 
-    const resultado = padres.map((padre) => ({
+    const resultado = padres.map((padre: ComentarioConAutor) => ({
       ...padre,
       respuestas: hijos.filter(
-        (hijo) => hijo.idComentarioPadre === padre.idComentario
+        (hijo: ComentarioConAutor) => hijo.idComentarioPadre === padre.idComentario
       ),
     }));
 
@@ -278,16 +280,19 @@ export class ComunidadRepository {
   }
 
   // ─── findArticulosPublicados ───────────────────────────────────────────────
-  async findArticulosPublicados(): Promise<Result<Articulo[]>> {
+  async findArticulosPublicados(limit?: number): Promise<Result<Articulo[]>> {
     const supabase = await createClient();
 
-    const { data, error } = await supabase
+    let query = supabase
       .schema("comunidad")
       .from("articulos")
       .select("*")
       .eq("estado", "Publicado")
-      .order("fechapublicacion", { ascending: false })
-      .returns<RawArticulo[]>();
+      .order("fechapublicacion", { ascending: false });
+
+    if (limit) query = query.limit(limit);
+
+    const { data, error } = await query.returns<RawArticulo[]>();
 
     if (error) return err(`Error al obtener artículos: ${error.message}`);
 
@@ -299,6 +304,51 @@ export class ComunidadRepository {
         categoria:        row.categoria,
         estado:           row.estado as Articulo["estado"],
         fechaPublicacion: row.fechapublicacion,
+      }))
+    );
+  }
+
+  // ─── findEntrenadoresActivos ────────────────────────────────────────────────
+  async findEntrenadoresActivos(): Promise<Result<EntrenadorPublico[]>> {
+    const supabase = await createClient();
+
+    interface RawEntrenador {
+      identrenador: string;
+      especialidad: string | null;
+      certificacion: string | null;
+      usuarios: {
+        nombre: string;
+        apellido: string;
+        fotoperfil: string | null;
+      } | null;
+    }
+
+    const { data, error } = await supabase
+      .schema("seguimiento")
+      .from("entrenadores")
+      .select(`
+        identrenador,
+        especialidad,
+        certificacion,
+        usuarios!idusuario (
+          nombre,
+          apellido,
+          fotoperfil
+        )
+      `)
+      .limit(6)
+      .returns<RawEntrenador[]>();
+
+    if (error) return err(`Error al obtener entrenadores: ${error.message}`);
+
+    return ok(
+      (data ?? []).map((row: RawEntrenador) => ({
+        idEntrenador:  row.identrenador,
+        nombre:        row.usuarios?.nombre ?? "",
+        apellido:      row.usuarios?.apellido ?? "",
+        fotoPerfil:    row.usuarios?.fotoperfil ?? null,
+        especialidad:  row.especialidad,
+        certificacion: row.certificacion,
       }))
     );
   }
