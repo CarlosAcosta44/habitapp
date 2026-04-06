@@ -12,6 +12,7 @@
   --color-warning:  #f59e0b;   /* Ámbar  — racha en riesgo   */
   --color-danger:   #ef4444;   /* Rojo   — acción destructiva */
   --color-info:     #3b82f6;   /* Azul   — información       */
+  --color-pink:     #ec4899;   /* Rosa   — acento gamificación */
 
   /* Superficies — modo claro */
   --surface-base:  #f8fafc;
@@ -27,11 +28,11 @@
   --font-sans: var(--font-inter, 'Inter', sans-serif);
 }
 
-/* ─── Modo oscuro ───────────────────────────────────────────── */
+/* ─── Modo oscuro (basado en diseños de HabitApp) ─────────── */
 .dark {
-  --surface-base:  #0f172a;
-  --surface-card:  #1e293b;
-  --surface-muted: #334155;
+  --surface-base:  #080b14;
+  --surface-card:  #111827;
+  --surface-muted: #1e293b;
 
   --text-primary:   #f8fafc;
   --text-secondary: #94a3b8;
@@ -47,4 +48,19 @@ body {
   background-color: var(--surface-base);
   color: var(--text-primary);
   font-family: var(--font-sans);
+}
+
+/* ─── Scrollbar personalizado ───────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.5);
 }
