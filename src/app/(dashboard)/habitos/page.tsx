@@ -70,7 +70,7 @@ export default async function HabitosPage() {
         </div>
 
         <Link
-          href="/dashboard/habitos/nueva"
+          href="/habitos/nueva"
           className="flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 transition-colors"
         >
           + Nuevo hábito
