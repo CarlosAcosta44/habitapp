@@ -5,9 +5,17 @@ interface AuthSplitContainerProps {
   title: string
   subtitle: string
   reverseImage?: boolean
+  /** Ancho del panel del formulario (paso 2 del registro necesita más espacio para la cuadrícula). */
+  formMaxWidth?: 'sm' | 'lg'
 }
 
-export function AuthSplitContainer({ children, title, subtitle, reverseImage = false }: AuthSplitContainerProps) {
+export function AuthSplitContainer({
+  children,
+  title,
+  subtitle,
+  reverseImage = false,
+  formMaxWidth = 'sm',
+}: AuthSplitContainerProps) {
   return (
     <div className={`w-full min-h-screen flex flex-col ${reverseImage ? 'md:flex-row-reverse' : 'md:flex-row'} items-stretch`}>
       
@@ -65,7 +73,7 @@ export function AuthSplitContainer({ children, title, subtitle, reverseImage = f
 
       {/* Panel del Formulario */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-4 sm:p-8 min-h-screen">
-        <div className="w-full max-w-sm">
+        <div className={`w-full ${formMaxWidth === 'lg' ? 'max-w-lg' : 'max-w-sm'}`}>
           {children}
         </div>
       </div>
