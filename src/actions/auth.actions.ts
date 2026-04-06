@@ -83,7 +83,7 @@ const RegisterSchema = z.object({
   apellido:  z.string().trim().min(1, 'Los apellidos son obligatorios').max(45),
   birthdate: z.string().optional(),
   genero:    z.enum(['Masculino', 'Femenino'], {
-    errorMap: () => ({ message: 'Selecciona una opción de género' }),
+    message: 'Selecciona una opción de género'
   }),
   habit_presets_json: z.string().min(2),
 })
@@ -159,7 +159,7 @@ export type RegisterActionState = {
 export async function registerAction(
   _prev: RegisterActionState | null,
   formData: FormData
-): Promise<RegisterActionState | void> {
+): Promise<RegisterActionState> {
   const habitIdsRaw = parseHabitPresetIds(
     String(formData.get('habit_presets_json') ?? '[]')
   )

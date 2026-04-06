@@ -55,6 +55,25 @@ export interface Articulo {
   fechaPublicacion: string;
 }
 
+// ─── Hábitos populares ────────────────────────────────────────────────────────
+export interface HabitoPopular {
+  idHabito:    string;
+  nombre:      string;
+  categoria:   string;
+  frecuencia:  string;
+  totalUsuarios: number;
+}
+
+// ─── Entrenador público ───────────────────────────────────────────────────────
+export interface EntrenadorPublico {
+  idEntrenador: string;
+  nombre:       string;
+  apellido:     string;
+  fotoPerfil:   string | null;
+  especialidad: string | null;
+  certificacion: string | null;
+}
+
 // ─── DTOs ─────────────────────────────────────────────────────────────────────
 export type CreateComentarioDTO = Omit<Comentario, "idComentario" | "fechaPublicacion">;
 export type CreateReaccionDTO = {

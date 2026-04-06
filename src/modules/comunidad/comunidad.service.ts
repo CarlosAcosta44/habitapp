@@ -15,6 +15,8 @@ import type {
   Comentario,
   ComentarioConAutor,
   Articulo,
+  HabitoPopular,
+  EntrenadorPublico,
   CreateComentarioDTO,
   CreateReaccionDTO,
 } from "./types";
@@ -95,7 +97,12 @@ export class ComunidadService {
   }
 
   // ─── getArticulos ──────────────────────────────────────────────────────────
-  async getArticulos(): Promise<Result<Articulo[]>> {
-    return this.repo.findArticulosPublicados();
+  async getArticulos(limit?: number): Promise<Result<Articulo[]>> {
+    return this.repo.findArticulosPublicados(limit);
+  }
+
+  // ─── getEntrenadores ─────────────────────────────────────────────────────
+  async getEntrenadores(): Promise<Result<EntrenadorPublico[]>> {
+    return this.repo.findEntrenadoresActivos();
   }
 }
