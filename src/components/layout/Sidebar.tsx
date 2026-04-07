@@ -12,8 +12,11 @@ import {
   HelpCircle, 
   LogOut, 
   Moon,
-  Sun
+  Sun,
+  Trophy
 } from 'lucide-react';
+import { NewHabitModal } from '../modals/NewHabitModal';
+import { logoutAction } from '@/actions/auth.actions';
 
 interface SidebarProps {
   user: any; // Ideally we use the domain type
@@ -21,7 +24,8 @@ interface SidebarProps {
 
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(true); 
+  const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -54,6 +58,7 @@ export function Sidebar({ user }: SidebarProps) {
 
   const navLinks = [
     { name: 'Perfil', href: '/perfil', icon: BookOpen },
+    { name: 'Retos', href: '/retos', icon: Trophy },
     { name: 'Hábitos', href: '/habitos', icon: CheckSquare },
     { name: 'Comunidad', href: '/comunidad', icon: Users },
     { name: 'Reportes', href: '/reportes', icon: HelpCircle },
@@ -92,7 +97,10 @@ export function Sidebar({ user }: SidebarProps) {
           </div>
         </div>
 
-        <button className="w-full bg-[#9da8ff] hover:bg-indigo-300 text-slate-950 font-bold text-sm py-3 px-4 rounded-[2rem] transition-colors shadow-lg active:scale-95 uppercase tracking-wide">
+        <button 
+          onClick={() => setIsNewHabitModalOpen(true)}
+          className="w-full bg-[#9da8ff] hover:bg-indigo-300 text-slate-950 font-bold text-sm py-3 px-4 rounded-[2rem] transition-colors shadow-lg active:scale-95 uppercase tracking-wide"
+        >
           Nuevo Hábito
         </button>
       </div>
@@ -141,10 +149,12 @@ export function Sidebar({ user }: SidebarProps) {
           <span className="text-sm font-medium">Centro de ayuda</span>
         </button>
         
-        <button className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors text-slate-600 dark:text-slate-400 group w-full text-left">
-          <LogOut className="w-5 h-5 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-slate-400" />
-          <span className="text-sm font-medium">Cerrar sesión</span>
-        </button>
+        <form action={logoutAction} className="w-full">
+          <button className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors text-slate-600 dark:text-slate-400 group w-full text-left">
+            <LogOut className="w-5 h-5 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-slate-400" />
+            <span className="text-sm font-medium">Cerrar sesión</span>
+          </button>
+        </form>
         
         <div className="flex items-center justify-between px-3 py-2.5 mt-2">
           <div className="flex items-center space-x-3 text-slate-600 dark:text-slate-400">
@@ -161,6 +171,11 @@ export function Sidebar({ user }: SidebarProps) {
           </button>
         </div>
       </div>
+
+      <NewHabitModal 
+        isOpen={isNewHabitModalOpen} 
+        onClose={() => setIsNewHabitModalOpen(false)} 
+      />
     </aside>
   );
 }
