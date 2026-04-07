@@ -296,11 +296,13 @@ ORDER BY u.puntostotales DESC;
 CREATE OR REPLACE FUNCTION gestion.crear_perfil_usuario()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO gestion.usuarios (idusuario, nombre, apellido, idrol)
+    INSERT INTO gestion.usuarios (idusuario, nombre, apellido, genero, fechanacimiento, idrol)
     VALUES (
         NEW.id,
         COALESCE(NEW.raw_user_meta_data->>'nombre', 'Sin nombre'),
         COALESCE(NEW.raw_user_meta_data->>'apellido', 'Sin apellido'),
+        (NEW.raw_user_meta_data->>'genero'),
+        (NEW.raw_user_meta_data->>'fechanacimiento')::DATE,
         (SELECT idrol FROM gestion.roles WHERE nombrerol = 'Usuario')
     );
     RETURN NEW;
