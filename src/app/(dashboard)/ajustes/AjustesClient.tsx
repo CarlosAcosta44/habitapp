@@ -77,7 +77,7 @@ export function AjustesClient() {
     sound: true,
   });
 
-  // Efecto para inicializar el estado del modo oscuro y el sonido desde localStorage
+  // Inicialización y sincronización
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
     const savedSound = localStorage.getItem("sound");
@@ -85,13 +85,22 @@ export function AjustesClient() {
     if (savedTheme) {
       setToggles((prev) => ({ ...prev, dark_mode: savedTheme === "dark" }));
     } else {
-      // Valor por defecto en layout.tsx es dark
       setToggles((prev) => ({ ...prev, dark_mode: document.documentElement.classList.contains("dark") }));
     }
 
     if (savedSound) {
       setToggles((prev) => ({ ...prev, sound: savedSound === "true" }));
     }
+
+    const handleThemeChange = () => {
+      setToggles((prev) => ({
+        ...prev,
+        dark_mode: document.documentElement.classList.contains("dark")
+      }));
+    };
+
+    window.addEventListener("theme-change", handleThemeChange);
+    return () => window.removeEventListener("theme-change", handleThemeChange);
   }, []);
 
   // Efecto para aplicar modo oscuro al elemento HTML cada vez que cambie
@@ -138,8 +147,27 @@ export function AjustesClient() {
   };
 
   const toggleAction = (id: string) => {
-    playInteractionSound(); // Reproduce sonido al interactuar (si está activado)
-    setToggles((prev) => ({ ...prev, [id]: !prev[id] }));
+    playInteractionSound(); 
+    
+    setToggles((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      
+      // Si el cambio es el modo oscuro, aplicamos el efecto global
+      if (id === "dark_mode") {
+        const isDark = newState.dark_mode;
+        if (isDark) {
+          document.documentElement.classList.add("dark");
+          localStorage.setItem("theme", "dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+          localStorage.setItem("theme", "light");
+        }
+        // Notificamos a otros componentes (como la Sidebar)
+        window.dispatchEvent(new Event("theme-change"));
+      }
+      
+      return newState;
+    });
   };
 
   return (
