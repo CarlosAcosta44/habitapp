@@ -105,35 +105,52 @@ async function crearHabitosOnboarding(
   const validIds = presetIds.filter((id) => ONBOARDING_PRESET_IDS.has(id))
   if (validIds.length === 0) return
 
-  const habitoService = new HabitoService()
-  const existentes    = await habitoService.getByUsuario(usuarioId)
-  if (existentes.success && existentes.data.length > 0) return
+  try {
+    const habitoService = new HabitoService()
+    
+    // Evitar duplicados si el usuario ya tiene hábitos (idempotencia)
+    const existentes = await habitoService.getByUsuario(usuarioId)
+    if (existentes.success && existentes.data.length > 0) {
+      console.log(`[Onboarding] El usuario ${usuarioId} ya tiene hábitos. Saltando creación.`)
+      return
+    }
 
-  const catsResult = await habitoService.getCategorias()
-  if (!catsResult.success) return
+    const catsResult = await habitoService.getCategorias()
+    if (!catsResult.success) {
+      console.error('[Onboarding] Error al obtener categorías:', catsResult.error)
+      return
+    }
 
-  const categoriaPorNombre = new Map(
-    catsResult.data.map((c) => [c.nombre, c.idCategoria])
-  )
+    const categoriaPorNombre = new Map(
+      catsResult.data.map((c) => [c.nombre, c.idCategoria])
+    )
 
-  const hoy = new Date().toISOString().split('T')[0]
+    const hoy = new Date().toISOString().split('T')[0]
 
-  for (const id of validIds) {
-    const preset = ONBOARDING_HABIT_PRESETS.find((p) => p.id === id)
-    if (!preset) continue
-    const idCategoria = categoriaPorNombre.get(preset.categoria)
-    if (!idCategoria) continue
+    for (const id of validIds) {
+      const preset = ONBOARDING_HABIT_PRESETS.find((p) => p.id === id)
+      if (!preset) continue
+      
+      const idCategoria = categoriaPorNombre.get(preset.categoria)
+      if (!idCategoria) {
+        console.warn(`[Onboarding] Categoría "${preset.categoria}" no encontrada para el hábito "${preset.nombre}"`)
+        continue
+      }
 
-    await habitoService.create({
-      nombre:      preset.nombre,
-      descripcion: null,
-      fechaInicio: hoy,
-      fechaFin:    null,
-      puntos:      preset.puntos,
-      idUsuario:   usuarioId,
-      idCategoria,
-      estado:      'Activo',
-    })
+      await habitoService.create({
+        nombre:      preset.nombre,
+        descripcion: `Hábito inicial de ${preset.categoria}`,
+        fechaInicio: hoy,
+        fechaFin:    null,
+        puntos:      preset.puntos,
+        idUsuario:   usuarioId,
+        idCategoria,
+        estado:      'Activo',
+      })
+    }
+    console.log(`[Onboarding] ${validIds.length} hábitos creados exitosamente para ${usuarioId}`)
+  } catch (error) {
+    console.error('[Onboarding] Error fatal durante la creación de hábitos:', error)
   }
 }
 
