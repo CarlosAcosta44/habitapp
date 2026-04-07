@@ -190,9 +190,15 @@ FOR EACH ROW EXECUTE FUNCTION seguimiento.tr_func_validar_fechas();
 -- 2. Crear perfil automático al registrarse (Sync con Auth)
 CREATE OR REPLACE FUNCTION gestion.tr_func_auto_perfil() RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO gestion.usuarios (idusuario, nombre, apellido, idrol)
-    VALUES (NEW.id, NEW.raw_user_meta_data->>'nombre', NEW.raw_user_meta_data->>'apellido', 
-           (SELECT idrol FROM gestion.roles WHERE nombrerol = 'Usuario'));
+    INSERT INTO gestion.usuarios (idusuario, nombre, apellido, genero, fechanacimiento, idrol)
+    VALUES (
+        NEW.id,
+        COALESCE(NEW.raw_user_meta_data->>'nombre', 'Sin nombre'),
+        COALESCE(NEW.raw_user_meta_data->>'apellido', 'Sin apellido'),
+        (NEW.raw_user_meta_data->>'genero'),
+        (NEW.raw_user_meta_data->>'fechanacimiento')::DATE,
+        (SELECT idrol FROM gestion.roles WHERE nombrerol = 'Usuario')
+    );
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
