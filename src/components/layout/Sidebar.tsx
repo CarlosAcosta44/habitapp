@@ -4,16 +4,17 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  BookOpen, 
   CheckSquare, 
   Users, 
   Settings, 
-  Search, 
-  HelpCircle, 
+  LifeBuoy, 
   LogOut, 
   Moon,
-  Sun,
-  Trophy
+  Trophy,
+  BarChart3,
+  Sparkles,
+  HeartPulse,
+  Power
 } from 'lucide-react';
 import { NewHabitModal } from '../modals/NewHabitModal';
 import { logoutAction } from '@/actions/auth.actions';
@@ -57,27 +58,30 @@ export function Sidebar({ user }: SidebarProps) {
   };
 
   const navLinks = [
-    { name: 'Perfil', href: '/perfil', icon: BookOpen },
-    { name: 'Retos', href: '/retos', icon: Trophy },
     { name: 'Hábitos', href: '/habitos', icon: CheckSquare },
+    { name: 'Retos', href: '/retos', icon: Trophy },
     { name: 'Comunidad', href: '/comunidad', icon: Users },
-    { name: 'Reportes', href: '/reportes', icon: HelpCircle },
+    { name: 'Reportes', href: '/reportes', icon: BarChart3 },
     { name: 'Ajustes', href: '/ajustes', icon: Settings },
   ];
 
   return (
     <aside className="w-64 h-full bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-800 dark:text-slate-300 transition-colors border-r border-slate-200 dark:border-slate-800">
       {/* Brand & User Profile Area */}
-      <div className="p-6 flex flex-col space-y-6">
+      <div className="p-6 flex flex-col space-y-6 mb-5 ">
         <h2 className="text-2xl font-bold tracking-wide text-indigo-300">
           HabitApp
         </h2>
         
-        <div className="flex items-center space-x-4">
+        <Link
+          href="/perfil"
+          className="flex items-center space-x-4 rounded-xl p-1 -m-1 transition-colors hover:bg-slate-100 dark:hover:bg-slate-900/60 mb-6 "
+          aria-label="Ir al perfil"
+        >
           <div className="relative">
             <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
               {user?.avatar_url ? (
-                 // eslint-disable-next-line @next/next/no-img-element
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={user.avatar_url} alt="User Avatar" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-xl font-bold text-indigo-700 dark:text-white bg-indigo-100 dark:bg-indigo-600">
@@ -95,30 +99,19 @@ export function Sidebar({ user }: SidebarProps) {
               {user?.role === 'trainer' ? 'TRAINER' : 'PREMIUM LIFESTYLE'}
             </p>
           </div>
-        </div>
+        </Link>
 
         <button 
           onClick={() => setIsNewHabitModalOpen(true)}
-          className="w-full bg-[#9da8ff] hover:bg-indigo-300 text-slate-950 font-bold text-sm py-3 px-4 rounded-[2rem] transition-colors shadow-lg active:scale-95 uppercase tracking-wide"
+          className="w-full bg-[#9da8ff] hover:bg-indigo-300 text-slate-950 font-bold text-sm py-3 px-4 rounded-[2rem] transition-colors shadow-lg active:scale-95 uppercase tracking-wide inline-flex items-center justify-center gap-2"
         >
+          <Sparkles className="w-4 h-4" />
           Nuevo Hábito
         </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="px-6 mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-          <input 
-            type="text" 
-            placeholder="Buscar..." 
-            className="w-full bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white rounded-lg pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500"
-          />
-        </div>
-      </div>
-
       {/* Navigation Links */}
-      <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-4 mt-4 space-y-1 overflow-y-auto">
         {navLinks.map((link) => {
           const Icon = link.icon;
           const isActive = pathname === link.href || (pathname?.startsWith(link.href) && link.href !== '/');
@@ -140,22 +133,22 @@ export function Sidebar({ user }: SidebarProps) {
             </Link>
           );
         })}
+
+        <div className="mt-8 rounded-2xl border border-indigo-200/20 bg-indigo-500/5 px-4 py-5 text-center">
+          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-300">
+            <HeartPulse className="h-5 w-5" />
+          </div>
+          <p className="mt-3 text-xs uppercase tracking-[0.14em] text-indigo-300/80">
+            Bienestar diario
+          </p>
+          <p className="mt-1 text-[11px] text-slate-400">
+            Cada pequeño avance suma.
+          </p>
+        </div>
       </nav>
 
       {/* Bottom Footer Area */}
       <div className="px-4 pb-6 mt-auto flex flex-col space-y-1 border-t border-slate-200 dark:border-slate-800 pt-4">
-        <button className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors text-slate-600 dark:text-slate-400 group w-full text-left">
-          <HelpCircle className="w-5 h-5 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-slate-400" />
-          <span className="text-sm font-medium">Centro de ayuda</span>
-        </button>
-        
-        <form action={logoutAction} className="w-full">
-          <button className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors text-slate-600 dark:text-slate-400 group w-full text-left">
-            <LogOut className="w-5 h-5 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-slate-400" />
-            <span className="text-sm font-medium">Cerrar sesión</span>
-          </button>
-        </form>
-        
         <div className="flex items-center justify-between px-3 py-2.5 mt-2">
           <div className="flex items-center space-x-3 text-slate-600 dark:text-slate-400">
             <Moon className="w-5 h-5 text-slate-400" />
@@ -170,6 +163,18 @@ export function Sidebar({ user }: SidebarProps) {
             <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isDarkMode ? 'translate-x-4' : 'translate-x-1'}`} />
           </button>
         </div>
+
+        <button className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors text-slate-600 dark:text-slate-400 group w-full text-left">
+          <LifeBuoy className="w-5 h-5 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-slate-400" />
+          <span className="text-sm font-medium">Centro de ayuda</span>
+        </button>
+        
+        <form action={logoutAction} className="w-full">
+          <button className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors text-slate-600 dark:text-slate-400 group w-full text-left">
+            <Power className="w-5 h-5 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-slate-400" />
+            <span className="text-sm font-medium">Cerrar sesión</span>
+          </button>
+        </form>
       </div>
 
       <NewHabitModal 
