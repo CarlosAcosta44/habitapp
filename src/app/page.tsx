@@ -1,7 +1,17 @@
-import { redirect } from 'next/navigation'
+import { LandingNavbar }   from "@/components/layout/LandingNavbar";
+import { HeroSection }     from "@/components/landing/HeroSection";
+import { ProgressSection } from "@/components/landing/ProgressSection";
+import { CommunitySection } from "@/components/landing/CommunitySection";
+import { LandingFooter }   from "@/components/layout/LandingFooter";
 
-// La raíz redirige siempre a /login.
-// El middleware se encargará de redirigir al dashboard si ya hay sesión activa.
 export default function RootPage() {
-  redirect('/login')
+  return (
+    <main className="min-h-screen bg-[#030612] selection:bg-indigo-500/30">
+      <LandingNavbar />
+      <HeroSection />
+      <ProgressSection />
+      <CommunitySection />
+      <LandingFooter />
+    </main>
+  );
 }
