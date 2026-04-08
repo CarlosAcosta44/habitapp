@@ -16,11 +16,10 @@ export default async function PerfilPage() {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) redirect("/login");
 
-  // Obtener datos del perfil
+  // Obtener datos del perfil y rol desde la vista pública
   const { data: perfil } = await supabase
-    .schema("gestion")
-    .from("usuarios")
-    .select("nombre, apellido, fotoperfil, puntostotales")
+    .from("perfiles_usuarios_api")
+    .select("nombre, apellido, fotoperfil, puntostotales, nombrerol")
     .eq("idusuario", session.user.id)
     .single();
 
