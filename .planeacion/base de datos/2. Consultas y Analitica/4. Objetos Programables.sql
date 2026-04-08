@@ -98,6 +98,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- 8. Obtener cantidad total de usuarios registrados (Usado en AuthUI)
+CREATE OR REPLACE FUNCTION public.get_total_usuarios()
+RETURNS INTEGER AS $$
+DECLARE v_total INTEGER;
+BEGIN
+    SELECT count(*) INTO v_total FROM gestion.usuarios;
+    RETURN v_total;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ====================================================
 -- SECCIÓN 2: PROCEDIMIENTOS (Acciones de Mutación)
