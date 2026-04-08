@@ -250,6 +250,31 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+-- 8. Sincronizar rol en auth.users
+CREATE OR REPLACE FUNCTION gestion.sync_rol_a_auth()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_nombre_rol VARCHAR(45);
+BEGIN
+    SELECT nombrerol INTO v_nombre_rol FROM gestion.roles WHERE idrol = NEW.idrol;
+    
+    UPDATE auth.users
+    SET raw_app_meta_data = jsonb_set(
+        COALESCE(raw_app_meta_data, '{}'::jsonb),
+        '{rol}',
+        to_jsonb(v_nombre_rol)
+    )
+    WHERE id = NEW.idusuario;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER trigger_sync_rol_auth
+    AFTER INSERT OR UPDATE OF idrol ON gestion.usuarios
+    FOR EACH ROW
+    EXECUTE FUNCTION gestion.sync_rol_a_auth();
+
 -- ====================================================
 -- SECCIÓN 4: VISTAS (Consultas Simplificadas)
 -- ====================================================
