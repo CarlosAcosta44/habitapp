@@ -80,12 +80,12 @@ export function Sidebar({ user }: SidebarProps) {
         >
           <div className="relative">
             <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
-              {user?.avatar_url ? (
+              {user?.fotoperfil || user?.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={user.avatar_url} alt="User Avatar" className="w-full h-full object-cover" />
+                <img src={user.fotoperfil || user.avatar_url} alt="User Avatar" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-xl font-bold text-indigo-700 dark:text-white bg-indigo-100 dark:bg-indigo-600">
-                  {user?.full_name?.[0] || 'U'}
+                  {user?.nombre?.[0] || user?.full_name?.[0] || 'U'}
                 </div>
               )}
             </div>
@@ -93,10 +93,10 @@ export function Sidebar({ user }: SidebarProps) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-indigo-900 dark:text-indigo-200 truncate uppercase tracking-wider leading-tight pb-1">
-              {user?.full_name || 'JOHN DOE'}
+              {user?.nombre && user?.apellido ? `${user.nombre} ${user.apellido}` : (user?.full_name || 'JOHN DOE')}
             </p>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate uppercase tracking-widest">
-              {user?.role === 'trainer' ? 'TRAINER' : 'PREMIUM LIFESTYLE'}
+              Rol: {user?.nombrerol || 'USUARIO'}
             </p>
           </div>
         </Link>
@@ -134,7 +134,7 @@ export function Sidebar({ user }: SidebarProps) {
           );
         })}
 
-        <div className="mt-8 rounded-2xl border border-indigo-200/20 bg-indigo-500/5 px-4 py-5 text-center">
+        <div className="mb-6 mt-8 rounded-2xl border border-indigo-200/20 bg-indigo-500/5 px-4 py-5 text-center">
           <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-300">
             <HeartPulse className="h-5 w-5" />
           </div>
