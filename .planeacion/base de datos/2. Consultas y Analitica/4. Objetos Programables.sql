@@ -288,7 +288,22 @@ CREATE TRIGGER trigger_sync_rol_auth
 -- SECCIÓN 4: VISTAS (Consultas Simplificadas)
 -- ====================================================
 
--- 1. Vista de Ranking con niveles dinámicos
+-- 1. Vista Pública de Perfiles (para consumo de la API Frontend)
+CREATE OR REPLACE VIEW public.perfiles_usuarios_api AS
+SELECT 
+    u.idusuario,
+    u.nombre,
+    u.apellido,
+    u.fotoperfil,
+    u.puntostotales,
+    u.idrol,
+    r.nombrerol
+FROM gestion.usuarios u
+JOIN gestion.roles r ON u.idrol = r.idrol;
+
+GRANT SELECT ON public.perfiles_usuarios_api TO anon, authenticated, service_role;
+
+-- 2. Vista de Ranking con niveles dinámicos
 CREATE OR REPLACE VIEW gestion.vista_resumen_ranking AS
 SELECT idusuario, nombre, puntostotales, gestion.get_nivel_usuario(puntostotales) as nivel
 FROM gestion.usuarios ORDER BY puntostotales DESC;
