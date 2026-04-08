@@ -60,9 +60,33 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.3);
-  border-radius: 9999px;
+  --scrollbar-thumb: rgba(99, 102, 241, 0.3);
+  --scrollbar-thumb-hover: rgba(99, 102, 241, 0.5);
+
+  /* Landing Page specific colors */
+  --landing-bg: #030612;
+  --landing-accent: #3b82f6;
+  --landing-purple: #6366f1;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.5);
+
+/* ─── Landing Page Utilities ────────────────────────────────── */
+.landing-gradient {
+  background: radial-gradient(circle at top left, #1e293b 0%, #030612 50%);
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+}
+
+.glass-morphism {
+  background: rgba(8, 11, 20, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #ffffff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
