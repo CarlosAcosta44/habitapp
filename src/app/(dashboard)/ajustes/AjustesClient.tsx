@@ -48,7 +48,7 @@ const generalItemsDefault = [
     titulo: "Notificaciones",
     descripcion: "Configura tus recordatorios",
     tipo: "link" as const,
-    href: "/ajustes",
+    href: "/ajustes/notificaciones",
   },
   {
     icono: (
@@ -65,10 +65,10 @@ const generalItemsDefault = [
 
 // Más opciones
 const masOpciones = [
-  { titulo: "Valorar Rutinas",        icono: "⭐", href: "/ajustes" },
-  { titulo: "Compartir con Amigos",   icono: "🔗", href: "/ajustes" },
+  { titulo: "Valorar Rutinas",        icono: "⭐", href: "/ajustes/valorar" },
+  { titulo: "Compartir con Amigos",   icono: "🔗", id: "share" },
   { titulo: "Sobre Nosotros",         icono: "ℹ️", href: "/ajustes/sobre-nosotros" },
-  { titulo: "Soporte",                icono: "❓", href: "/ajustes" },
+  { titulo: "Soporte",                icono: "❓", href: "/ajustes/soporte" },
 ];
 
 export function AjustesClient() {
@@ -146,7 +146,17 @@ export function AjustesClient() {
     }
   };
 
+  const handleShare = () => {
+    const url = window.location.origin;
+    navigator.clipboard.writeText(url);
+    alert("¡Enlace de HabitApp copiado al portapapeles! 🚀");
+  };
+
   const toggleAction = (id: string) => {
+    if (id === "share") {
+      handleShare();
+      return;
+    }
     playInteractionSound(); 
     
     setToggles((prev) => {
@@ -251,21 +261,41 @@ export function AjustesClient() {
           </div>
 
           <div className="space-y-3">
-            {masOpciones.map((item) => (
-              <Link
-                key={item.titulo}
-                href={item.href!}
-                className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800/50 hover:border-pink-500/20 transition-all cursor-pointer group"
-              >
-                <div className="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-600/10 flex items-center justify-center text-lg flex-shrink-0">
-                  {item.icono}
-                </div>
-                <h3 className="flex-1 text-sm font-bold text-slate-900 dark:text-white">{item.titulo}</h3>
-                <svg className="w-5 h-5 text-slate-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                </svg>
-              </Link>
-            ))}
+            {masOpciones.map((item) => {
+              const content = (
+                <>
+                  <div className="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-600/10 flex items-center justify-center text-lg flex-shrink-0">
+                    {item.icono}
+                  </div>
+                  <h3 className="flex-1 text-sm font-bold text-slate-900 dark:text-white">{item.titulo}</h3>
+                  <svg className="w-5 h-5 text-slate-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                  </svg>
+                </>
+              );
+
+              if (item.id === "share") {
+                return (
+                  <button
+                    key={item.titulo}
+                    onClick={handleShare}
+                    className="w-full text-left flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800/50 hover:border-pink-500/20 transition-all cursor-pointer group"
+                  >
+                    {content}
+                  </button>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.titulo}
+                  href={item.href!}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800/50 hover:border-pink-500/20 transition-all cursor-pointer group"
+                >
+                  {content}
+                </Link>
+              );
+            })}
           </div>
 
 

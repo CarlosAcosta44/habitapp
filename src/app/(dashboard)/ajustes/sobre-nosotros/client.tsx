@@ -2,49 +2,42 @@
 
 import Link from "next/link";
 import { 
-  Target, 
-  Trophy, 
-  Users, 
-  GraduationCap, 
   ArrowLeft,
-  ChevronRight,
-  Zap,
-  ShieldCheck,
-  HeartPulse
+  Zap
 } from "lucide-react";
 
-export function SobreNosotrosClient() {
+export default function SobreNosotrosClient() {
   const sections = [
     {
       title: "Seguimiento Diario",
       desc: "Registra, personaliza y haz seguimiento de tus hábitos en áreas como ejercicio, nutrición, sueño y salud mental.",
-      icon: <Target className="w-6 h-6 text-indigo-400" />,
+      icon: <span className="text-2xl">🎯</span>,
       color: "border-indigo-500/30 bg-indigo-500/5"
     },
     {
       title: "Gamificación",
       desc: "Acumula puntos al completar tus misiones diarias. Compite en el ranking global de forma sana y motivadora.",
-      icon: <Trophy className="w-6 h-6 text-pink-400" />,
+      icon: <span className="text-2xl">🏆</span>,
       color: "border-pink-500/30 bg-pink-500/5"
     },
     {
       title: "Comunidad",
       desc: "Foros de discusión temáticos y artículos informativos para compartir experiencias y recibir apoyo continuo.",
-      icon: <Users className="w-6 h-6 text-emerald-400" />,
+      icon: <span className="text-2xl">👥</span>,
       color: "border-emerald-500/30 bg-emerald-500/5"
     },
     {
       title: "Asesoría Profesional",
       desc: "Vinculación con entrenadores certificados que diseñan rutinas personalizadas y supervisan tu progreso real.",
-      icon: <GraduationCap className="w-6 h-6 text-amber-400" />,
+      icon: <span className="text-2xl">🎓</span>,
       color: "border-amber-500/30 bg-amber-500/5"
     }
   ];
 
   const roles = [
-    { name: "Usuario", activity: "Registra hábitos, suma puntos y participa en foros.", icon: <Zap className="w-4 h-4" /> },
-    { name: "Entrenador", activity: "Crea rutinas y brinda recomendaciones directas.", icon: <ShieldCheck className="w-4 h-4" /> },
-    { name: "Administrador", activity: "Gestiona la plataforma, usuarios y contenido destacado.", icon: <HeartPulse className="w-4 h-4" /> }
+    { name: "Usuario", activity: "Registra hábitos, suma puntos y participa en foros.", icon: "⚡" },
+    { name: "Entrenador", activity: "Crea rutinas y brinda recomendaciones directas.", icon: "🛡️" },
+    { name: "Administrador", activity: "Gestiona la plataforma, usuarios y contenido destacado.", icon: "❤️" }
   ];
 
   return (

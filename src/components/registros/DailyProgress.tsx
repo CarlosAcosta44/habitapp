@@ -21,7 +21,7 @@ export function DailyProgress({ completados, total }: DailyProgressProps) {
         <div
           className="relative grid h-44 w-44 place-items-center rounded-full"
           style={{
-            background: `conic-gradient(rgb(99 102 241) ${progressDegrees}deg, rgb(226 232 240) 0deg)`,
+            background: `conic-gradient(rgb(99 102 241) ${progressDegrees}deg, var(--progress-track, rgb(226 232 240)) 0deg)`,
           }}
         >
           <div className="grid h-36 w-36 place-items-center rounded-full bg-white dark:bg-slate-900">

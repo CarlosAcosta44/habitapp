@@ -26,6 +26,9 @@
   --text-secondary: #64748b;
   --text-muted:     #94a3b8;
 
+  /* Progreso */
+  --progress-track: #e2e8f0;
+
   /* Fuente */
   --font-sans: var(--font-inter, 'Inter', sans-serif);
 }
@@ -39,6 +42,8 @@
   --text-primary:   #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted:     #475569;
+
+  --progress-track: rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
