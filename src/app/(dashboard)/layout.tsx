@@ -7,10 +7,10 @@ async function getCurrentUser() {
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) redirect('/login')
   
-  // Try to fetch profile for extra metadata
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+  // Try to fetch profile for extra metadata using the public API view
+  const { data: profile } = await supabase.from('perfiles_usuarios_api').select('*').eq('idusuario', user.id).single()
   
-  return profile || user
+  return profile ? { ...user, ...profile } : user
 }
 
 export default async function DashboardLayout({

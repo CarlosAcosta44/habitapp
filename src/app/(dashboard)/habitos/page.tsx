@@ -53,11 +53,37 @@ export default async function HabitosPage() {
   const completados = habitos.filter((h) => h.registroHoy?.completado).length;
   const porcentaje = habitos.length === 0 ? 0 : Math.round((completados / habitos.length) * 100);
   const rachaMaxima = Math.max(0, ...Object.values(rachasMap));
-  const nombreUsuario =
-    session.user.user_metadata?.full_name?.split(" ")?.[0] ||
-    session.user.email?.split("@")[0] ||
-    "Campeon";
-  const diasSemana = ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"];
+  // ── Obtener datos del perfil real ───────────────────────────────────────────
+  const { data: perfil } = await supabase
+    .from("perfiles_usuarios_api")
+    .select("nombre, apellido")
+    .eq("idusuario", session.user.id)
+    .single();
+
+  const nombreReal = perfil?.nombre && perfil?.apellido 
+    ? `${perfil.nombre} ${perfil.apellido}` 
+    : (session.user.user_metadata?.full_name?.split(" ")?.[0] || session.user.email?.split("@")[0] || "Campeón");
+
+  // ── Obtener últimos 7 días para el panel semanal ──────────────────────────
+  const historialResult = await registroService.getHistorialUsuario(usuarioId);
+  const registrosReales = historialResult.success ? historialResult.data : [];
+  
+  const diasCompletados = new Set(registrosReales.filter(r => r.completado).map(r => r.fecha));
+  
+  const hoyStr = new Date().toISOString().split("T")[0];
+  const fechaActual = new Date();
+  
+  const trackerSemanal = Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date(fechaActual);
+    d.setDate(fechaActual.getDate() - (6 - i));
+    const isostring = d.toISOString().split("T")[0];
+    const nombreDia = d.toLocaleDateString("es-CO", { weekday: 'short' });
+    return {
+      diaStr: nombreDia.charAt(0).toUpperCase() + nombreDia.slice(1),
+      activo: diasCompletados.has(isostring),
+      esHoy: isostring === hoyStr
+    };
+  });
 
   return (
     <div className="space-y-7">
@@ -68,20 +94,13 @@ export default async function HabitosPage() {
               Panel diario
             </p>
             <h1 className="mt-2 text-3xl md:text-4xl font-black">
-              Hola, {nombreUsuario} 👋
+              Hola, {nombreReal} 👋
             </h1>
             <p className="mt-2 text-sm md:text-base text-indigo-100/90">
-              Construyamos habitos solidos, un check a la vez.
+              Construyamos hábitos sólidos, un check a la vez.
             </p>
           </div>
-
-          <Link
-            href="/habitos/nueva"
-            className="inline-flex items-center gap-2 rounded-xl bg-white/95 px-4 py-2.5 text-sm font-bold text-indigo-700 transition hover:bg-white"
-          >
-            <Zap className="h-4 w-4" />
-            Nuevo habito
-          </Link>
+          {/* Botón removido */}
         </div>
 
         <div className="mt-5 flex items-center gap-2 text-indigo-100">
@@ -100,21 +119,22 @@ export default async function HabitosPage() {
         <DailyProgress completados={completados} total={habitos.length} />
 
         <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-4 shadow-sm">
-          <h2 className="font-bold text-slate-900 dark:text-slate-100">Esta semana</h2>
+          <h2 className="font-bold text-slate-900 dark:text-slate-100">Últimos 7 días</h2>
           <div className="grid grid-cols-7 gap-2">
-            {diasSemana.map((dia, index) => {
-              const activo = index < Math.min(completados, 7);
+            {trackerSemanal.map((tracker, index) => {
               return (
                 <div
-                  key={dia}
+                  key={index}
                   className={`rounded-xl border px-2 py-2 text-center ${
-                    activo
+                    tracker.activo
                       ? "border-indigo-300 bg-indigo-50 dark:border-indigo-700 dark:bg-indigo-950/40"
-                      : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950"
+                      : (tracker.esHoy 
+                          ? "border-amber-300 bg-amber-50 dark:border-amber-800/50 dark:bg-amber-900/10"
+                          : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950")
                   }`}
                 >
-                  <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400">{dia}</p>
-                  <div className={`mx-auto mt-2 h-6 w-6 rounded-full ${activo ? "bg-indigo-500" : "bg-slate-300 dark:bg-slate-700"}`} />
+                  <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400">{tracker.diaStr}</p>
+                  <div className={`mx-auto mt-2 h-6 w-6 rounded-full ${tracker.activo ? "bg-indigo-500" : (tracker.esHoy ? "bg-amber-300 dark:bg-amber-700/50" : "bg-slate-300 dark:bg-slate-700")}`} />
                 </div>
               );
             })}
@@ -169,7 +189,7 @@ export default async function HabitosPage() {
                 ¡Crea tu primer hábito para empezar!
               </p>
               <Link
-                href="/habitos/nueva"
+                href="/habitos/crear"
                 className="inline-block mt-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2 transition-colors"
               >
                 Crear hábito ✨

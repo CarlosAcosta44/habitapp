@@ -7,7 +7,9 @@
 
 import { createClient }    from "@/lib/supabase/server";
 import { redirect }        from "next/navigation";
+import Link                from "next/link";
 import { PerfilTabs }      from "@/components/perfil/PerfilTabs";
+import { RegistroService } from "@/modules/registros/registro.service";
 
 export const metadata = { title: "Perfil | HabitApp" };
 
@@ -16,11 +18,9 @@ export default async function PerfilPage() {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) redirect("/login");
 
-  // Obtener datos del perfil
   const { data: perfil } = await supabase
-    .schema("gestion")
-    .from("usuarios")
-    .select("nombre, apellido, fotoperfil, puntostotales")
+    .from("perfiles_usuarios_api")
+    .select("nombre, apellido, fotoperfil, puntostotales, nombrerol")
     .eq("idusuario", session.user.id)
     .single();
 
@@ -28,31 +28,128 @@ export default async function PerfilPage() {
   const apellido = perfil?.apellido ?? "";
   const puntos  = perfil?.puntostotales ?? 0;
 
-  // Mock de actividad reciente
-  const actividad = [
-    { id: "1", tipo: "reto",       titulo: "Reto: Guerrero Matutino",      desc: "Completaste 15 sesiones de entrenamiento antes de las 8 AM.", puntos: 112, label: "PUNTOS", icono: "🏃", color: "border-l-indigo-500 bg-indigo-600/5", extra: "📈 Racha aumentada a 12 días" },
-    { id: "2", tipo: "habito",     titulo: "Hábito: Lectura Diaria",       desc: "30 minutos registrados hoy. ¡Mantén el ritmo!", puntos: 62, label: "PUNTOS", icono: "📖", color: "border-l-violet-500 bg-violet-600/5", extra: null },
-    { id: "3", tipo: "racha_rota", titulo: "Racha de Meditación Rota",     desc: "Perdiste tu racha de 8 días de enfoque consciente.", puntos: null, label: null, icono: "🧘", color: "border-l-red-400 bg-red-600/5", extra: "¡No te rindas! Reinicia hoy para recuperar tu bono." },
-    { id: "4", tipo: "logro",      titulo: "Logro Compartido",             desc: "Felicitaste a Elena M. por su racha de 50 días.", puntos: 15, label: "BONO SOCIAL", icono: "🎉", color: "border-l-pink-400 bg-pink-600/5", extra: null },
-  ];
+  // ── 0. Cargar los registros para calcular estadísticas (Racha / Eficiencia) ──
+  const registroService = new RegistroService();
+  const historialResult = await registroService.getHistorialUsuario(session.user.id);
+  const registrosReales = historialResult.success ? historialResult.data : [];
 
-  // Mock amigos
-  const amigos = [
-    { id: "1", nombre: "Samuel", apellido: "Lores",     puntos: 1890 },
-    { id: "2", nombre: "Maicol", apellido: "Rodriguez", puntos: 4120 },
-    { id: "3", nombre: "Elena",  apellido: "Vizcarra",  puntos: 2780 },
-    { id: "4", nombre: "Lucia",  apellido: "Mendez",    puntos: 1200 },
-    { id: "5", nombre: "Roberto",apellido: "Garcia",    puntos: 890 },
-    { id: "6", nombre: "Sofia",  apellido: "Castro",    puntos: 5600, top: true },
-  ];
+  // Calcular días activos del mes
+  const hoyDate = new Date();
+  const mesActual = hoyDate.getMonth();
+  const añoActual = hoyDate.getFullYear();
+  
+  const diasCompletadosMes = new Set(
+    registrosReales
+      .filter(r => r.completado)
+      .filter(r => {
+        const rowDate = new Date(r.fecha + "T12:00:00Z"); // Fix TZ boundary
+        return rowDate.getMonth() === mesActual && rowDate.getFullYear() === añoActual;
+      })
+      .map(r => r.fecha)
+  );
+  const diasActivosMensuales = diasCompletadosMes.size;
+  const diasEnElMes = new Date(añoActual, mesActual + 1, 0).getDate();
+  const eficienciaMensual = Math.round((diasActivosMensuales / diasEnElMes) * 100);
 
-  // Mock logros
-  const logros = [
-    { id: "1", nombre: "Sueño Profundo",    desc: "7 días durmiendo +8h",       fecha: "05 Sept, 2023", icono: "🌙" },
-    { id: "2", nombre: "Ratón de Biblioteca",desc: "Leído 500 páginas este mes", fecha: "28 Agosto, 2023",icono: "📚" },
-    { id: "3", nombre: "Corazón de Oro",     desc: "Ayudaste a 10 amigos",       fecha: "15 Agosto, 2023",icono: "❤️" },
-    { id: "4", nombre: "Energía Pura",       desc: "Sprint de 5km completado",   fecha: "02 Agosto, 2023",icono: "⚡" },
-  ];
+  // Calcular Racha Global (Días consecutivos con al menos un hábito completado)
+  const todosLosDias = Array.from(new Set(registrosReales.filter(r => r.completado).map(r => r.fecha))).sort((a,b) => b.localeCompare(a));
+  let rachaGlobal = 0;
+  for (let i = 0; i < todosLosDias.length; i++) {
+    const d = new Date(hoyDate);
+    d.setDate(hoyDate.getDate() - i);
+    const expected = d.toISOString().split("T")[0];
+    if (todosLosDias[i] === expected) rachaGlobal++;
+    else break;
+  }
+
+  // ── 1. Actividad de Puntos Secuencial ──
+  const { data: historialPuntos } = await supabase
+    .from("api_historial_puntos")
+    .select("*")
+    .eq("idusuario", session.user.id)
+    .order("fecha", { ascending: false })
+    .limit(5);
+
+  const actividad = historialPuntos?.map((hp, idx) => ({
+    id: hp.idhistorial,
+    tipo: idx % 2 === 0 ? "habito" : "logro", 
+    titulo: hp.motivo,
+    desc: `Puntos obtenidos el ${hp.fecha}`,
+    puntos: hp.puntos,
+    label: "PUNTOS",
+    icono: "⭐",
+    color: "border-l-indigo-500 bg-indigo-600/5",
+    extra: null
+  })) || [];
+
+  if (actividad.length === 0) {
+    actividad.push({ id: "mock", tipo: "info", titulo: "¡Bienvenido a HabitApp!", desc: "Comienza a completar hábitos para ver tu progreso aquí.", puntos: 0, label: "", icono: "👋", color: "border-l-slate-500 bg-slate-600/5", extra: null });
+  }
+
+  // ── 2. Amigos ──
+  const { data: misAmistades } = await supabase
+    .from("api_amigos")
+    .select("*")
+    .eq("estado", "Aceptado")
+    .or(`idusuario_solicitante.eq.${session.user.id},idusuario_receptor.eq.${session.user.id}`);
+
+  const amigosIds = misAmistades?.map(a => a.idusuario_solicitante === session.user.id ? a.idusuario_receptor : a.idusuario_solicitante) || [];
+  
+  let amigosReales: any[] = [];
+  if (amigosIds.length > 0) {
+    const { data: perfilesAmigos } = await supabase
+      .from("perfiles_usuarios_api")
+      .select("idusuario, nombre, apellido, puntostotales")
+      .in("idusuario", amigosIds)
+      .order("puntostotales", { ascending: false });
+
+    amigosReales = perfilesAmigos?.map((pa, idx) => ({
+      id: pa.idusuario,
+      nombre: pa.nombre,
+      apellido: pa.apellido,
+      puntos: pa.puntostotales,
+      top: idx === 0 && pa.puntostotales > 0 // El que más puntos tiene recibe estrella
+    })) || [];
+  }
+  const amigos = amigosReales;
+
+  // ── 3. Logros Reales ──
+  const { data: logrosGanados } = await supabase
+    .from("api_usuario_logro")
+    .select("*")
+    .eq("idusuario", session.user.id);
+    
+  const idsGanados = logrosGanados?.map(l => l.idlogro) || [];
+
+  let logrosReales: any[] = [];
+  if (idsGanados.length > 0) {
+    const { data: catalogoLogros } = await supabase
+      .from("api_logros")
+      .select("*")
+      .in("idlogro", idsGanados);
+
+    logrosReales = catalogoLogros?.map((lg) => {
+      const meta = logrosGanados?.find(ul => ul.idlogro === lg.idlogro);
+      return {
+        id: lg.idlogro,
+        nombre: lg.nombre,
+        desc: lg.descripcion,
+        fecha: meta?.fechaobtenido || "Recientemente",
+        icono: lg.icono
+      };
+    }) || [];
+  }
+  const logros = logrosReales;
+  const logroDestacado = logros.length > 0 ? logros[0] : null;
+
+  // ── 4. Lógica de Próximo Objetivo ──
+  let proximoObjetivo = { nombre: "Inicia tu camino", desc: "Consigue tus primeros puntos.", meta: 100, actual: puntos };
+  if (puntos < 100) proximoObjetivo = { nombre: "Aspirante", desc: "Consigue tus primeros 100 puntos", meta: 100, actual: puntos };
+  else if (puntos < 500) proximoObjetivo = { nombre: "Aplicado", desc: "Tu meta ahora son 500 puntos", meta: 500, actual: puntos };
+  else if (puntos < 1500) proximoObjetivo = { nombre: "Constante", desc: "Alcanzar 1500 puntos es el reto", meta: 1500, actual: puntos };
+  else proximoObjetivo = { nombre: "Mente de Acero", desc: "Llega a la increíble suma de 5000 puntos", meta: 5000, actual: puntos };
+  
+  const porcentajeObj = Math.min(100, Math.round((proximoObjetivo.actual / proximoObjetivo.meta) * 100));
 
   return (
     <div className="max-w-5xl mx-auto pb-12">
@@ -65,7 +162,7 @@ export default async function PerfilPage() {
             {perfil?.fotoperfil ? (
               <img src={perfil.fotoperfil} alt="" className="h-full w-full object-cover" />
             ) : (
-              <span className="text-4xl font-bold text-slate-300">
+              <span className="text-4xl font-bold text-slate-300 uppercase">
                 {nombre.charAt(0)}{apellido.charAt(0)}
               </span>
             )}
@@ -88,7 +185,7 @@ export default async function PerfilPage() {
               {puntos.toLocaleString()} <span className="text-slate-500 text-xs uppercase tracking-wider">Puntos</span>
             </span>
             <span className="px-4 py-1.5 rounded-xl bg-[#111827] border border-slate-800/50 text-sm font-semibold text-orange-400">
-              24 <span className="text-slate-500 text-xs uppercase tracking-wider">Racha</span>
+              {rachaGlobal} <span className="text-slate-500 text-xs uppercase tracking-wider">Racha</span>
             </span>
           </div>
         </div>
@@ -188,24 +285,28 @@ export default async function PerfilPage() {
               {/* Logro destacado */}
               <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-900/30 to-violet-900/30 border border-indigo-500/20 mb-6">
                 <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-md uppercase tracking-wider">
-                  Insignia Legendaria
+                  {logroDestacado ? "Última Insignia" : "Aún sin insignias"}
                 </span>
-                <h2 className="text-3xl font-extrabold text-white mt-3">¡El mejor corredor!</h2>
+                <h2 className="text-3xl font-extrabold text-white mt-3">
+                  {logroDestacado ? logroDestacado.nombre : "¡Comienza tu aventura!"}
+                </h2>
                 <p className="text-sm text-slate-300 mt-2 max-w-md">
-                  Has completado 30 sesiones de running consecutivas sin fallar un solo kilómetro. Eres la definición de constancia.
+                  {logroDestacado ? logroDestacado.desc : "Completa retos y mantén rachas en tus hábitos para coleccionar insignias y subir de nivel."}
                 </p>
-                <div className="flex items-center justify-between mt-5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-indigo-400">🏆</span>
-                    <div>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">Obtenido el</p>
-                      <p className="text-sm text-white font-semibold">12 Octubre, 2023</p>
+                {logroDestacado && (
+                  <div className="flex items-center justify-between mt-5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-indigo-400">{logroDestacado.icono}</span>
+                      <div>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Obtenido el</p>
+                        <p className="text-sm text-white font-semibold">{logroDestacado.fecha}</p>
+                      </div>
                     </div>
+                    <button className="px-4 py-2 rounded-xl bg-[#111827] border border-slate-800/50 text-sm font-semibold text-slate-300 hover:border-slate-700 transition-colors">
+                      Compartir Logro
+                    </button>
                   </div>
-                  <button className="px-4 py-2 rounded-xl bg-[#111827] border border-slate-800/50 text-sm font-semibold text-slate-300 hover:border-slate-700 transition-colors">
-                    Compartir Logro
-                  </button>
-                </div>
+                )}
               </div>
 
               {/* Grid de logros */}
@@ -225,19 +326,19 @@ export default async function PerfilPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-bold text-white">
-                      Próximo objetivo: <span className="text-indigo-400 italic">Maestro Zen</span>
+                      Próximo objetivo: <span className="text-indigo-400 italic">{proximoObjetivo.nombre}</span>
                     </h3>
                     <p className="text-sm text-slate-400 mt-1">
-                      Te faltan 4 sesiones de meditación para desbloquear tu próxima insignia dorada.
+                      {proximoObjetivo.desc}
                     </p>
                   </div>
                   <div className="text-right flex-shrink-0 ml-4">
-                    <p className="text-xs text-slate-500 uppercase tracking-wider">80% Completado</p>
-                    <p className="text-sm font-bold text-indigo-400">4/5 días</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider">{porcentajeObj}% Completado</p>
+                    <p className="text-sm font-bold text-indigo-400">{proximoObjetivo.actual}/{proximoObjetivo.meta}</p>
                   </div>
                 </div>
                 <div className="w-full h-2 bg-slate-800 rounded-full mt-3 overflow-hidden">
-                  <div className="h-full w-4/5 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full"></div>
+                  <div className={`h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full`} style={{ width: `${porcentajeObj}%` }}></div>
                 </div>
               </div>
             </div>
@@ -252,20 +353,20 @@ export default async function PerfilPage() {
           <div className="p-5 rounded-2xl bg-[#111827] border border-slate-800/50">
             <h3 className="text-base font-bold text-white mb-3">Rendimiento Mensual</h3>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-slate-400">Meta de Puntos</span>
-              <span className="text-sm font-bold text-indigo-400">82%</span>
+              <span className="text-sm text-slate-400">Días activos vs meta</span>
+              <span className="text-sm font-bold text-indigo-400">{diasActivosMensuales}/{diasEnElMes}</span>
             </div>
             <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden mb-4">
-              <div className="h-full w-[82%] bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full"></div>
+              <div className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full" style={{ width: `${eficienciaMensual}%` }}></div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 rounded-xl bg-slate-800/50 text-center">
                 <p className="text-[10px] text-slate-500 uppercase tracking-wider">Días Activos</p>
-                <p className="text-xl font-extrabold text-white">22/30</p>
+                <p className="text-xl font-extrabold text-white">{diasActivosMensuales}/{diasEnElMes}</p>
               </div>
               <div className="p-3 rounded-xl bg-slate-800/50 text-center">
                 <p className="text-[10px] text-slate-500 uppercase tracking-wider">Eficiencia</p>
-                <p className="text-xl font-extrabold text-white">94%</p>
+                <p className="text-xl font-extrabold text-white">{eficienciaMensual}%</p>
               </div>
             </div>
           </div>
@@ -276,9 +377,9 @@ export default async function PerfilPage() {
               <p className="text-[10px] text-indigo-300 uppercase tracking-wider font-bold">Próximo Hito</p>
               <span className="text-2xl">🏅</span>
             </div>
-            <h3 className="text-xl font-extrabold text-white mt-2">Mente de Acero</h3>
+            <h3 className="text-xl font-extrabold text-white mt-2">{proximoObjetivo.nombre}</h3>
             <p className="text-xs text-slate-300 mt-1">
-              Completa 30 días de hábitos sin fallar uno solo.
+              Rumbo a los {proximoObjetivo.meta} puntos totales.
             </p>
           </div>
 
@@ -287,17 +388,21 @@ export default async function PerfilPage() {
             <h3 className="text-base font-bold text-white mb-3">Círculo Social</h3>
             <div className="flex items-center gap-2 mb-3">
               <div className="flex -space-x-2">
-                {[...Array(3)].map((_, i) => (
+                {amigos.slice(0, 3).map((a, i) => (
                   <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 border-2 border-[#111827] flex items-center justify-center">
-                    <span className="text-[10px] text-slate-300 font-medium">{String.fromCharCode(65 + i)}</span>
+                    <span className="text-[10px] text-slate-300 font-medium">{a.nombre.charAt(0)}</span>
                   </div>
                 ))}
+                {amigos.length === 0 && <span className="text-xs text-slate-500">Aún no tienes amigos</span>}
               </div>
-              <span className="text-xs text-slate-400">3 amigos activos hoy</span>
+              {amigos.length > 0 && <span className="text-xs text-slate-400">{amigos.length} amigos en tu red</span>}
             </div>
-            <button className="w-full py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+            <Link 
+              href="/ranking"
+              className="block flex items-center justify-center w-full py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+            >
               Ver Rankings
-            </button>
+            </Link>
           </div>
 
         </div>
