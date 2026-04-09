@@ -40,7 +40,7 @@ export default async function ReportesPage() {
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-white">
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">
             Análisis Editorial
           </h1>
           <p className="text-sm text-slate-400 mt-1 italic">
@@ -49,7 +49,7 @@ export default async function ReportesPage() {
         </div>
 
         {/* Periodo toggle */}
-        <div className="flex items-center bg-[#111827] rounded-xl border border-slate-800/50 p-1">
+        <div className="flex items-center bg-white dark:bg-[#111827] rounded-xl border border-slate-200 dark:border-slate-800 p-1 shadow-sm">
           {["Diario", "Semanal", "Mensual"].map((p, i) => (
             <button
               key={p}
@@ -69,7 +69,7 @@ export default async function ReportesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Card de insights globales */}
-        <div className="lg:col-span-2 p-6 rounded-2xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-slate-800/50">
+        <div className="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-[10px] font-bold text-indigo-400 bg-indigo-600/20 px-2.5 py-1 rounded-md uppercase tracking-wider">
               Global Insights
@@ -127,9 +127,9 @@ export default async function ReportesPage() {
         </div>
 
         {/* Estado de Ánimo */}
-        <div className="p-6 rounded-2xl bg-[#111827] border border-slate-800/50">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-bold text-white">Estado de Ánimo</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Estado de Ánimo</h3>
             <span className="text-2xl">😊</span>
           </div>
 
@@ -155,10 +155,10 @@ export default async function ReportesPage() {
       </div>
 
       {/* ── Comparativa Semanal ────────────────────────────────────────────── */}
-      <div className="p-6 rounded-2xl bg-[#111827] border border-slate-800/50">
+      <div className="p-6 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-lg font-bold text-white">Comparativa Semanal</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Comparativa Semanal</h2>
             <p className="text-xs text-slate-400 mt-0.5">Frecuencia de cumplimiento por categoría</p>
           </div>
           <div className="flex items-center gap-4">
@@ -217,7 +217,7 @@ export default async function ReportesPage() {
           </div>
         ) : (
           habitos.map((h) => (
-            <div key={h.idHabito} className="p-5 rounded-2xl bg-[#111827] border border-slate-800/50">
+            <div key={h.idHabito} className="p-5 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm">
               <div className="flex items-start justify-between mb-3">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ backgroundColor: `${h.color}20` }}>
                   <div className="w-5 h-5 rounded-full" style={{ backgroundColor: h.color }}></div>
@@ -232,8 +232,8 @@ export default async function ReportesPage() {
                   {h.porcentajeCambio}
                 </span>
               </div>
-              <h3 className="text-sm font-bold text-white mb-1">{h.nombre}</h3>
-              <p className="text-xs text-slate-400 mb-3">{h.descripcion}</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{h.nombre}</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{h.descripcion}</p>
               <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-700"

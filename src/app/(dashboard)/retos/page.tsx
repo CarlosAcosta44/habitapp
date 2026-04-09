@@ -21,7 +21,7 @@ export default function DetalleRetoPage() {
   const completedCount = Object.values(tasks).filter(Boolean).length;
 
   return (
-    <div className="min-h-screen w-full bg-[#0A0718] text-slate-200 p-6 lg:p-12">
+    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#0A0718] text-slate-900 dark:text-slate-200 p-6 lg:p-12 transition-colors">
       
       {/* Header */}
       <header className="flex items-center justify-between mb-8 max-w-6xl mx-auto">
@@ -29,7 +29,7 @@ export default function DetalleRetoPage() {
           <Link href="/dashboard" className="text-slate-400 hover:text-white transition">
             <ArrowLeft size={20} />
           </Link>
-          <h1 className="text-xl font-bold font-serif text-[#9DA8FF]">Detalle del Reto</h1>
+          <h1 className="text-xl font-bold font-serif text-indigo-600 dark:text-[#9DA8FF]">Detalle del Reto</h1>
         </div>
         <div className="flex items-center gap-6 text-slate-400">
           <Search size={20} className="hover:text-white cursor-pointer transition" />
@@ -103,8 +103,8 @@ export default function DetalleRetoPage() {
           <div className="w-full lg:w-1/3 flex flex-col gap-6">
             
             {/* Information Card */}
-            <div className="bg-[#181636] rounded-[2rem] p-8 shadow-xl border border-slate-800">
-              <h3 className="text-xl font-bold text-[#9DA8FF] mb-6">Información</h3>
+            <div className="bg-white dark:bg-[#181636] rounded-[2rem] p-8 shadow-xl border border-slate-200 dark:border-slate-800">
+              <h3 className="text-xl font-bold text-indigo-600 dark:text-[#9DA8FF] mb-6">Información</h3>
               <p className="text-slate-400 text-sm leading-relaxed mb-8">
                 Este reto está diseñado para aquellos que buscan superar sus límites. No se trata solo de velocidad, sino de constancia y bienestar integral.
               </p>
@@ -132,14 +132,14 @@ export default function DetalleRetoPage() {
             </div>
 
             {/* Rewards Card */}
-            <div className="bg-[#181636] rounded-[2rem] p-8 shadow-xl border border-slate-800">
+            <div className="bg-white dark:bg-[#181636] rounded-[2rem] p-8 shadow-xl border border-slate-200 dark:border-slate-800">
               <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">Próximos Premios</h3>
               <div className="flex items-center gap-5">
                 <div className="w-14 h-14 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-400 shadow-inner">
                   <Medal size={28} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-lg">Insignia Elite</h4>
+                  <h4 className="font-bold text-slate-900 dark:text-white text-lg">Insignia Elite</h4>
                   <p className="text-xs text-slate-400">Nivel de prestigio Platino</p>
                 </div>
               </div>
@@ -147,19 +147,18 @@ export default function DetalleRetoPage() {
 
           </div>
 
-          {/* RIGHT COLUMN: Tasks */}
-          <div className="w-full lg:w-2/3 flex flex-col">
+          <div className="w-full lg:w-2/3 flex flex-col uppercase tracking-wider">
             <div className="flex justify-between items-end mb-6">
-              <h2 className="text-3xl font-bold font-serif text-white">Tareas del Reto</h2>
+              <h2 className="text-3xl font-bold font-serif text-slate-900 dark:text-white">Tareas del Reto</h2>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{completedCount}/4 COMPLETADAS</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               
               {/* TASK: Water */}
-              <div className="bg-white rounded-[2rem] p-6 shadow-xl relative overflow-hidden transition-all hover:scale-[1.02] cursor-pointer">
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-xl border border-slate-200 dark:border-slate-800 relative overflow-hidden transition-all hover:scale-[1.02] cursor-pointer group">
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 rounded-full bg-[#E6F0FF] text-blue-500 flex items-center justify-center shadow-inner">
+                  <div className="w-12 h-12 rounded-full bg-[#E6F0FF] dark:bg-blue-500/20 text-blue-500 flex items-center justify-center shadow-inner">
                     <Droplet size={24} />
                   </div>
                   <div className="flex -space-x-2">
@@ -183,9 +182,9 @@ export default function DetalleRetoPage() {
               </div>
 
               {/* TASK: Walk */}
-              <div className="bg-white rounded-[2rem] p-6 shadow-xl relative overflow-hidden transition-all hover:scale-[1.02] cursor-pointer">
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-xl border border-slate-200 dark:border-slate-800 relative overflow-hidden transition-all hover:scale-[1.02] cursor-pointer">
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center shadow-inner">
+                  <div className="w-12 h-12 rounded-full bg-pink-100 dark:bg-pink-500/20 text-pink-500 flex items-center justify-center shadow-inner">
                     <Footprints size={24} />
                   </div>
                   <div className="flex -space-x-2">
@@ -210,9 +209,9 @@ export default function DetalleRetoPage() {
               </div>
 
               {/* TASK: Water Plants */}
-               <div className="bg-white rounded-[2rem] p-6 shadow-xl flex flex-col justify-between custom-hover cursor-pointer h-[160px] relative overflow-hidden">
+               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-xl border border-slate-200 dark:border-slate-800 flex flex-col justify-between custom-hover cursor-pointer h-[160px] relative overflow-hidden">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-green-100 text-green-500 flex items-center justify-center shadow-inner">
+                  <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-500/20 text-green-500 flex items-center justify-center shadow-inner">
                     <Flower2 size={24} />
                   </div>
                   <div>
@@ -229,9 +228,9 @@ export default function DetalleRetoPage() {
               </div>
 
                {/* TASK: Meditate */}
-               <div className="bg-white rounded-[2rem] p-6 shadow-xl flex flex-col justify-between custom-hover cursor-pointer h-[160px] relative overflow-hidden">
+               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-xl border border-slate-200 dark:border-slate-800 flex flex-col justify-between custom-hover cursor-pointer h-[160px] relative overflow-hidden">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-400 flex items-center justify-center shadow-inner">
+                  <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-400 flex items-center justify-center shadow-inner">
                     <Wind size={24} />
                   </div>
                   <div>
