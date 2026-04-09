@@ -63,7 +63,7 @@ const HABITO_CON_CATEGORIA_SELECT = `
   puntos,
   idusuario,
   idcategoria,
-  categorias_habitos!idcategoria (
+  categorias_habitos (
     idcategoria,
     nombre,
     descripcion
@@ -153,12 +153,12 @@ export class HabitoRepository
         puntos,
         idusuario,
         idcategoria,
-        categorias_habitos!idcategoria (
+        categorias_habitos (
           idcategoria,
           nombre,
           descripcion
         ),
-        registro_habitos!idhabito (
+        registro_habitos (
           idregistro,
           completado,
           puntos_ganados,
