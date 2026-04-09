@@ -44,19 +44,19 @@ export default async function ComunidadPage() {
         <input
           type="text"
           placeholder="Buscar en la comunidad..."
-          className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#111827] border border-slate-800/50 text-sm text-slate-300 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all"
+          className="w-full pl-12 pr-4 py-3 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-sm text-slate-900 dark:text-slate-300 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all"
         />
       </div>
 
       {/* ── Hero Section ──────────────────────────────────────────────────── */}
       <section>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight">
           Crea, Comparte<br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-violet-400">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-500 dark:from-indigo-400 dark:to-violet-400">
             & Conecta.
           </span>
         </h1>
-        <p className="text-base text-slate-400 mt-3 max-w-md">
+        <p className="text-base text-slate-600 dark:text-slate-400 mt-3 max-w-md">
           Únete a miles de personas que están transformando sus vidas a través
           de hábitos sostenibles y apoyo mutuo.
         </p>
@@ -67,12 +67,12 @@ export default async function ComunidadPage() {
 
       {/* ── Foros de la Comunidad ─────────────────────────────────────────── */}
       <section>
-        <h2 className="text-xl font-bold text-white mb-5">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-5">
           Foros de la Comunidad
         </h2>
 
         {foros.length === 0 ? (
-          <div className="text-center py-12 rounded-2xl border border-dashed border-slate-700">
+          <div className="text-center py-12 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
             <p className="text-3xl mb-2">💬</p>
             <p className="text-slate-400 font-medium">
               No hay foros disponibles todavía
@@ -94,7 +94,7 @@ export default async function ComunidadPage() {
       {articulos.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-xl font-bold text-white">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
               Artículos Destacados
             </h2>
             <span className="text-sm text-slate-400">
