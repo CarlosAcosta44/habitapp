@@ -67,7 +67,7 @@ const generalItemsDefault = [
 const masOpciones = [
   { titulo: "Valorar Rutinas",        icono: "⭐", href: "/ajustes" },
   { titulo: "Compartir con Amigos",   icono: "🔗", href: "/ajustes" },
-  { titulo: "Sobre Nosotros",         icono: "ℹ️", href: "/ajustes" },
+  { titulo: "Sobre Nosotros",         icono: "ℹ️", href: "/ajustes/sobre-nosotros" },
   { titulo: "Soporte",                icono: "❓", href: "/ajustes" },
 ];
 
@@ -268,20 +268,7 @@ export function AjustesClient() {
             ))}
           </div>
 
-          {/* Pro Tip Card */}
-          <div className="mt-6 p-6 rounded-2xl bg-gradient-to-br from-indigo-600/30 via-violet-600/20 to-blue-600/30 border border-indigo-500/20 backdrop-blur-sm">
-            <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-2">Pro Tip</p>
-            <h3 className="text-lg font-extrabold text-slate-900 dark:text-white leading-tight mb-2">
-              Mantén el enfoque en tus objetivos semanales.
-            </h3>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">Inspiración</p>
-            <Link
-              href="/habitos"
-              className="inline-block px-5 py-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-700/50 text-sm font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1a2332] transition-colors"
-            >
-              Ver Dashboard
-            </Link>
-          </div>
+
         </div>
       </div>
 
