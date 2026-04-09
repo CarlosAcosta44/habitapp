@@ -10,6 +10,7 @@ import { redirect }        from "next/navigation";
 import Link                from "next/link";
 import { PerfilTabs }      from "@/components/perfil/PerfilTabs";
 import { RegistroService } from "@/modules/registros/registro.service";
+import { AddFriendForm }   from "@/components/perfil/AddFriendForm";
 
 export const metadata = { title: "Perfil | HabitApp" };
 
@@ -112,6 +113,22 @@ export default async function PerfilPage() {
     })) || [];
   }
   const amigos = amigosReales;
+
+  const { data: sugerenciasRaw } = await supabase
+    .from("perfiles_usuarios_api")
+    .select("idusuario, nombre, apellido")
+    .neq("idusuario", session.user.id)
+    .limit(40);
+
+  const amigosExistentesSet = new Set(amigosIds);
+  const sugerenciasAmigos = (sugerenciasRaw ?? [])
+    .filter((user) => !amigosExistentesSet.has(user.idusuario))
+    .slice(0, 12)
+    .map((user) => ({
+      id: user.idusuario,
+      nombre: user.nombre,
+      apellido: user.apellido,
+    }));
 
   // ── 3. Logros Reales ──
   const { data: logrosGanados } = await supabase
@@ -240,10 +257,9 @@ export default async function PerfilPage() {
                   <h2 className="text-2xl font-extrabold text-white">{amigos.length} Amigos</h2>
                   <p className="text-sm text-slate-400 italic">Tu red de apoyo para mejores hábitos.</p>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#111827] border border-slate-800/50 text-sm font-semibold text-indigo-400 hover:border-indigo-500/30 transition-colors">
-                  👤+ Añadir Amigo
-                </button>
               </div>
+
+              <AddFriendForm suggestions={sugerenciasAmigos} />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {amigos.map((amigo) => (
