@@ -18,6 +18,7 @@ DECLARE
     v_habito_id UUID;
     v_foro_id UUID;
     v_articulo_id UUID;
+    v_reto_id UUID;
     i INT;
     j INT;
     k INT;
@@ -47,6 +48,11 @@ BEGIN
     DELETE FROM seguimiento.perfil_salud;
 
     -- Gestión
+    -- Gestión y UI
+    DELETE FROM comunidad.usuario_tarea_progreso;
+    DELETE FROM comunidad.usuario_reto;
+    DELETE FROM gestion.usuario_logro;
+    DELETE FROM gestion.amigos;
     DELETE FROM gestion.notificaciones;
     DELETE FROM gestion.historial_puntos;
     DELETE FROM gestion.administradores;
@@ -186,6 +192,48 @@ BEGIN
     FROM gestion.usuarios gu
     JOIN auth.users au ON gu.idusuario = au.id
     WHERE au.email LIKE '%.habitapp@gmail.com';
+
+    -- ================================================
+    -- NUEVOS MÓDULOS DE UI (Logros, Retos, Amigos)
+    -- ================================================
+    
+    -- Inyectar interacciones aleatorias en los nuevos Módulos para los usuarios sintéticos
+    FOR v_user_id IN (SELECT au.id FROM auth.users au WHERE au.email LIKE '%.habitapp@gmail.com') LOOP
+        
+        -- 1. Asignar Logros Aleatorios
+        INSERT INTO gestion.usuario_logro (idusuario, idlogro, fechaobtenido)
+        SELECT v_user_id, idlogro, CURRENT_DATE - (RANDOM() * 30)::INT
+        FROM gestion.logros
+        ORDER BY RANDOM() LIMIT 2
+        ON CONFLICT DO NOTHING;
+        
+        -- 2. Inscribir usuarios al Gran Reto "¡Mejores corredores!"
+        v_reto_id := (SELECT idreto FROM comunidad.retos LIMIT 1);
+        IF v_reto_id IS NOT NULL THEN
+            -- Añadirlo al reto
+            INSERT INTO comunidad.usuario_reto (idusuario, idreto, estado)
+            VALUES (v_user_id, v_reto_id, 'En Curso')
+            ON CONFLICT DO NOTHING;
+            
+            -- Poner progreso aleatorio en tareas de ese reto
+            INSERT INTO comunidad.usuario_tarea_progreso (idusuario, idtarea, valor_actual, completado)
+            SELECT v_user_id, rt.idtarea, (RANDOM() * rt.metrica_objetivo)::INT, (RANDOM() > 0.5)
+            FROM comunidad.reto_tareas rt WHERE rt.idreto = v_reto_id
+            ON CONFLICT DO NOTHING;
+        END IF;
+
+    END LOOP;
+
+    -- 3. Crear Amistades Aleatorias (Red de Apoyo)
+    -- Cada usuario recibe ~3 amigos de la lista sintética
+    FOR v_user_id IN (SELECT au.id FROM auth.users au WHERE au.email LIKE '%.habitapp@gmail.com') LOOP
+        INSERT INTO gestion.amigos (idusuario_solicitante, idusuario_receptor, estado)
+        SELECT v_user_id, au2.id, 'Aceptado'
+        FROM auth.users au2 
+        WHERE au2.id != v_user_id AND au2.email LIKE '%.habitapp@gmail.com'
+        ORDER BY RANDOM() LIMIT 3
+        ON CONFLICT DO NOTHING;
+    END LOOP;
 
     RAISE NOTICE '✅ Datos masivos generados para 25 usuarios.';
     RAISE NOTICE '📧 Prueba login: sofia6.habitapp@gmail.com / HabitApp123!';
