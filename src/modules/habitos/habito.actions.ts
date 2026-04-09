@@ -29,7 +29,7 @@ const CreateHabitoSchema = z.object({
   fechaInicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida"),
   fechaFin:    z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
   puntos:      z.coerce.number().min(1, "Mínimo 1 punto").max(100, "Máximo 100 puntos"),
-  idCategoria: z.string().uuid("Categoría inválida"),
+  idCategoria: z.string().min(1, "Debes seleccionar una categoría"),
 });
 
 const UpdateHabitoSchema = CreateHabitoSchema.partial().extend({
@@ -72,9 +72,35 @@ export async function createHabitoAction(
     };
   }
 
+  // Si el idCategoria es un ID de fallback (no UUID), buscamos la categoría real por nombre
+  let idCategoriaFinal = validation.data.idCategoria;
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_REGEX.test(idCategoriaFinal)) {
+    // Extraer el nombre del fallback ID (ej: 'cat-ejercicio' -> 'Ejercicio')
+    const nombreFallback = idCategoriaFinal
+      .replace("cat-", "")
+      .replace("-", " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+
+    const categoriasResult = await service.getCategorias();
+    if (categoriasResult.success) {
+      const match = categoriasResult.data.find(
+        (c) => c.nombre.toLowerCase() === nombreFallback.toLowerCase()
+      );
+      if (match) {
+        idCategoriaFinal = match.idCategoria;
+      } else {
+        return { success: false, message: `No se encontró la categoría "${nombreFallback}" en la base de datos. Por favor ejecuta el script SQL de datos iniciales en Supabase.` };
+      }
+    } else {
+      return { success: false, message: "No se pudo conectar con la base de datos para validar la categoría." };
+    }
+  }
+
   // 3. Llamar al servicio
   const result = await service.create({
     ...validation.data,
+    idCategoria: idCategoriaFinal,
     descripcion: validation.data.descripcion ?? null,
     fechaFin:    validation.data.fechaFin    ?? null,
     estado:      "Activo",
@@ -86,7 +112,8 @@ export async function createHabitoAction(
   }
 
   // 4. Revalidar y retornar
-  revalidatePath("/dashboard/habitos");
+  revalidatePath("/habitos");
+  redirect("/habitos");
   return { success: true, message: "Hábito creado exitosamente" };
 }
 
@@ -129,7 +156,7 @@ export async function updateHabitoAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/habitos");
+  revalidatePath("/habitos");
   return { success: true, message: "Hábito actualizado exitosamente" };
 }
 
@@ -150,7 +177,7 @@ export async function deleteHabitoAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/habitos");
+  revalidatePath("/habitos");
   return { success: true, message: "Hábito eliminado exitosamente" };
 }
 
@@ -171,6 +198,6 @@ export async function completarHabitoAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/habitos");
+  revalidatePath("/habitos");
   return { success: true, message: "¡Hábito completado! 🎉" };
 }
