@@ -1,4 +1,4 @@
-import { SobreNosotrosClient } from "./SobreNosotrosClient";
+import SobreNosotrosClient from "./client";
 
 export const metadata = { title: "Sobre Nosotros | HabitApp" };
 

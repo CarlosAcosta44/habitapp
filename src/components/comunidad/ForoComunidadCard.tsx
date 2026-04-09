@@ -25,7 +25,7 @@ export function ForoComunidadCard({ foro }: ForoComunidadCardProps) {
   const config = categoriaConfig[foro.categoria ?? ""] ?? categoriaConfig.default;
 
   return (
-    <div className="group p-5 rounded-2xl bg-[#111827] border border-slate-800/50 hover:border-indigo-500/30 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-indigo-500/5 relative overflow-hidden">
+    <div className="group p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800/50 hover:border-indigo-500/30 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-indigo-500/5 relative overflow-hidden">
       {/* Badge activo */}
       {foro.estado === "Abierto" && foro.totalComentarios > 0 && (
         <div className="absolute top-4 right-4">
@@ -41,21 +41,21 @@ export function ForoComunidadCard({ foro }: ForoComunidadCardProps) {
       </div>
 
       {/* Info */}
-      <h3 className="text-base font-bold text-white mb-1.5 group-hover:text-indigo-300 transition-colors">
+      <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
         {foro.titulo}
       </h3>
       {foro.descripcion && (
-        <p className="text-sm text-slate-400 line-clamp-2 mb-4">
+        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
           {foro.descripcion}
         </p>
       )}
 
       {/* Miembros */}
       <div className="flex items-center gap-2 text-xs text-slate-500">
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75Z" />
         </svg>
-        <span>{foro.totalSuscriptores.toLocaleString()} miembros</span>
+        <span className="text-slate-500 dark:text-slate-400">{foro.totalSuscriptores.toLocaleString()} miembros</span>
       </div>
     </div>
   );
