@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { X, Sparkles, Activity, Plus, Ban, Smile } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { X, Sparkles, Plus, Ban, Smile } from 'lucide-react';
 
 interface NewHabitModalProps {
   isOpen: boolean;
@@ -10,11 +11,26 @@ interface NewHabitModalProps {
 }
 
 export function NewHabitModal({ isOpen, onClose }: NewHabitModalProps) {
-  if (!isOpen) return null;
+  const [isMounted, setIsMounted] = useState(false);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
-      <div className="bg-[#13112E] w-full max-w-[500px] rounded-[32px] p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isOpen || !isMounted) return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Nuevo buen habito"
+    >
+      <div
+        className="bg-[#13112E] w-full max-w-[500px] rounded-[32px] p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+        onClick={(event) => event.stopPropagation()}
+      >
         
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -118,6 +134,7 @@ export function NewHabitModal({ isOpen, onClose }: NewHabitModalProps) {
           Crear hábito personalizado
         </Link>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

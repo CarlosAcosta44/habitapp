@@ -262,32 +262,42 @@ export class HabitoRepository
 
   // ─── findCategorias ────────────────────────────────────────────────────────
   async findCategorias(): Promise<Result<CategoriaHabito[]>> {
-  const supabase = await createClient();
+    const supabase = await createClient();
 
-  // Definimos el tipo crudo de la tabla categorias_habitos
-  interface RawCategoria {
-    idcategoria: string;
-    nombre:      string;
-    descripcion: string | null;
+    // Definimos el tipo crudo de la tabla categorias_habitos
+    interface RawCategoria {
+      idcategoria: string;
+      nombre:      string;
+      descripcion: string | null;
+    }
+
+    const { data, error } = await supabase
+      .schema("seguimiento")
+      .from("categorias_habitos")
+      .select("idcategoria, nombre, descripcion")
+      .order("nombre", { ascending: true })
+      .returns<RawCategoria[]>();
+
+    if (error) {
+      console.error("[HabitoRepository.findCategorias] Error Supabase:", {
+        message: error.message,
+        code:    error.code,
+        details: error.details,
+        hint:    error.hint,
+      });
+      return err(`Error al obtener categorías: ${error.message}`);
+    }
+
+    console.log("[HabitoRepository.findCategorias] Filas recibidas:", data?.length ?? 0);
+
+    return ok(
+      (data ?? []).map((row: RawCategoria) => ({
+        idCategoria: row.idcategoria,
+        nombre:      row.nombre,
+        descripcion: row.descripcion,
+      }))
+    );
   }
-
-  const { data, error } = await supabase
-    .schema("seguimiento")
-    .from("categorias_habitos")
-    .select("*")
-    .order("nombre", { ascending: true })
-    .returns<RawCategoria[]>();
-
-  if (error) return err(`Error al obtener categorías: ${error.message}`);
-
-  return ok(
-    (data ?? []).map((row: RawCategoria) => ({
-      idCategoria: row.idcategoria,
-      nombre:      row.nombre,
-      descripcion: row.descripcion,
-    }))
-  );
-}
   // ─── mapToDomain ───────────────────────────────────────────────────────────
   private mapToDomain(row: RawHabito): HabitoConCategoria {
     const cat = row.categorias_habitos;
