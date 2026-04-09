@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
@@ -70,6 +71,21 @@ export async function loginAction(formData: FormData) {
     await supabase.auth.updateUser({
       data: { starter_habits: '' },
     })
+  }
+
+  if (userId) {
+    const { data: userData } = await supabase
+      .schema('gestion')
+      .from('usuarios')
+      .select('idrol, roles(nombrerol)')
+      .eq('idusuario', userId)
+      .single()
+
+    const rol = (userData as any)?.roles?.nombrerol
+    if (rol) {
+      const cookieStore = await cookies()
+      cookieStore.set('user_role', rol, { maxAge: 60 * 60 * 24 * 7, path: '/' })
+    }
   }
 
   revalidatePath('/', 'layout')
@@ -235,6 +251,20 @@ export async function registerAction(
   if (data.session && userId) {
     await crearHabitosOnboarding(userId, habitIdsRaw)
     await supabase.auth.updateUser({ data: { starter_habits: '' } })
+
+    const { data: userData } = await supabase
+      .schema('gestion')
+      .from('usuarios')
+      .select('idrol, roles(nombrerol)')
+      .eq('idusuario', userId)
+      .single()
+
+    const rol = (userData as any)?.roles?.nombrerol
+    if (rol) {
+      const cookieStore = await cookies()
+      cookieStore.set('user_role', rol, { maxAge: 60 * 60 * 24 * 7, path: '/' })
+    }
+
     revalidatePath('/', 'layout')
     redirect('/habitos')
   }
@@ -250,6 +280,8 @@ export async function registerAction(
 export async function logoutAction() {
   const supabase = await createClient()
   await supabase.auth.signOut()
+  const cookieStore = await cookies()
+  cookieStore.delete('user_role')
   revalidatePath('/', 'layout')
   redirect('/login')
 }

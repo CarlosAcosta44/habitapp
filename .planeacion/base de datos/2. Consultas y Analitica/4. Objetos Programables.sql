@@ -98,6 +98,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- 8. Obtener cantidad total de usuarios registrados (Usado en AuthUI)
+CREATE OR REPLACE FUNCTION public.get_total_usuarios()
+RETURNS INTEGER AS $$
+DECLARE v_total INTEGER;
+BEGIN
+    SELECT count(*) INTO v_total FROM gestion.usuarios;
+    RETURN v_total;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ====================================================
 -- SECCIÓN 2: PROCEDIMIENTOS (Acciones de Mutación)
@@ -250,11 +259,51 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+-- 8. Sincronizar rol en auth.users
+CREATE OR REPLACE FUNCTION gestion.sync_rol_a_auth()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_nombre_rol VARCHAR(45);
+BEGIN
+    SELECT nombrerol INTO v_nombre_rol FROM gestion.roles WHERE idrol = NEW.idrol;
+    
+    UPDATE auth.users
+    SET raw_app_meta_data = jsonb_set(
+        COALESCE(raw_app_meta_data, '{}'::jsonb),
+        '{rol}',
+        to_jsonb(v_nombre_rol)
+    )
+    WHERE id = NEW.idusuario;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER trigger_sync_rol_auth
+    AFTER INSERT OR UPDATE OF idrol ON gestion.usuarios
+    FOR EACH ROW
+    EXECUTE FUNCTION gestion.sync_rol_a_auth();
+
 -- ====================================================
 -- SECCIÓN 4: VISTAS (Consultas Simplificadas)
 -- ====================================================
 
--- 1. Vista de Ranking con niveles dinámicos
+-- 1. Vista Pública de Perfiles (para consumo de la API Frontend)
+CREATE OR REPLACE VIEW public.perfiles_usuarios_api AS
+SELECT 
+    u.idusuario,
+    u.nombre,
+    u.apellido,
+    u.fotoperfil,
+    u.puntostotales,
+    u.idrol,
+    r.nombrerol
+FROM gestion.usuarios u
+JOIN gestion.roles r ON u.idrol = r.idrol;
+
+GRANT SELECT ON public.perfiles_usuarios_api TO anon, authenticated, service_role;
+
+-- 2. Vista de Ranking con niveles dinámicos
 CREATE OR REPLACE VIEW gestion.vista_resumen_ranking AS
 SELECT idusuario, nombre, puntostotales, gestion.get_nivel_usuario(puntostotales) as nivel
 FROM gestion.usuarios ORDER BY puntostotales DESC;

@@ -84,7 +84,7 @@ export class RegistroRepository {
         observacion,
         idhabito,
         idusuario,
-        habitos!idhabito (
+        habitos (
           nombre,
           puntos,
           idcategoria
