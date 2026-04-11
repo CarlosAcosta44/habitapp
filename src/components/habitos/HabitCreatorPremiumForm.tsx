@@ -34,7 +34,7 @@ export function HabitCreatorPremiumForm({ categorias }: HabitCreatorPremiumFormP
   const [selectedTimes, setSelectedTimes] = useState<string[]>(["Manana"]);
 
   const hoy = new Date().toISOString().split("T")[0];
-  const puntos = Math.min(100, Math.max(1, timesPerDay * 10));
+  const puntos = 10;
 
   const icons = [
     { id: "activity", Cmp: Activity },

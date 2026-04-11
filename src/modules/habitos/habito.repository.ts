@@ -33,6 +33,8 @@ interface RawHabito {
   fechafin:    string | null;
   estado:      string;
   puntos:      number;
+  meta_diaria: number;
+  unidad_medida: string;
   idusuario:   string;
   idcategoria: string;
   categorias_habitos: {
@@ -46,6 +48,7 @@ interface RawHabitoConRegistro extends RawHabito {
   registro_habitos: {
     idregistro:    string;
     completado:    boolean;
+    progreso_actual: number;
     puntos_ganados: number;
     observacion:   string | null;
     fecha:         string;
@@ -61,9 +64,11 @@ const HABITO_CON_CATEGORIA_SELECT = `
   fechafin,
   estado,
   puntos,
+  meta_diaria,
+  unidad_medida,
   idusuario,
   idcategoria,
-  categorias_habitos (
+  categorias_habitos!fk_habitos_categoria (
     idcategoria,
     nombre,
     descripcion
@@ -151,9 +156,11 @@ export class HabitoRepository
         fechafin,
         estado,
         puntos,
+        meta_diaria,
+        unidad_medida,
         idusuario,
         idcategoria,
-        categorias_habitos (
+        categorias_habitos!fk_habitos_categoria (
           idcategoria,
           nombre,
           descripcion
@@ -161,6 +168,7 @@ export class HabitoRepository
         registro_habitos (
           idregistro,
           completado,
+          progreso_actual,
           puntos_ganados,
           observacion,
           fecha
@@ -183,6 +191,7 @@ export class HabitoRepository
           ? {
               idRegistro:    registroHoy.idregistro,
               completado:    registroHoy.completado,
+              progresoActual: registroHoy.progreso_actual,
               puntosGanados: registroHoy.puntos_ganados,
               observacion:   registroHoy.observacion,
             }
@@ -207,6 +216,8 @@ export class HabitoRepository
         fechafin:    data.fechaFin,
         estado:      data.estado,
         puntos:      data.puntos,
+        meta_diaria: 1, // DEFAULT in script OR data.metaDiaria
+        unidad_medida: 'veces',
         idusuario:   data.idUsuario,
         idcategoria: data.idCategoria,
       })
@@ -250,13 +261,35 @@ export class HabitoRepository
   async delete(id: string): Promise<Result<boolean>> {
     const supabase = await createClient();
 
-    const { error } = await supabase
+    // 1. Borrar todas las dependencias hijas en cascada (manual)
+    
+    // Borrar registros de hábitos
+    const { error: regErr } = await supabase
+      .schema("seguimiento")
+      .from("registro_habitos")
+      .delete()
+      .eq("idhabito", id);
+    
+    if (regErr) return err(`No se pudieron borrar los registros del hábito: ${regErr.message}`);
+      
+    // Borrar recordatorios (si hubieran)
+    const { error: recErr } = await supabase
+      .schema("seguimiento")
+      .from("recordatorios")
+      .delete()
+      .eq("idhabito", id);
+
+    if (recErr) return err(`No se pudieron borrar los recordatorios: ${recErr.message}`);
+
+    // 2. Finalmente, borrar el hábito padre
+    const { error: habErr } = await supabase
       .schema("seguimiento")
       .from("habitos")
       .delete()
       .eq("idhabito", id);
 
-    if (error) return err(`Error al eliminar hábito: ${error.message}`);
+    if (habErr) return err(`Error final al eliminar el hábito: ${habErr.message}`);
+    
     return ok(true);
   }
 
@@ -309,6 +342,8 @@ export class HabitoRepository
       fechaFin:    row.fechafin,
       estado:      row.estado as Habito["estado"],
       puntos:      row.puntos,
+      metaDiaria:  row.meta_diaria,
+      unidadMedida:row.unidad_medida,
       idUsuario:   row.idusuario,
       idCategoria: row.idcategoria,
       categoria: {

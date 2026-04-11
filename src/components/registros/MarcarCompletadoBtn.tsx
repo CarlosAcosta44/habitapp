@@ -9,31 +9,51 @@
 "use client";
 
 import { useTransition } from "react";
-import { marcarCompletadoAction, desmarcarCompletadoAction } from "@/modules/registros/registro.actions";
+import { 
+  marcarCompletadoAction, 
+  desmarcarCompletadoAction,
+  avanzarProgresoAction
+} from "@/modules/registros/registro.actions";
 
 interface MarcarCompletadoBtnProps {
   idHabito:    string;
   completado:  boolean;
+  progresoActual: number;
+  metaDiaria:  number;
   fecha:       string;   // "YYYY-MM-DD"
 }
 
 export function MarcarCompletadoBtn({
   idHabito,
   completado,
+  progresoActual,
+  metaDiaria,
   fecha,
 }: MarcarCompletadoBtnProps) {
   const [isPending, startTransition] = useTransition();
 
-  function handleToggle() {
+  function handleToggle(e: React.MouseEvent) {
+    e.stopPropagation(); // Evitar que se abra el modal flotante si lo envolveremos luego en HabitCard
+
     startTransition(async () => {
       const formData = new FormData();
       formData.set("idHabito", idHabito);
       formData.set("fecha",    fecha);
 
       if (completado) {
+        // Deshacemos todo
         await desmarcarCompletadoAction(null, formData);
       } else {
-        await marcarCompletadoAction(null, formData);
+        // Avanzar el progreso (Fraccional)
+        // Por regla de negocio añadimos 25% si es meta > 1 (o mínimo 1)
+        let cantidad = 1;
+        if (metaDiaria > 1) {
+           cantidad = Math.max(1, Math.ceil(metaDiaria / 4));
+        }
+
+        formData.set("cantidadAsumar", cantidad.toString());
+        formData.set("metaDiaria", metaDiaria.toString());
+        await avanzarProgresoAction(null, formData);
       }
     });
   }

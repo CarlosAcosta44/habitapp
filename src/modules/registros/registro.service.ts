@@ -14,6 +14,7 @@ import type {
   RegistroConHabito,
   RachaActual,
   MarcarCompletadoDTO,
+  AvanzarProgresoDTO,
 } from "./types";
 
 export class RegistroService {
@@ -75,6 +76,24 @@ export class RegistroService {
     }
 
     return this.repo.desmarcarCompletado(habitoId, usuarioId);
+  }
+
+  // ─── avanzarProgreso ───────────────────────────────────────────────────────
+  async avanzarProgreso(
+    dto: AvanzarProgresoDTO
+  ): Promise<Result<RegistroHabito>> {
+    const hoy = new Date().toISOString().split("T")[0];
+
+    // Regla 1: solo el día actual
+    if (dto.fecha !== hoy) {
+      return err("Solo puedes registrar el progreso del día actual");
+    }
+    
+    if (dto.cantidadAsumar <= 0) {
+      return err("La cantidad a sumar debe ser mayor a cero");
+    }
+
+    return this.repo.avanzarProgreso(dto);
   }
 
   // ─── getRacha ──────────────────────────────────────────────────────────────

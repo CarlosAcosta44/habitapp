@@ -8,6 +8,7 @@ export interface RegistroHabito {
   idRegistro:    string;
   fecha:         string;       // "YYYY-MM-DD"
   completado:    boolean;
+  progresoActual:number;
   puntosGanados: number;
   observacion:   string | null;
   idHabito:      string;
@@ -37,5 +38,14 @@ export type MarcarCompletadoDTO = {
   idHabito:   string;
   idUsuario:  string;
   fecha:      string;
+  observacion?: string;
+};
+
+export type AvanzarProgresoDTO = {
+  idHabito:   string;
+  idUsuario:  string;
+  fecha:      string;
+  cantidadAsumar: number;
+  metaDiaria: number;
   observacion?: string;
 };
