@@ -13,6 +13,14 @@ import type {
   RankingUsuario,
 } from "./types";
 
+export interface ComparativaGraphed {
+  diasSemana: string[];
+  data: {
+    categoriaId: string;
+    vals: number[]; // Puntos en el gráfico del 0 a 100
+  }[];
+}
+
 export class ReportesRepository {
 
   // ── Estadísticas globales del usuario ───────────────────────────────────────
@@ -132,5 +140,71 @@ export class ReportesRepository {
         };
       })
     );
+  }
+
+  // ── Comparativa Semanal (Gráfico) ───────────────────────────────────────────
+  async findComparativaSemanal(userId: string): Promise<Result<ComparativaGraphed>> {
+    const supabase = await createClient();
+
+    // Obtener registros de los últimos 7 días con su categoría
+    const { data: registros, error } = await supabase
+      .schema("seguimiento")
+      .from("registro_habitos")
+      .select(`
+        fecha, 
+        completado,
+        habitos!idhabito (
+          idcategoria,
+          categorias_habitos!fk_habitos_categoria (
+            nombre
+          )
+        )
+      `)
+      .eq("idusuario", userId)
+      .gte("fecha", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+      .order("fecha", { ascending: true });
+
+    if (error) return err(`Error al obtener comparativa: ${error.message}`);
+
+    // Fechas de los últimos 7 días
+    const hoy = new Date();
+    const ultimos7Dias: string[] = [];
+    const diasSemanaNombres = ["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"];
+    const arrayNombres: string[] = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(hoy);
+      d.setDate(d.getDate() - i);
+      const iso = d.toISOString().split("T")[0];
+      ultimos7Dias.push(iso);
+      arrayNombres.push(diasSemanaNombres[d.getDay()]);
+    }
+
+    // Inicializar contadores por categoría
+    // Buscaremos específicamente "Salud" y "Enfoque" (o similares)
+    const dataSalud = [0,0,0,0,0,0,0];
+    const dataEnfoque = [0,0,0,0,0,0,0];
+
+    registros?.forEach((r: any) => {
+      const dayIdx = ultimos7Dias.indexOf(r.fecha);
+      if (dayIdx >= 0 && r.completado) {
+        const catNombre = r.habitos?.categorias_habitos?.nombre?.toLowerCase() || "";
+        
+        if (catNombre.includes("salud") || catNombre.includes("nutrición") || catNombre.includes("bienestar")) {
+           dataSalud[dayIdx] = Math.min(100, dataSalud[dayIdx] + 20); // Cada check suma 20%
+        } else {
+           // Si no es salud, lo promediamos en enfoque/productividad
+           dataEnfoque[dayIdx] = Math.min(100, dataEnfoque[dayIdx] + 25);
+        }
+      }
+    });
+
+    return ok({
+       diasSemana: arrayNombres,
+       data: [
+         { categoriaId: "SALUD", vals: dataSalud },
+         { categoriaId: "ENFOQUE", vals: dataEnfoque }
+       ]
+    });
   }
 }

@@ -33,4 +33,9 @@ export class ReportesService {
     if (!userId) return err("ID del usuario requerido");
     return this.repo.findHabitosConProgreso(userId);
   }
+
+  async getComparativaSemanal(userId: string) {
+    if (!userId) return err("ID del usuario requerido");
+    return this.repo.findComparativaSemanal(userId);
+  }
 }
