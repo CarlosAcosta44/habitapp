@@ -18,18 +18,20 @@ export default async function ReportesPage() {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) redirect("/login");
 
-  const [statsResult, habitosResult] = await Promise.all([
+  const [statsResult, habitosResult, comparativaResult] = await Promise.all([
     reportesService.getEstadisticas(session.user.id),
     reportesService.getHabitosReporte(session.user.id),
+    reportesService.getComparativaSemanal(session.user.id),
   ]);
 
   const stats   = statsResult.success   ? statsResult.data   : null;
   const habitos = habitosResult.success  ? habitosResult.data : [];
+  const comparativa = comparativaResult.success ? comparativaResult.data : { diasSemana: ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"], data: [{categoriaId: "A", vals: [0,0,0,0,0,0,0]}, {categoriaId: "B", vals: [0,0,0,0,0,0,0]}] };
 
-  // Datos mock para comparativa semanal (CSS chart)
-  const diasSemana = ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"];
-  const saludData   = [20, 30, 35, 50, 65, 80, 75];
-  const enfoqueData = [10, 15, 20, 25, 45, 60, 70];
+  // Datos reales procesados para el SVG
+  const diasSemana = comparativa.diasSemana;
+  const saludData   = comparativa.data[0]?.vals || [0,0,0,0,0,0,0];
+  const enfoqueData = comparativa.data[1]?.vals || [0,0,0,0,0,0,0];
 
   // Emojis de estado de ánimo (mock)
   const emojisAnimo = ["😊", "🔥", "😎", "🥰", "😊", "⚡", "😄", "😊", "💪", "😊", "🌿", "🏔️", "🍀", "🌊"];
