@@ -157,3 +157,39 @@ CREATE POLICY "Reacciones: Dueño gestiona reacción" ON comunidad.reacciones FO
 -- Tablas de Relación (usuario_foro, forum_admin, etc): Visibles para Admin e implicados
 ALTER TABLE comunidad.usuario_foro ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Foro_User: Acceso implicado/Admin" ON comunidad.usuario_foro FOR ALL USING (auth.uid() = idusuario OR gestion.es_admin());
+
+/*====================================================
+  5. CONCESIÓN DE PERMISOS (GRANT)
+  Permitir acceso a los roles de Supabase a los esquemas
+====================================================*/
+
+-- GRANT USAGE en los schemas personalizados
+GRANT USAGE ON SCHEMA gestion    TO anon, authenticated, service_role;
+GRANT USAGE ON SCHEMA seguimiento TO anon, authenticated, service_role;
+GRANT USAGE ON SCHEMA comunidad  TO anon, authenticated, service_role;
+
+-- GRANT SELECT/INSERT/UPDATE/DELETE en las tablas
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA gestion     TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA seguimiento  TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA comunidad   TO anon, authenticated;
+
+-- service_role tiene acceso total (ignora RLS)
+GRANT ALL ON ALL TABLES IN SCHEMA gestion     TO service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA seguimiento  TO service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA comunidad   TO service_role;
+
+-- GRANT en secuencias (necesario para INSERT con gen_random_uuid)
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA gestion     TO anon, authenticated, service_role;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA seguimiento  TO anon, authenticated, service_role;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA comunidad   TO anon, authenticated, service_role;
+
+-- GRANT en funciones
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA gestion     TO anon, authenticated, service_role;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA seguimiento  TO anon, authenticated, service_role;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA comunidad   TO anon, authenticated, service_role;
+
+-- Configuración para tablas futuras
+ALTER DEFAULT PRIVILEGES IN SCHEMA gestion     GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA seguimiento GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA comunidad   GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO anon, authenticated;
+
