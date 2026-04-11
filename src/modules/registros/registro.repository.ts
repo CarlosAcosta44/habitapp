@@ -25,6 +25,7 @@ interface RawRegistro {
   idregistro:    string;
   fecha:         string;
   completado:    boolean;
+  progreso_actual: number;
   puntos_ganados: number;
   observacion:   string | null;
   idhabito:      string;
@@ -177,6 +178,59 @@ export class RegistroRepository {
     return ok(this.mapToDomain(data as RawRegistro));
   }
 
+  // ─── avanzarProgreso ──────────────────────────────────────────────────────
+  async avanzarProgreso(
+    dto: AvanzarProgresoDTO
+  ): Promise<Result<RegistroHabito>> {
+    const supabase = await createClient();
+
+    // 1. Obtener registro de hoy primero
+    const { data: hoyReg, error: eqErr } = await supabase
+      .schema("seguimiento")
+      .from("registro_habitos")
+      .select("progreso_actual, completado")
+      .eq("idhabito", dto.idHabito)
+      .eq("idusuario", dto.idUsuario)
+      .eq("fecha", dto.fecha)
+      .maybeSingle();
+
+    if (eqErr && eqErr.code !== 'PGRST116') {
+      return err(`Error buscando progreso diario: ${eqErr.message}`);
+    }
+
+    const currentProgress = hoyReg?.progreso_actual ?? 0;
+    const isAlreadyCompleted = hoyReg?.completado ?? false;
+
+    // Si ya estaba completado, evitamos avanzar más? (Figma implies no over-tracking limits, let's max it at metaDiaria just in case)
+    const newProgress = Math.min(dto.metaDiaria, currentProgress + dto.cantidadAsumar);
+    const completadoFinal = newProgress >= dto.metaDiaria;
+
+    // 2. Upsert con el nuevo progreso
+    const { data: resultInsert, error: errInsert } = await supabase
+      .schema("seguimiento")
+      .from("registro_habitos")
+      .upsert(
+        {
+          idhabito:   dto.idHabito,
+          idusuario:  dto.idUsuario,
+          fecha:      dto.fecha,
+          completado: completadoFinal,
+          progreso_actual: newProgress,
+          observacion: dto.observacion ?? null,
+        },
+        {
+          onConflict: "idhabito,idusuario,fecha",
+        }
+      )
+      .select("*")
+      .returns<RawRegistro>()
+      .single();
+
+    if (errInsert) return err(`Error actualizando progreso: ${errInsert.message}`);
+    
+    return ok(this.mapToDomain(resultInsert as RawRegistro));
+  }
+
   // ─── desmarcarCompletado ──────────────────────────────────────────────────
   /**
    * Desmarca un hábito como completado (por si el usuario se equivocó).
@@ -298,6 +352,7 @@ export class RegistroRepository {
       idRegistro:    row.idregistro,
       fecha:         row.fecha,
       completado:    row.completado,
+      progresoActual: row.progreso_actual,
       puntosGanados: row.puntos_ganados,
       observacion:   row.observacion,
       idHabito:      row.idhabito,

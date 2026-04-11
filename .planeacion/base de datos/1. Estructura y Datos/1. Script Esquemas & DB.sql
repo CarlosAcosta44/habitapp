@@ -70,6 +70,46 @@ CREATE TABLE gestion.notificaciones (
     FOREIGN KEY (idusuario) REFERENCES gestion.usuarios(idusuario)
 );
 
+-- 1. Gestión de Amistades / Red de Apoyo (Añadido desde UI Extensions)
+CREATE TABLE gestion.amigos (
+    idamistad UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    idusuario_solicitante UUID NOT NULL,
+    idusuario_receptor    UUID NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente' CHECK (estado IN ('Pendiente', 'Aceptado', 'Rechazado', 'Bloqueado')),
+    fechasolicitud DATE NOT NULL DEFAULT CURRENT_DATE,
+    fecharespuesta DATE,
+    FOREIGN KEY (idusuario_solicitante) REFERENCES gestion.usuarios(idusuario) ON DELETE CASCADE,
+    FOREIGN KEY (idusuario_receptor) REFERENCES gestion.usuarios(idusuario) ON DELETE CASCADE,
+    CHECK (idusuario_solicitante <> idusuario_receptor)
+);
+
+CREATE UNIQUE INDEX unique_amistad_relacion 
+ON gestion.amigos (
+    LEAST(idusuario_solicitante, idusuario_receptor), 
+    GREATEST(idusuario_solicitante, idusuario_receptor)
+);
+
+-- 2. Catálogo de Logros e Insignias del Sistema
+CREATE TABLE gestion.logros (
+    idlogro UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion VARCHAR(300) NOT NULL,
+    icono VARCHAR(20) NOT NULL, 
+    puntos_recompensa INT DEFAULT 0,
+    tipo VARCHAR(50) DEFAULT 'General'
+);
+
+-- 3. Logros Obtenidos por los Usuarios
+CREATE TABLE gestion.usuario_logro (
+    idusuario UUID NOT NULL,
+    idlogro UUID NOT NULL,
+    fechaobtenido DATE NOT NULL DEFAULT CURRENT_DATE,
+    PRIMARY KEY (idusuario, idlogro),
+    FOREIGN KEY (idusuario) REFERENCES gestion.usuarios(idusuario) ON DELETE CASCADE,
+    FOREIGN KEY (idlogro) REFERENCES gestion.logros(idlogro) ON DELETE CASCADE
+);
+
+
 /*====================================================
   ESQUEMA: SEGUIMIENTO
 ====================================================*/
@@ -115,28 +155,31 @@ CREATE TABLE seguimiento.categorias_habitos (
 
 -- Hábitos/retos de los usuarios
 CREATE TABLE seguimiento.habitos (
-    idhabito    UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-    nombre      VARCHAR(45)  NOT NULL,
-    descripcion VARCHAR(200),
-    fechainicio DATE         NOT NULL DEFAULT CURRENT_DATE,
-    fechafin    DATE,
-    estado      VARCHAR(20)  NOT NULL DEFAULT 'Activo' CHECK (estado IN ('Activo', 'Inactivo', 'Completado')),
-    puntos      INT          NOT NULL DEFAULT 0,
-    idusuario   UUID         NOT NULL,
-    idcategoria UUID         NOT NULL,
+    idhabito      UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+    nombre        VARCHAR(45)  NOT NULL,
+    descripcion   VARCHAR(200),
+    meta_diaria   INT          NOT NULL DEFAULT 1,
+    unidad_medida VARCHAR(30)  NOT NULL DEFAULT 'veces',
+    fechainicio   DATE         NOT NULL DEFAULT CURRENT_DATE,
+    fechafin      DATE,
+    estado        VARCHAR(20)  NOT NULL DEFAULT 'Activo' CHECK (estado IN ('Activo', 'Inactivo', 'Completado')),
+    puntos        INT          NOT NULL DEFAULT 0,
+    idusuario     UUID         NOT NULL,
+    idcategoria   UUID         NOT NULL,
     FOREIGN KEY (idusuario)   REFERENCES gestion.usuarios(idusuario),
     FOREIGN KEY (idcategoria) REFERENCES seguimiento.categorias_habitos(idcategoria)
 );
 
 -- Registro diario de cumplimiento de hábitos (reto diario)
 CREATE TABLE seguimiento.registro_habitos (
-    idregistro     UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
-    fecha          DATE    NOT NULL DEFAULT CURRENT_DATE,
-    completado     BOOLEAN NOT NULL DEFAULT FALSE,
-    puntos_ganados INT     NOT NULL DEFAULT 0,
-    observacion    VARCHAR(200),
-    idhabito       UUID    NOT NULL,
-    idusuario      UUID    NOT NULL,
+    idregistro      UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
+    fecha           DATE    NOT NULL DEFAULT CURRENT_DATE,
+    completado      BOOLEAN NOT NULL DEFAULT FALSE,
+    progreso_actual INT     NOT NULL DEFAULT 0,
+    puntos_ganados  INT     NOT NULL DEFAULT 0,
+    observacion     VARCHAR(200),
+    idhabito        UUID    NOT NULL,
+    idusuario       UUID    NOT NULL,
     FOREIGN KEY (idhabito)  REFERENCES seguimiento.habitos(idhabito),
     FOREIGN KEY (idusuario) REFERENCES gestion.usuarios(idusuario),
     UNIQUE (idhabito, idusuario, fecha) -- un registro por hábito por día
@@ -270,6 +313,54 @@ CREATE TABLE comunidad.usuario_foro (
     FOREIGN KEY (idforo)    REFERENCES comunidad.foros(idforo)
 );
 
+-- 1. Catálogo de Retos Grupales (Añadido desde UI Extensions)
+CREATE TABLE comunidad.retos (
+    idreto UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    titulo VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(500) NOT NULL,
+    insignia_recompensa UUID, 
+    puntos_recompensa INT DEFAULT 0,
+    fechainicio DATE NOT NULL DEFAULT CURRENT_DATE,
+    fechafin DATE,
+    estado VARCHAR(20) NOT NULL DEFAULT 'Activo' CHECK (estado IN ('Borrador', 'Activo', 'Finalizado')),
+    FOREIGN KEY (insignia_recompensa) REFERENCES gestion.logros(idlogro) ON DELETE SET NULL
+);
+
+-- 2. Tareas que conforman un reto específico
+CREATE TABLE comunidad.reto_tareas (
+    idtarea UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nombre VARCHAR(100) NOT NULL,
+    metrica_objetivo INT NOT NULL, 
+    unidad_medida VARCHAR(20) NOT NULL, 
+    icono VARCHAR(20), 
+    idreto UUID NOT NULL,
+    FOREIGN KEY (idreto) REFERENCES comunidad.retos(idreto) ON DELETE CASCADE
+);
+
+-- 3. Participación de Usuarios en Retos
+CREATE TABLE comunidad.usuario_reto (
+    idusuario UUID NOT NULL,
+    idreto UUID NOT NULL,
+    fechainscripcion DATE NOT NULL DEFAULT CURRENT_DATE,
+    estado VARCHAR(20) NOT NULL DEFAULT 'En Curso' CHECK (estado IN ('En Curso', 'Completado', 'Abandonado')),
+    PRIMARY KEY (idusuario, idreto),
+    FOREIGN KEY (idusuario) REFERENCES gestion.usuarios(idusuario) ON DELETE CASCADE,
+    FOREIGN KEY (idreto) REFERENCES comunidad.retos(idreto) ON DELETE CASCADE
+);
+
+-- 4. Progreso de los Usuarios en las Tareas de los Retos
+CREATE TABLE comunidad.usuario_tarea_progreso (
+    idusuario UUID NOT NULL,
+    idtarea UUID NOT NULL,
+    valor_actual INT NOT NULL DEFAULT 0,
+    completado BOOLEAN NOT NULL DEFAULT FALSE,
+    ultima_actualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (idusuario, idtarea),
+    FOREIGN KEY (idusuario) REFERENCES gestion.usuarios(idusuario) ON DELETE CASCADE,
+    FOREIGN KEY (idtarea) REFERENCES comunidad.reto_tareas(idtarea) ON DELETE CASCADE
+);
+
+
 /*====================================================
   VISTA: RANKING DE USUARIOS
   La posición se calcula dinámicamente con ROW_NUMBER
@@ -325,29 +416,35 @@ RETURNS TRIGGER AS $$
 DECLARE
     puntos_habito INT;
 BEGIN
-    -- Solo actuar si se marcó como completado
+    -- 1. CASO: Hábito Marcado como Completado
     IF NEW.completado = TRUE AND (OLD.completado = FALSE OR OLD.completado IS NULL) THEN
+        SELECT puntos INTO puntos_habito FROM seguimiento.habitos WHERE idhabito = NEW.idhabito;
 
-        -- Obtener los puntos del hábito
-        SELECT puntos INTO puntos_habito
-        FROM seguimiento.habitos
-        WHERE idhabito = NEW.idhabito;
-
-        -- Actualizar puntos totales del usuario
         UPDATE gestion.usuarios
         SET puntostotales = puntostotales + puntos_habito
         WHERE idusuario = NEW.idusuario;
 
-        -- Guardar en historial de puntos
         INSERT INTO gestion.historial_puntos (puntos, motivo, idusuario)
         VALUES (
             puntos_habito,
             'Hábito completado: ' || (SELECT nombre FROM seguimiento.habitos WHERE idhabito = NEW.idhabito),
             NEW.idusuario
         );
-
-        -- Actualizar puntos ganados en el registro
         NEW.puntos_ganados := puntos_habito;
+
+    -- 2. CASO: Hábito Desmarcado (Revertir progreso)
+    ELSIF NEW.completado = FALSE AND OLD.completado = TRUE THEN
+        UPDATE gestion.usuarios
+        SET puntostotales = puntostotales - OLD.puntos_ganados
+        WHERE idusuario = NEW.idusuario;
+
+        INSERT INTO gestion.historial_puntos (puntos, motivo, idusuario)
+        VALUES (
+            -OLD.puntos_ganados,
+            'Deshacer: Hábito ' || (SELECT nombre FROM seguimiento.habitos WHERE idhabito = NEW.idhabito),
+            NEW.idusuario
+        );
+        NEW.puntos_ganados := 0;
     END IF;
 
     RETURN NEW;
@@ -377,3 +474,48 @@ INSERT INTO seguimiento.categorias_habitos (nombre, descripcion) VALUES
     ('Hidratación',  'Consumo adecuado de agua'),
     ('Salud Mental', 'Meditación, mindfulness y bienestar emocional'),
     ('Productividad','Organización y gestión del tiempo');
+
+/*====================================================
+  DATOS INICIALES EXTRAS (Dashboard UI)
+====================================================*/
+
+-- Logros en duro de la UI
+INSERT INTO gestion.logros (nombre, descripcion, icono, puntos_recompensa)
+VALUES 
+    ('Sueño Profundo', '7 días durmiendo +8h', '🌙', 50),
+    ('Ratón de Biblioteca', 'Leído 500 páginas este mes', '📚', 80),
+    ('Corazón de Oro', 'Ayudaste a 10 amigos', '❤️', 100),
+    ('Energía Pura', 'Sprint de 5km completado', '⚡', 75);
+
+-- Reto principal de la UI
+INSERT INTO comunidad.retos (titulo, descripcion, puntos_recompensa)
+VALUES ('¡Mejores corredores!', 'Únete a 142 corredores esta semana y cumple las 4 tareas diarias.', 200);
+
+-- Tareas simuladas para el reto
+DO $$
+DECLARE
+    v_idreto UUID;
+BEGIN
+    SELECT idreto INTO v_idreto FROM comunidad.retos WHERE titulo = '¡Mejores corredores!' LIMIT 1;
+    
+    INSERT INTO comunidad.reto_tareas (nombre, metrica_objetivo, unidad_medida, icono, idreto)
+    VALUES 
+        ('Beber agua', 2000, 'ml', 'Droplet', v_idreto),
+        ('Correr', 10000, 'pasos', 'Footprints', v_idreto),
+        ('Tomar el sol', 4, 'veces', 'Flower2', v_idreto),
+        ('Meditar', 30, 'minutos', 'Wind', v_idreto);
+END $$;
+
+/*====================================================
+  VISTAS API PÚBLICAS
+====================================================*/
+
+CREATE OR REPLACE VIEW public.api_amigos AS SELECT * FROM gestion.amigos;
+CREATE OR REPLACE VIEW public.api_logros AS SELECT * FROM gestion.logros;
+CREATE OR REPLACE VIEW public.api_usuario_logro AS SELECT * FROM gestion.usuario_logro;
+CREATE OR REPLACE VIEW public.api_historial_puntos AS SELECT * FROM gestion.historial_puntos;
+
+GRANT SELECT ON public.api_amigos TO anon, authenticated;
+GRANT SELECT ON public.api_logros TO anon, authenticated;
+GRANT SELECT ON public.api_usuario_logro TO anon, authenticated;
+GRANT SELECT ON public.api_historial_puntos TO anon, authenticated;

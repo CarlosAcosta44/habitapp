@@ -127,20 +127,8 @@ export class HabitoService {
     return ok(result.data);
   }
 
-  // ─── delete ────────────────────────────────────────────────────────────────
-  /**
-   * REGLA: Solo se pueden eliminar hábitos Inactivos o Completados.
-   * Los hábitos Activos deben desactivarse primero.
-   */
   async delete(id: string): Promise<Result<boolean>> {
-    const existe = await this.repo.findById(id);
-    if (!existe.success) return err(existe.error);
-    if (!existe.data)    return err(`Hábito con ID ${id} no encontrado`);
-
-    if (existe.data.estado === "Activo") {
-      return err("No se puede eliminar un hábito activo. Desactívalo primero");
-    }
-
+    // Permitimos borrar cualquier hábito sin importar su estado (Limpieza física)
     return this.repo.delete(id);
   }
 
