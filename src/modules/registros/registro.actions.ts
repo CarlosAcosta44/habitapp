@@ -20,6 +20,14 @@ const MarcarCompletadoSchema = z.object({
   observacion: z.string().max(200).optional(),
 });
 
+const AvanzarProgresoSchema = z.object({
+  idHabito:   z.string().uuid("Hábito inválido"),
+  fecha:      z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida"),
+  cantidadAsumar: z.coerce.number().min(1),
+  metaDiaria: z.coerce.number().min(1),
+  observacion: z.string().max(200).optional(),
+});
+
 // ─── marcarCompletadoAction ───────────────────────────────────────────────────
 export async function marcarCompletadoAction(
   _prevState: ActionState | null,
@@ -80,4 +88,47 @@ export async function desmarcarCompletadoAction(
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/habitos");
   return { success: true, message: "Registro desmarcado" };
+}
+
+// ─── avanzarProgresoAction ────────────────────────────────────────────────────
+export async function avanzarProgresoAction(
+  _prevState: ActionState | null,
+  formData:   FormData
+): Promise<ActionState> {
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return { success: false, message: "No autorizado" };
+
+  const rawData = {
+    idHabito:       formData.get("idHabito"),
+    fecha:          formData.get("fecha"),
+    cantidadAsumar: formData.get("cantidadAsumar"),
+    metaDiaria:     formData.get("metaDiaria"),
+    observacion:    formData.get("observacion") || undefined,
+  };
+
+  const validation = AvanzarProgresoSchema.safeParse(rawData);
+  if (!validation.success) {
+    return {
+      success: false,
+      message: "Datos inválidos",
+      errors:  validation.error.flatten().fieldErrors,
+    };
+  }
+
+  const result = await service.avanzarProgreso({
+    idHabito:       validation.data.idHabito,
+    idUsuario:      session.user.id,
+    fecha:          validation.data.fecha,
+    cantidadAsumar: validation.data.cantidadAsumar,
+    metaDiaria:     validation.data.metaDiaria,
+    observacion:    validation.data.observacion,
+  });
+
+  if (!result.success) {
+    return { success: false, message: result.error };
+  }
+
+  revalidatePath("/habitos");
+  return { success: true, message: "Progreso guardado ✨" };
 }
