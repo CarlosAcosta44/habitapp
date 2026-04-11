@@ -20,6 +20,8 @@ export interface Habito {
   fechaFin:    string | null;
   estado:      "Activo" | "Inactivo" | "Completado";
   puntos:      number;
+  metaDiaria:  number;
+  unidadMedida:string;
   idUsuario:   string;
   idCategoria: string;
 }
@@ -34,6 +36,7 @@ export interface HabitoConProgreso extends HabitoConCategoria {
   registroHoy: {
     idRegistro:    string;
     completado:    boolean;
+    progresoActual:number;
     puntosGanados: number;
     observacion:   string | null;
   } | null;
