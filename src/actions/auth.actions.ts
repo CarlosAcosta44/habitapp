@@ -154,14 +154,16 @@ async function crearHabitosOnboarding(
       }
 
       await habitoService.create({
-        nombre:      preset.nombre,
-        descripcion: `Hábito inicial de ${preset.categoria}`,
-        fechaInicio: hoy,
-        fechaFin:    null,
-        puntos:      preset.puntos,
-        idUsuario:   usuarioId,
+        nombre:       preset.nombre,
+        descripcion:  `Hábito inicial de ${preset.categoria}`,
+        fechaInicio:  hoy,
+        fechaFin:     null,
+        puntos:       preset.puntos,
+        idUsuario:    usuarioId,
         idCategoria,
-        estado:      'Activo',
+        estado:       'Activo',
+        metaDiaria:   1,
+        unidadMedida: 'vez',
       })
     }
     console.log(`[Onboarding] ${validIds.length} hábitos creados exitosamente para ${usuarioId}`)
