@@ -30,6 +30,8 @@ const CreateHabitoSchema = z.object({
   fechaFin:    z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").optional(),
   puntos:      z.coerce.number().min(1, "Mínimo 1 punto").max(100, "Máximo 100 puntos"),
   idCategoria: z.string().min(1, "Debes seleccionar una categoría"),
+  metaDiaria:  z.coerce.number().min(1, "Mínimo 1").default(1),
+  unidadMedida:z.string().default("veces"),
 });
 
 const UpdateHabitoSchema = CreateHabitoSchema.partial().extend({
@@ -61,6 +63,8 @@ export async function createHabitoAction(
     fechaFin:    formData.get("fechaFin") || undefined,
     puntos:      formData.get("puntos"),
     idCategoria: formData.get("idCategoria"),
+    metaDiaria:  formData.get("metaDiaria") || 1,
+    unidadMedida:formData.get("unidadMedida") || "veces",
   };
 
   const validation = CreateHabitoSchema.safeParse(rawData);
@@ -105,6 +109,8 @@ export async function createHabitoAction(
     fechaFin:    validation.data.fechaFin    ?? null,
     estado:      "Activo",
     idUsuario:   session.user.id,
+    metaDiaria:  validation.data.metaDiaria,
+    unidadMedida:validation.data.unidadMedida,
   });
 
   if (!result.success) {
