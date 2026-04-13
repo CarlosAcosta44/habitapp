@@ -112,7 +112,7 @@ export function NewHabitModal({ isOpen, onClose }: NewHabitModalProps) {
               { nombre: 'Leer', icono: '📚', cat: 'cat-productividad', pts: 30, u: 3200 },
               { nombre: 'Dormir 8h', icono: '🌙', cat: 'cat-sueno', pts: 50, u: 4500 }
             ]}
-            onClose={() => { setView('main'); onClose(); }}
+            onClose={() => { setView('buen_habito'); onClose(); }}
           />
         )}
 
