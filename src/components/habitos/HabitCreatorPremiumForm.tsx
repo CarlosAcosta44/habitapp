@@ -65,6 +65,8 @@ export function HabitCreatorPremiumForm({ categorias }: HabitCreatorPremiumFormP
       <input type="hidden" name="idCategoria" value={selectedCategoryId} />
       <input type="hidden" name="fechaInicio" value={hoy} />
       <input type="hidden" name="puntos" value={puntos} />
+      <input type="hidden" name="metaDiaria" value={timesPerDay} />
+      <input type="hidden" name="unidadMedida" value="veces" />
 
       <div className="flex flex-col lg:flex-row w-full max-w-[1300px]">
         <div className="flex-1 lg:max-w-[760px] border-r border-slate-800 p-6 lg:p-12">

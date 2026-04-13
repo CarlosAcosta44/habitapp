@@ -157,6 +157,8 @@ function HabitList({ items, onClose, isBad }: { items: any[], onClose: ()=>void,
       fd.append('fechaInicio', new Date().toISOString().split('T')[0]);
       fd.append('puntos', habito.pts.toString());
       fd.append('idCategoria', habito.cat);
+      fd.append('metaDiaria', '1');
+      fd.append('unidadMedida', 'veces');
       
       const res = await createHabitoAction(null, fd);
       setLoadingIdx(null);
