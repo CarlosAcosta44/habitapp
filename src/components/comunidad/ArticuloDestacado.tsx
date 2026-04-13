@@ -1,29 +1,31 @@
 /**
  * @file src/components/comunidad/ArticuloDestacado.tsx
- * @description Card de artículo destacado con imagen de fondo,
- * categoría badge, título y tiempo estimado de lectura.
+ * @description Card de artículo destacado estilo ForoCard:
+ * fondo sólido, badge de categoría, título, extracto y tiempo de lectura.
  */
 
 import type { Articulo } from "@/modules/comunidad/types";
 
-// Colores por categoría
+// Colores del badge por categoría
 const categoriaBadgeColors: Record<string, string> = {
-  Nutrición:      "bg-red-500/90 text-white",
-  "Actividad Física": "bg-emerald-500/90 text-white",
-  Ejercicio:      "bg-blue-500/90 text-white",
-  "Salud Mental": "bg-purple-500/90 text-white",
-  Sueño:          "bg-indigo-500/90 text-white",
-  default:        "bg-slate-500/90 text-white",
+  Nutrición:          "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+  "Actividad Física": "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  Ejercicio:          "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  "Salud Mental":     "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  Sueño:              "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
+  Salud:              "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+  default:            "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
 };
 
-// Imágenes de fondo por categoría (gradientes como placeholder)
-const categoriaGradient: Record<string, string> = {
-  Nutrición:      "from-cyan-900 to-teal-800",
-  "Actividad Física": "from-emerald-900 to-green-800",
-  Ejercicio:      "from-blue-900 to-indigo-800",
-  "Salud Mental": "from-purple-900 to-violet-800",
-  Sueño:          "from-indigo-900 to-blue-800",
-  default:        "from-slate-800 to-slate-700",
+// Ícono por categoría
+const categoriaIcono: Record<string, string> = {
+  Nutrición:          "🥗",
+  "Actividad Física": "🏃",
+  Ejercicio:          "💪",
+  "Salud Mental":     "🧘",
+  Sueño:              "🌙",
+  Salud:              "❤️",
+  default:            "✨",
 };
 
 interface ArticuloDestacadoProps {
@@ -31,41 +33,47 @@ interface ArticuloDestacadoProps {
 }
 
 export function ArticuloDestacado({ articulo }: ArticuloDestacadoProps) {
-  const badgeColor = categoriaBadgeColors[articulo.categoria ?? ""] ?? categoriaBadgeColors.default;
-  const gradient = categoriaGradient[articulo.categoria ?? ""] ?? categoriaGradient.default;
+  const badgeColor =
+    categoriaBadgeColors[articulo.categoria ?? ""] ?? categoriaBadgeColors.default;
+  const icono =
+    categoriaIcono[articulo.categoria ?? ""] ?? categoriaIcono.default;
 
   // Estimar tiempo de lectura (200 palabras por minuto)
   const palabras = articulo.contenido.split(/\s+/).length;
   const minutos = Math.max(1, Math.ceil(palabras / 200));
 
+  // Extracto corto del contenido
+  const extracto =
+    articulo.contenido.slice(0, 110).trim() +
+    (articulo.contenido.length > 110 ? "…" : "");
+
   return (
-    <div className="group relative rounded-2xl overflow-hidden cursor-pointer aspect-[4/3] min-h-[280px]">
-      {/* Fondo gradient */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`}></div>
+    <div className="group rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 space-y-3 hover:shadow-md transition-shadow cursor-pointer">
 
-      {/* Overlay oscuro */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-
-      {/* Contenido */}
-      <div className="absolute inset-0 p-5 flex flex-col justify-end">
-        {/* Badge categoría */}
-        {articulo.categoria && (
-          <span className={`self-start text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider mb-3 ${badgeColor}`}>
-            {articulo.categoria}
-          </span>
-        )}
-
-        <h3 className="text-lg font-bold text-white leading-tight group-hover:text-indigo-200 transition-colors">
-          {articulo.titulo}
-        </h3>
-      </div>
-
-      {/* Tiempo de lectura */}
-      <div className="absolute top-4 right-4">
-        <span className="text-xs text-slate-300 font-medium">
-          Lectura de {minutos} min
+      {/* Header: ícono + categoría + tiempo */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">{icono}</span>
+          {articulo.categoria && (
+            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${badgeColor}`}>
+              {articulo.categoria}
+            </span>
+          )}
+        </div>
+        <span className="text-xs text-slate-400 dark:text-slate-500 flex-shrink-0">
+          📖 {minutos} min
         </span>
       </div>
+
+      {/* Título */}
+      <h3 className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
+        {articulo.titulo}
+      </h3>
+
+      {/* Extracto */}
+      <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
+        {extracto}
+      </p>
     </div>
   );
 }
