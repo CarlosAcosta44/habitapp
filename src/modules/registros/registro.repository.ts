@@ -18,6 +18,7 @@ import type {
   RachaActual,
   CreateRegistroDTO,
   MarcarCompletadoDTO,
+  AvanzarProgresoDTO,
 } from "./types";
 
 // ─── Tipos crudos de Supabase ─────────────────────────────────────────────────
