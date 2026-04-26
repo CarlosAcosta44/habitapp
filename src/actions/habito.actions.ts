@@ -1,6 +1,7 @@
 /**
- * @file src/modules/habitos/habito.actions.ts
+ * @file src/actions/habito.actions.ts
  * @description Server Actions para el módulo de Hábitos.
+ * @layer Presentation (Capa 1 — Server-side)
  *
  * Flujo de cada action:
  * 1. Obtener sesión del usuario autenticado
@@ -17,7 +18,7 @@ import { revalidatePath } from "next/cache";
 import { redirect }       from "next/navigation";
 import { z }              from "zod";
 import { createClient }   from "@/lib/supabase/server";
-import { HabitoService }  from "./habito.service";
+import { HabitoService }  from "@/services/habito.service";
 
 const service = new HabitoService();
 
@@ -50,12 +51,10 @@ export async function createHabitoAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  // 1. Verificar sesión
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return { success: false, message: "No autorizado" };
 
-  // 2. Extraer y validar datos
   const rawData = {
     nombre:      formData.get("nombre"),
     descripcion: formData.get("descripcion"),
@@ -76,11 +75,9 @@ export async function createHabitoAction(
     };
   }
 
-  // Si el idCategoria es un ID de fallback (no UUID), buscamos la categoría real por nombre
   let idCategoriaFinal = validation.data.idCategoria;
   const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!UUID_REGEX.test(idCategoriaFinal)) {
-    // Extraer el nombre del fallback ID (ej: 'cat-ejercicio' -> 'Ejercicio')
     const nombreFallback = idCategoriaFinal
       .replace("cat-", "")
       .replace("-", " ")
@@ -94,14 +91,13 @@ export async function createHabitoAction(
       if (match) {
         idCategoriaFinal = match.idCategoria;
       } else {
-        return { success: false, message: `No se encontró la categoría "${nombreFallback}" en la base de datos. Por favor ejecuta el script SQL de datos iniciales en Supabase.` };
+        return { success: false, message: `No se encontró la categoría "${nombreFallback}" en la base de datos.` };
       }
     } else {
       return { success: false, message: "No se pudo conectar con la base de datos para validar la categoría." };
     }
   }
 
-  // 3. Llamar al servicio
   const result = await service.create({
     ...validation.data,
     idCategoria: idCategoriaFinal,
@@ -117,7 +113,6 @@ export async function createHabitoAction(
     return { success: false, message: result.error };
   }
 
-  // 4. Revalidar y retornar
   revalidatePath("/habitos");
   redirect("/habitos");
   return { success: true, message: "Hábito creado exitosamente" };

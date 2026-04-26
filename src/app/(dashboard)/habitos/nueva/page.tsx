@@ -6,7 +6,7 @@
 
 import { createClient }  from "@/lib/supabase/server";
 import { redirect }      from "next/navigation";
-import { HabitoService } from "@/modules/habitos/habito.service";
+import { HabitoService } from "@/services/habito.service";
 import { HabitForm }     from "@/components/habitos/HabitForm";
 import Link              from "next/link";
 

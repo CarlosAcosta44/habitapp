@@ -1,16 +1,17 @@
 /**
- * @file src/modules/reportes/reportes.service.ts
+ * @file src/services/reportes.service.ts
  * @description Service Layer para el módulo de Reportes y Ranking.
+ * @layer Business Logic (Capa 3)
  */
 
 import { ok, err }       from "@/lib/result";
 import type { Result }   from "@/lib/result";
-import { ReportesRepository } from "./reportes.repository";
+import { ReportesRepository } from "@/repositories/reportes.repository";
 import type {
   EstadisticasGlobales,
   HabitoReporte,
   RankingUsuario,
-} from "./types";
+} from "@/types/domain/reportes.types";
 
 export class ReportesService {
   private readonly repo: ReportesRepository;

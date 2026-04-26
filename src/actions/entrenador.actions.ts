@@ -1,6 +1,7 @@
 /**
- * @file src/modules/entrenador/entrenador.actions.ts
+ * @file src/actions/entrenador.actions.ts
  * @description Server Actions para el módulo de Entrenadores.
+ * @layer Presentation (Capa 1 — Server-side)
  */
 
 "use server";
@@ -8,8 +9,8 @@
 import { revalidatePath } from "next/cache";
 import { z }              from "zod";
 import { createClient }   from "@/lib/supabase/server";
-import { EntrenadorService } from "./entrenador.service";
-import type { ActionState }  from "@/modules/habitos/habito.actions";
+import { EntrenadorService } from "@/services/entrenador.service";
+import type { ActionState }  from "@/actions/habito.actions";
 
 const service = new EntrenadorService();
 

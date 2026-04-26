@@ -1,12 +1,9 @@
 /**
- * @file src/modules/registros/registro.repository.ts
+ * @file src/repositories/registro.repository.ts
  * @description Repositorio para seguimiento.registro_habitos.
- * Maneja el progreso diario y el cálculo de rachas.
- *
+ * @layer Data & Infrastructure (Capa 4)
  * @pattern Repository Pattern
  * @principle SRP — solo acceso a datos de registros
- * @note El trigger sumar_puntos_habito en BD suma puntos automáticamente
- *       al marcar completado=true. No necesitamos hacerlo aquí.
  */
 
 import { createClient } from "@/lib/supabase/server";
@@ -19,7 +16,7 @@ import type {
   CreateRegistroDTO,
   MarcarCompletadoDTO,
   AvanzarProgresoDTO,
-} from "./types";
+} from "@/types/domain/registro.types";
 
 // ─── Tipos crudos de Supabase ─────────────────────────────────────────────────
 interface RawRegistro {
@@ -44,10 +41,6 @@ interface RawRegistroConHabito extends RawRegistro {
 export class RegistroRepository {
 
   // ─── findByHabitoId ────────────────────────────────────────────────────────
-  /**
-   * Trae todos los registros de un hábito ordenados por fecha.
-   * Útil para mostrar el historial y calcular rachas en el cliente.
-   */
   async findByHabitoId(
     habitoId: string
   ): Promise<Result<RegistroHabito[]>> {
@@ -66,10 +59,6 @@ export class RegistroRepository {
   }
 
   // ─── findByUsuarioId ───────────────────────────────────────────────────────
-  /**
-   * Trae todos los registros de un usuario con datos del hábito (JOIN).
-   * Útil para el historial general del usuario.
-   */
   async findByUsuarioId(
     usuarioId: string
   ): Promise<Result<RegistroConHabito[]>> {
@@ -111,10 +100,6 @@ export class RegistroRepository {
   }
 
   // ─── findHoy ──────────────────────────────────────────────────────────────
-  /**
-   * Trae el registro de HOY para un hábito específico.
-   * Retorna null si todavía no existe.
-   */
   async findHoy(
     habitoId: string,
     usuarioId: string
@@ -141,15 +126,6 @@ export class RegistroRepository {
   }
 
   // ─── marcarCompletado ─────────────────────────────────────────────────────
-  /**
-   * ⭐ Operación compuesta: crea o actualiza el registro del día como completado.
-   *
-   * FLUJO:
-   * 1. Busca si ya existe un registro para hoy (upsert por constraint único)
-   * 2. Lo inserta/actualiza con completado = true
-   * 3. El TRIGGER sumar_puntos_habito en BD suma los puntos automáticamente
-   *    y guarda el historial. No necesitamos hacerlo aquí.
-   */
   async marcarCompletado(
     dto: MarcarCompletadoDTO
   ): Promise<Result<RegistroHabito>> {
@@ -166,10 +142,7 @@ export class RegistroRepository {
           completado: true,
           observacion: dto.observacion ?? null,
         },
-        {
-          // El constraint UNIQUE (idhabito, idusuario, fecha) maneja el conflicto
-          onConflict: "idhabito,idusuario,fecha",
-        }
+        { onConflict: "idhabito,idusuario,fecha" }
       )
       .select("*")
       .returns<RawRegistro>()
@@ -185,7 +158,6 @@ export class RegistroRepository {
   ): Promise<Result<RegistroHabito>> {
     const supabase = await createClient();
 
-    // 1. Obtener registro de hoy primero
     const { data: hoyReg, error: eqErr } = await supabase
       .schema("seguimiento")
       .from("registro_habitos")
@@ -200,43 +172,32 @@ export class RegistroRepository {
     }
 
     const currentProgress = hoyReg?.progreso_actual ?? 0;
-    const isAlreadyCompleted = hoyReg?.completado ?? false;
-
-    // Si ya estaba completado, evitamos avanzar más? (Figma implies no over-tracking limits, let's max it at metaDiaria just in case)
     const newProgress = Math.min(dto.metaDiaria, currentProgress + dto.cantidadAsumar);
     const completadoFinal = newProgress >= dto.metaDiaria;
 
-    // 2. Upsert con el nuevo progreso
     const { data: resultInsert, error: errInsert } = await supabase
       .schema("seguimiento")
       .from("registro_habitos")
       .upsert(
         {
-          idhabito:   dto.idHabito,
-          idusuario:  dto.idUsuario,
-          fecha:      dto.fecha,
-          completado: completadoFinal,
+          idhabito:        dto.idHabito,
+          idusuario:       dto.idUsuario,
+          fecha:           dto.fecha,
+          completado:      completadoFinal,
           progreso_actual: newProgress,
-          observacion: dto.observacion ?? null,
+          observacion:     dto.observacion ?? null,
         },
-        {
-          onConflict: "idhabito,idusuario,fecha",
-        }
+        { onConflict: "idhabito,idusuario,fecha" }
       )
       .select("*")
       .returns<RawRegistro>()
       .single();
 
     if (errInsert) return err(`Error actualizando progreso: ${errInsert.message}`);
-    
     return ok(this.mapToDomain(resultInsert as RawRegistro));
   }
 
   // ─── desmarcarCompletado ──────────────────────────────────────────────────
-  /**
-   * Desmarca un hábito como completado (por si el usuario se equivocó).
-   * Solo funciona en el día actual.
-   */
   async desmarcarCompletado(
     habitoId: string,
     usuarioId: string
@@ -260,14 +221,6 @@ export class RegistroRepository {
   }
 
   // ─── calcularRacha ────────────────────────────────────────────────────────
-  /**
-   * ⭐ Calcula la racha actual y máxima de un hábito.
-   *
-   * LÓGICA:
-   * - Trae todos los registros completados ordenados por fecha DESC
-   * - Racha actual: cuenta días consecutivos desde hoy hacia atrás
-   * - Racha máxima: la racha más larga encontrada en el historial
-   */
   async calcularRacha(
     habitoId: string,
     usuarioId: string
@@ -290,46 +243,28 @@ export class RegistroRepository {
     const totalCompletados = registros.length;
 
     if (totalCompletados === 0) {
-      return ok({
-        idHabito:         habitoId,
-        rachaActual:      0,
-        rachaMáxima:      0,
-        totalCompletados: 0,
-      });
+      return ok({ idHabito: habitoId, rachaActual: 0, rachaMáxima: 0, totalCompletados: 0 });
     }
 
-    // ── Calcular racha actual ──────────────────────────────────────────────
     let rachaActual = 0;
     const hoy = new Date();
-
     for (let i = 0; i < registros.length; i++) {
       const fechaEsperada = new Date(hoy);
       fechaEsperada.setDate(hoy.getDate() - i);
-      const fechaEsperadaStr = fechaEsperada.toISOString().split("T")[0];
-
-      if (registros[i].fecha === fechaEsperadaStr) {
+      if (registros[i].fecha === fechaEsperada.toISOString().split("T")[0]) {
         rachaActual++;
       } else {
-        break; // Se rompió la consecutividad
+        break;
       }
     }
 
-    // ── Calcular racha máxima ──────────────────────────────────────────────
-    let rachaMáxima   = 0;
-    let rachaTemp     = 1;
-
-    // Ordenar ascendente para comparar días consecutivos
-    const fechasAsc = [...registros]
-      .map((r) => r.fecha)
-      .sort((a, b) => a.localeCompare(b));
-
+    let rachaMáxima = 0;
+    let rachaTemp   = 1;
+    const fechasAsc = [...registros].map((r) => r.fecha).sort((a, b) => a.localeCompare(b));
     for (let i = 1; i < fechasAsc.length; i++) {
-      const prev = new Date(fechasAsc[i - 1]);
-      const curr = new Date(fechasAsc[i]);
       const diffDias = Math.round(
-        (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24)
+        (new Date(fechasAsc[i]).getTime() - new Date(fechasAsc[i - 1]).getTime()) / 86400000
       );
-
       if (diffDias === 1) {
         rachaTemp++;
         rachaMáxima = Math.max(rachaMáxima, rachaTemp);
@@ -339,12 +274,7 @@ export class RegistroRepository {
     }
     rachaMáxima = Math.max(rachaMáxima, rachaTemp);
 
-    return ok({
-      idHabito: habitoId,
-      rachaActual,
-      rachaMáxima,
-      totalCompletados,
-    });
+    return ok({ idHabito: habitoId, rachaActual, rachaMáxima, totalCompletados });
   }
 
   // ─── mapToDomain ──────────────────────────────────────────────────────────

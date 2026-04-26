@@ -1,5 +1,5 @@
 /**
- * @file src/modules/entrenador/types.ts
+ * @file src/types/domain/entrenador.types.ts
  * @description Tipos de dominio para el módulo de Entrenadores.
  */
 

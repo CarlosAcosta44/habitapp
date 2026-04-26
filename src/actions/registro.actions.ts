@@ -1,6 +1,7 @@
 /**
- * @file src/modules/registros/registro.actions.ts
+ * @file src/actions/registro.actions.ts
  * @description Server Actions para registros diarios de hábitos.
+ * @layer Presentation (Capa 1 — Server-side)
  */
 
 "use server";
@@ -8,8 +9,8 @@
 import { revalidatePath } from "next/cache";
 import { z }              from "zod";
 import { createClient }   from "@/lib/supabase/server";
-import { RegistroService } from "./registro.service";
-import type { ActionState } from "@/modules/habitos/habito.actions";
+import { RegistroService } from "@/services/registro.service";
+import type { ActionState } from "@/actions/habito.actions";
 
 const service = new RegistroService();
 

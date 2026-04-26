@@ -6,7 +6,7 @@
 
 import { createClient }      from "@/lib/supabase/server";
 import { redirect }          from "next/navigation";
-import { ReportesService }   from "@/modules/reportes/reportes.service";
+import { ReportesService }   from "@/services/reportes.service";
 
 export const metadata = { title: "Ranking | HabitApp" };
 
