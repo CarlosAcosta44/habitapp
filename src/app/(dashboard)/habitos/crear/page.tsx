@@ -1,6 +1,6 @@
-import { HabitoService } from "@/modules/habitos/habito.service";
+import { HabitoService } from "@/services/habito.service";
 import { HabitCreatorPremiumForm } from "@/components/habitos/HabitCreatorPremiumForm";
-import type { CategoriaHabito } from "@/modules/habitos/types";
+import type { CategoriaHabito } from "@/types/domain/habito.types";
 
 export const metadata = { title: "Crear Hábito | HabitApp" };
 

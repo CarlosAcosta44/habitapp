@@ -1,14 +1,12 @@
 /**
- * @file src/modules/comunidad/comunidad.service.ts
+ * @file src/services/comunidad.service.ts
  * @description Service Layer para el módulo de Comunidad.
- *
- * @pattern Service Layer
- * @principle SRP — solo lógica de negocio de comunidad
+ * @layer Business Logic (Capa 3)
  */
 
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
-import { ComunidadRepository } from "./comunidad.repository";
+import { ComunidadRepository } from "@/repositories/comunidad.repository";
 import type {
   Foro,
   ForoConMetricas,
@@ -19,7 +17,7 @@ import type {
   EntrenadorPublico,
   CreateComentarioDTO,
   CreateReaccionDTO,
-} from "./types";
+} from "@/types/domain/comunidad.types";
 
 export class ComunidadService {
   private readonly repo: ComunidadRepository;
@@ -43,11 +41,6 @@ export class ComunidadService {
   }
 
   // ─── comentar ──────────────────────────────────────────────────────────────
-  /**
-   * REGLAS DE NEGOCIO:
-   * 1. El contenido no puede estar vacío
-   * 2. Las respuestas solo pueden ser de primer nivel (no se anidan más de 1 nivel)
-   */
   async comentar(dto: CreateComentarioDTO): Promise<Result<Comentario>> {
     if (!dto.contenido.trim()) {
       return err("El comentario no puede estar vacío");
@@ -56,7 +49,6 @@ export class ComunidadService {
       return err("El comentario no puede superar 500 caracteres");
     }
 
-    // Regla: máximo 1 nivel de anidación
     if (dto.idComentarioPadre) {
       const comentarios = await this.repo.findComentariosByForo(dto.idForo);
       if (comentarios.success) {

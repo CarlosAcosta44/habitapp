@@ -6,7 +6,7 @@
 
 import { createClient }      from "@/lib/supabase/server";
 import { redirect }          from "next/navigation";
-import { EntrenadorService } from "@/modules/entrenador/entrenador.service";
+import { EntrenadorService } from "@/services/entrenador.service";
 import { RutinaCard }        from "@/components/entrenador/RutinaCard";
 import { RutinaForm }        from "@/components/entrenador/RutinaForm";
 

@@ -15,8 +15,8 @@
 import Link                from "next/link";
 import { createClient }    from "@/lib/supabase/server";
 import { redirect }        from "next/navigation";
-import { HabitoService }   from "@/modules/habitos/habito.service";
-import { RegistroService } from "@/modules/registros/registro.service";
+import { HabitoService }   from "@/services/habito.service";
+import { RegistroService } from "@/services/registro.service";
 import { HabitCard }       from "@/components/habitos/HabitCard";
 import { DailyProgress }   from "@/components/registros/DailyProgress";
 import { CalendarDays, Target, Trophy, Zap } from "lucide-react";

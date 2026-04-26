@@ -1,6 +1,12 @@
+/**
+ * @file src/services/amigos.service.ts
+ * @description Service Layer para la gestión de amigos.
+ * @layer Business Logic (Capa 3)
+ */
+
 import { err, ok } from "@/lib/result";
 import type { Result } from "@/lib/result";
-import { AmigosRepository } from "./amigos.repository";
+import { AmigosRepository } from "@/repositories/amigos.repository";
 import { createClient } from "@/lib/supabase/server";
 
 export class AmigosService {

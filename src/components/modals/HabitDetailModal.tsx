@@ -3,12 +3,12 @@
 import React, { useEffect, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Flame, Trash2, Ban, CheckCircle2 } from 'lucide-react';
-import type { HabitoConProgreso } from '@/modules/habitos/types';
+import type { HabitoConProgreso } from '@/types/domain/habito.types';
 import { 
   marcarCompletadoAction, 
   avanzarProgresoAction 
-} from '@/modules/registros/registro.actions';
-import { deleteHabitoAction } from '@/modules/habitos/habito.actions';
+} from '@/actions/registro.actions';
+import { deleteHabitoAction } from '@/actions/habito.actions';
 
 interface HabitDetailModalProps {
   isOpen: boolean;

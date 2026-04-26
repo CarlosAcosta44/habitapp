@@ -1,5 +1,5 @@
 /**
- * @file src/modules/reportes/types.ts
+ * @file src/types/domain/reportes.types.ts
  * @description Tipos de dominio para el módulo de Reportes y Ranking.
  */
 

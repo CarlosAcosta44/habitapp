@@ -1,3 +1,9 @@
+/**
+ * @file src/repositories/amigos.repository.ts
+ * @description Repositorio para la gestión de amigos.
+ * @layer Data & Infrastructure (Capa 4)
+ */
+
 import { createClient } from "@/lib/supabase/server";
 import { err, ok } from "@/lib/result";
 import type { Result } from "@/lib/result";

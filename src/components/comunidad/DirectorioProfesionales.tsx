@@ -4,7 +4,7 @@
  * Muestra tarjetas con foto, nombre, especialidad y botón de contacto.
  */
 
-import type { EntrenadorPublico } from "@/modules/comunidad/types";
+import type { EntrenadorPublico } from "@/types/domain/comunidad.types";
 
 interface DirectorioProfesionalesProps {
   entrenadores: EntrenadorPublico[];

@@ -1,21 +1,21 @@
 /**
- * @file src/modules/registros/registro.service.ts
+ * @file src/services/registro.service.ts
  * @description Service Layer para registros diarios y rachas.
- *
+ * @layer Business Logic (Capa 3)
  * @pattern Service Layer
  * @principle SRP — solo lógica de negocio de registros
  */
 
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
-import { RegistroRepository } from "./registro.repository";
+import { RegistroRepository } from "@/repositories/registro.repository";
 import type {
   RegistroHabito,
   RegistroConHabito,
   RachaActual,
   MarcarCompletadoDTO,
   AvanzarProgresoDTO,
-} from "./types";
+} from "@/types/domain/registro.types";
 
 export class RegistroService {
   private readonly repo: RegistroRepository;
@@ -39,22 +39,15 @@ export class RegistroService {
   }
 
   // ─── marcarCompletado ──────────────────────────────────────────────────────
-  /**
-   * REGLAS DE NEGOCIO:
-   * 1. Solo se puede marcar el día actual
-   * 2. No se puede marcar un hábito ya completado hoy
-   */
   async marcarCompletado(
     dto: MarcarCompletadoDTO
   ): Promise<Result<RegistroHabito>> {
     const hoy = new Date().toISOString().split("T")[0];
 
-    // Regla 1: solo el día actual
     if (dto.fecha !== hoy) {
       return err("Solo puedes registrar el progreso del día actual");
     }
 
-    // Regla 2: verificar si ya está completado hoy
     const registroHoy = await this.repo.findHoy(dto.idHabito, dto.idUsuario);
     if (registroHoy.success && registroHoy.data?.completado) {
       return err("Este hábito ya fue completado hoy");
@@ -74,7 +67,6 @@ export class RegistroService {
     if (!registroHoy.data.completado) {
       return err("Este hábito no está marcado como completado hoy");
     }
-
     return this.repo.desmarcarCompletado(habitoId, usuarioId);
   }
 
@@ -84,11 +76,9 @@ export class RegistroService {
   ): Promise<Result<RegistroHabito>> {
     const hoy = new Date().toISOString().split("T")[0];
 
-    // Regla 1: solo el día actual
     if (dto.fecha !== hoy) {
       return err("Solo puedes registrar el progreso del día actual");
     }
-    
     if (dto.cantidadAsumar <= 0) {
       return err("La cantidad a sumar debe ser mayor a cero");
     }

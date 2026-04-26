@@ -1,13 +1,13 @@
 /**
- * @file src/modules/habitos/habito.repository.ts
+ * @file src/repositories/habito.repository.ts
  * @description Repositorio para seguimiento.habitos con JOINs y operaciones compuestas.
+ * @layer Data & Infrastructure (Capa 4)
  * @pattern Repository Pattern
  * @principle SRP — acceso a datos de hábitos únicamente
- * @principle OCP — implementa IRepository sin modificarlo
- * @principle DIP — depende de abstracciones, no de Supabase directamente
  */
 
-import { createClient } from "@/lib/supabase/server";import { ok, err } from "@/lib/result";
+import { createClient } from "@/lib/supabase/server";
+import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
 import type {
   IRepository,
@@ -21,10 +21,9 @@ import type {
   UpdateHabitoDTO,
   HabitoFilters,
   CategoriaHabito,
-} from "./types";
+} from "@/types/domain/habito.types";
 
 // ─── Tipo crudo que devuelve Supabase ─────────────────────────────────────────
-// Definimos el tipo explícitamente para evitar errores de inferencia
 interface RawHabito {
   idhabito:    string;
   nombre:      string;
@@ -210,16 +209,16 @@ export class HabitoRepository
       .schema("seguimiento")
       .from("habitos")
       .insert({
-        nombre:      data.nombre,
-        descripcion: data.descripcion,
-        fechainicio: data.fechaInicio,
-        fechafin:    data.fechaFin,
-        estado:      data.estado,
-        puntos:      data.puntos,
-        meta_diaria: 1, // DEFAULT in script OR data.metaDiaria
-        unidad_medida: 'veces',
-        idusuario:   data.idUsuario,
-        idcategoria: data.idCategoria,
+        nombre:       data.nombre,
+        descripcion:  data.descripcion,
+        fechainicio:  data.fechaInicio,
+        fechafin:     data.fechaFin,
+        estado:       data.estado,
+        puntos:       data.puntos,
+        meta_diaria:  data.metaDiaria ?? 1,
+        unidad_medida: data.unidadMedida ?? 'veces',
+        idusuario:    data.idUsuario,
+        idcategoria:  data.idCategoria,
       })
       .select("*")
       .returns<RawHabito>()
@@ -261,18 +260,14 @@ export class HabitoRepository
   async delete(id: string): Promise<Result<boolean>> {
     const supabase = await createClient();
 
-    // 1. Borrar todas las dependencias hijas en cascada (manual)
-    
-    // Borrar registros de hábitos
     const { error: regErr } = await supabase
       .schema("seguimiento")
       .from("registro_habitos")
       .delete()
       .eq("idhabito", id);
-    
+
     if (regErr) return err(`No se pudieron borrar los registros del hábito: ${regErr.message}`);
-      
-    // Borrar recordatorios (si hubieran)
+
     const { error: recErr } = await supabase
       .schema("seguimiento")
       .from("recordatorios")
@@ -281,7 +276,6 @@ export class HabitoRepository
 
     if (recErr) return err(`No se pudieron borrar los recordatorios: ${recErr.message}`);
 
-    // 2. Finalmente, borrar el hábito padre
     const { error: habErr } = await supabase
       .schema("seguimiento")
       .from("habitos")
@@ -289,7 +283,7 @@ export class HabitoRepository
       .eq("idhabito", id);
 
     if (habErr) return err(`Error final al eliminar el hábito: ${habErr.message}`);
-    
+
     return ok(true);
   }
 
@@ -297,7 +291,6 @@ export class HabitoRepository
   async findCategorias(): Promise<Result<CategoriaHabito[]>> {
     const supabase = await createClient();
 
-    // Definimos el tipo crudo de la tabla categorias_habitos
     interface RawCategoria {
       idcategoria: string;
       nombre:      string;
@@ -311,17 +304,7 @@ export class HabitoRepository
       .order("nombre", { ascending: true })
       .returns<RawCategoria[]>();
 
-    if (error) {
-      console.error("[HabitoRepository.findCategorias] Error Supabase:", {
-        message: error.message,
-        code:    error.code,
-        details: error.details,
-        hint:    error.hint,
-      });
-      return err(`Error al obtener categorías: ${error.message}`);
-    }
-
-    console.log("[HabitoRepository.findCategorias] Filas recibidas:", data?.length ?? 0);
+    if (error) return err(`Error al obtener categorías: ${error.message}`);
 
     return ok(
       (data ?? []).map((row: RawCategoria) => ({
@@ -331,6 +314,7 @@ export class HabitoRepository
       }))
     );
   }
+
   // ─── mapToDomain ───────────────────────────────────────────────────────────
   private mapToDomain(row: RawHabito): HabitoConCategoria {
     const cat = row.categorias_habitos;

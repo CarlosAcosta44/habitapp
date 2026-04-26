@@ -5,7 +5,7 @@
 
 import { createClient }     from "@/lib/supabase/server";
 import { redirect }         from "next/navigation";
-import { ComunidadService } from "@/modules/comunidad/comunidad.service";
+import { ComunidadService } from "@/services/comunidad.service";
 import { ComentarioItem }   from "@/components/comunidad/ComentarioItem";
 import { ComentarioForm }   from "@/components/comunidad/ComentarioForm";
 import Link                 from "next/link";

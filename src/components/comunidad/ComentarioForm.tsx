@@ -7,7 +7,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { comentarAction } from "@/modules/comunidad/comunidad.actions";
+import { comentarAction } from "@/actions/comunidad.actions";
 
 interface ComentarioFormProps {
   foroId:            string;
