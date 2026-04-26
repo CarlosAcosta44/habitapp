@@ -4,7 +4,7 @@
  * fondo sólido, badge de categoría, título, extracto y tiempo de lectura.
  */
 
-import type { Articulo } from "@/modules/comunidad/types";
+import type { Articulo } from "@/types/domain/comunidad.types";
 
 // Colores del badge por categoría
 const categoriaBadgeColors: Record<string, string> = {

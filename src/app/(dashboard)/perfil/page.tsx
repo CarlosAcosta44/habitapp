@@ -9,7 +9,7 @@ import { createClient }    from "@/lib/supabase/server";
 import { redirect }        from "next/navigation";
 import Link                from "next/link";
 import { PerfilTabs }      from "@/components/perfil/PerfilTabs";
-import { RegistroService } from "@/modules/registros/registro.service";
+import { RegistroService } from "@/services/registro.service";
 import { AddFriendForm }   from "@/components/perfil/AddFriendForm";
 
 export const metadata = { title: "Perfil | HabitApp" };

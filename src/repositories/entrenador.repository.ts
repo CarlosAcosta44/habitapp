@@ -1,10 +1,11 @@
 /**
- * @file src/modules/entrenador/entrenador.repository.ts
+ * @file src/repositories/entrenador.repository.ts
  * @description Repositorio para el módulo de Entrenadores.
  * Maneja rutinas, asignaciones y seguimientos con JOINs complejos.
  *
  * @pattern Repository Pattern
  * @principle SRP — solo acceso a datos de entrenadores
+ * @layer Data & Infrastructure (Capa 4)
  */
 
 import { createClient } from "@/lib/supabase/server";
@@ -19,7 +20,7 @@ import type {
   CreateRutinaDTO,
   CreateSeguimientoDTO,
   AsignarRutinaDTO,
-} from "./types";
+} from "@/types/domain/entrenador.types";
 
 // ─── Tipos crudos ─────────────────────────────────────────────────────────────
 interface RawEntrenador {
@@ -70,9 +71,6 @@ interface RawSeguimiento {
 export class EntrenadorRepository {
 
   // ─── findById ──────────────────────────────────────────────────────────────
-  /**
-   * Busca un entrenador por su ID con datos del perfil de usuario (JOIN).
-   */
   async findById(
     entrenadorId: string
   ): Promise<Result<EntrenadorConPerfil | null>> {
@@ -107,9 +105,6 @@ export class EntrenadorRepository {
   }
 
   // ─── findByUsuarioId ───────────────────────────────────────────────────────
-  /**
-   * Busca el perfil de entrenador por el ID del usuario.
-   */
   async findByUsuarioId(
     usuarioId: string
   ): Promise<Result<Entrenador | null>> {
@@ -138,9 +133,6 @@ export class EntrenadorRepository {
   }
 
   // ─── findUsuariosAsignados ─────────────────────────────────────────────────
-  /**
-   * Trae todos los usuarios asignados a un entrenador con JOIN.
-   */
   async findUsuariosAsignados(
     entrenadorId: string
   ): Promise<Result<{ idUsuario: string; nombre: string; apellido: string; fechaInicio: string }[]>> {
@@ -182,9 +174,6 @@ export class EntrenadorRepository {
   }
 
   // ─── findRutinasConUsuarios ────────────────────────────────────────────────
-  /**
-   * ⭐ JOIN complejo: rutinas del entrenador + usuarios asignados a cada una.
-   */
   async findRutinasConUsuarios(
     entrenadorId: string
   ): Promise<Result<RutinaConUsuarios[]>> {
@@ -254,9 +243,6 @@ export class EntrenadorRepository {
   }
 
   // ─── asignarRutina ─────────────────────────────────────────────────────────
-  /**
-   * Asigna una rutina a un usuario (tabla usuario_rutina).
-   */
   async asignarRutina(dto: AsignarRutinaDTO): Promise<Result<boolean>> {
     const supabase = await createClient();
 
@@ -275,9 +261,6 @@ export class EntrenadorRepository {
   }
 
   // ─── createSeguimiento ─────────────────────────────────────────────────────
-  /**
-   * Registra un nuevo seguimiento/reporte del entrenador sobre un usuario.
-   */
   async createSeguimiento(
     dto: CreateSeguimientoDTO
   ): Promise<Result<Seguimiento>> {
@@ -302,9 +285,6 @@ export class EntrenadorRepository {
   }
 
   // ─── findSeguimientosByUsuario ─────────────────────────────────────────────
-  /**
-   * Trae todos los seguimientos de un usuario con un entrenador específico.
-   */
   async findSeguimientosByUsuario(
     usuarioId:    string,
     entrenadorId: string

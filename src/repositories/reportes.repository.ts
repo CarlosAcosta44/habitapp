@@ -1,7 +1,8 @@
 /**
- * @file src/modules/reportes/reportes.repository.ts
+ * @file src/repositories/reportes.repository.ts
  * @description Repositorio para el módulo de Reportes y Ranking.
  * Consultas a Supabase para estadísticas, comparativas y ranking global.
+ * @layer Data & Infrastructure (Capa 4)
  */
 
 import { createClient } from "@/lib/supabase/server";
@@ -11,7 +12,7 @@ import type {
   EstadisticasGlobales,
   HabitoReporte,
   RankingUsuario,
-} from "./types";
+} from "@/types/domain/reportes.types";
 
 export interface ComparativaGraphed {
   diasSemana: string[];

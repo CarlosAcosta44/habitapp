@@ -1,14 +1,12 @@
 /**
- * @file src/modules/entrenador/entrenador.service.ts
+ * @file src/services/entrenador.service.ts
  * @description Service Layer para el módulo de Entrenadores.
- *
- * @pattern Service Layer
- * @principle SRP — solo lógica de negocio de entrenadores
+ * @layer Business Logic (Capa 3)
  */
 
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
-import { EntrenadorRepository } from "./entrenador.repository";
+import { EntrenadorRepository } from "@/repositories/entrenador.repository";
 import type {
   EntrenadorConPerfil,
   Rutina,
@@ -17,7 +15,7 @@ import type {
   CreateRutinaDTO,
   CreateSeguimientoDTO,
   AsignarRutinaDTO,
-} from "./types";
+} from "@/types/domain/entrenador.types";
 
 export class EntrenadorService {
   private readonly repo: EntrenadorRepository;
@@ -26,7 +24,6 @@ export class EntrenadorService {
     this.repo = repo ?? new EntrenadorRepository();
   }
 
-  // ─── getPerfil ─────────────────────────────────────────────────────────────
   async getPerfil(entrenadorId: string): Promise<Result<EntrenadorConPerfil>> {
     const result = await this.repo.findById(entrenadorId);
     if (!result.success) return err(result.error);
@@ -34,7 +31,6 @@ export class EntrenadorService {
     return ok(result.data);
   }
 
-  // ─── getPerfilByUsuario ────────────────────────────────────────────────────
   async getPerfilByUsuario(usuarioId: string): Promise<Result<EntrenadorConPerfil>> {
     const result = await this.repo.findByUsuarioId(usuarioId);
     if (!result.success) return err(result.error);
@@ -43,7 +39,6 @@ export class EntrenadorService {
     return this.getPerfil(result.data.idEntrenador);
   }
 
-  // ─── getMisUsuarios ────────────────────────────────────────────────────────
   async getMisUsuarios(entrenadorId: string): Promise<Result<{
     idUsuario: string;
     nombre:    string;
@@ -54,7 +49,6 @@ export class EntrenadorService {
     return this.repo.findUsuariosAsignados(entrenadorId);
   }
 
-  // ─── getMisRutinas ─────────────────────────────────────────────────────────
   async getMisRutinas(
     entrenadorId: string
   ): Promise<Result<RutinaConUsuarios[]>> {
@@ -62,12 +56,6 @@ export class EntrenadorService {
     return this.repo.findRutinasConUsuarios(entrenadorId);
   }
 
-  // ─── createRutina ──────────────────────────────────────────────────────────
-  /**
-   * REGLAS DE NEGOCIO:
-   * 1. La duración debe ser positiva si se especifica
-   * 2. El tipo no puede estar vacío
-   */
   async createRutina(dto: CreateRutinaDTO): Promise<Result<Rutina>> {
     if (!dto.tipo.trim()) {
       return err("El tipo de rutina no puede estar vacío");
@@ -79,11 +67,6 @@ export class EntrenadorService {
     return this.repo.createRutina(dto);
   }
 
-  // ─── asignarRutina ─────────────────────────────────────────────────────────
-  /**
-   * REGLA: Verificar que el usuario está asignado al entrenador
-   * antes de asignarle una rutina.
-   */
   async asignarRutina(
     dto:          AsignarRutinaDTO,
     entrenadorId: string
@@ -99,7 +82,6 @@ export class EntrenadorService {
     return this.repo.asignarRutina(dto);
   }
 
-  // ─── registrarSeguimiento ──────────────────────────────────────────────────
   async registrarSeguimiento(
     dto: CreateSeguimientoDTO
   ): Promise<Result<Seguimiento>> {
@@ -110,7 +92,6 @@ export class EntrenadorService {
     return this.repo.createSeguimiento(dto);
   }
 
-  // ─── getSeguimientos ───────────────────────────────────────────────────────
   async getSeguimientos(
     usuarioId:    string,
     entrenadorId: string

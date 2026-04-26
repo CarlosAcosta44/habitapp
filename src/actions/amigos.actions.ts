@@ -1,10 +1,16 @@
+/**
+ * @file src/actions/amigos.actions.ts
+ * @description Server Actions para el módulo de Amigos.
+ * @layer Presentation (Capa 1 — Server-side)
+ */
+
 "use server";
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { AmigosService } from "./amigos.service";
-import type { ActionState } from "@/modules/habitos/habito.actions";
+import { AmigosService } from "@/services/amigos.service";
+import type { ActionState } from "@/actions/habito.actions";
 
 const service = new AmigosService();
 

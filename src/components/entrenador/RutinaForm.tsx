@@ -7,7 +7,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { createRutinaAction } from "@/modules/entrenador/entrenador.actions";
+import { createRutinaAction } from "@/actions/entrenador.actions";
 
 export function RutinaForm() {
   const [state, formAction, isPending] = useActionState(

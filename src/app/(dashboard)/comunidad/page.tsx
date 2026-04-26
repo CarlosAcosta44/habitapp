@@ -7,7 +7,7 @@
 
 import { createClient }       from "@/lib/supabase/server";
 import { redirect }           from "next/navigation";
-import { ComunidadService }   from "@/modules/comunidad/comunidad.service";
+import { ComunidadService }   from "@/services/comunidad.service";
 import { ExplorarHabitos }    from "@/components/comunidad/ExplorarHabitos";
 import { ForoComunidadCard }  from "@/components/comunidad/ForoComunidadCard";
 import { DirectorioProfesionales } from "@/components/comunidad/DirectorioProfesionales";

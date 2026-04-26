@@ -7,8 +7,8 @@
 
 import Link              from "next/link";
 import { useTransition } from "react";
-import { suscribirseAction, desuscribirseAction } from "@/modules/comunidad/comunidad.actions";
-import type { ForoConMetricas } from "@/modules/comunidad/types";
+import { suscribirseAction, desuscribirseAction } from "@/actions/comunidad.actions";
+import type { ForoConMetricas } from "@/types/domain/comunidad.types";
 
 interface ForoCardProps {
   foro: ForoConMetricas;
