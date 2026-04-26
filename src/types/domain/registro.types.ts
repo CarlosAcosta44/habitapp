@@ -1,5 +1,5 @@
 /**
- * @file src/modules/registros/types.ts
+ * @file src/types/domain/registro.types.ts
  * @description Tipos de dominio para registros diarios de hábitos y rachas.
  */
 

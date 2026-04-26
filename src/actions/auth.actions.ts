@@ -5,7 +5,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { HabitoService } from '@/modules/habitos/habito.service'
+import { HabitoService } from '@/services/habito.service'
 import {
   ONBOARDING_HABIT_PRESETS,
   ONBOARDING_PRESET_IDS,

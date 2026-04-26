@@ -1,6 +1,7 @@
 /**
- * @file src/modules/comunidad/comunidad.actions.ts
+ * @file src/actions/comunidad.actions.ts
  * @description Server Actions para el módulo de Comunidad.
+ * @layer Presentation (Capa 1 — Server-side)
  */
 
 "use server";
@@ -8,8 +9,8 @@
 import { revalidatePath } from "next/cache";
 import { z }              from "zod";
 import { createClient }   from "@/lib/supabase/server";
-import { ComunidadService } from "./comunidad.service";
-import type { ActionState } from "@/modules/habitos/habito.actions";
+import { ComunidadService } from "@/services/comunidad.service";
+import type { ActionState } from "@/actions/habito.actions";
 
 const service = new ComunidadService();
 

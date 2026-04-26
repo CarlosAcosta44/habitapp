@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { addFriendAction } from "@/modules/amigos/amigos.actions";
-import type { ActionState } from "@/modules/habitos/habito.actions";
+import { addFriendAction } from "@/actions/amigos.actions";
+import type { ActionState } from "@/actions/habito.actions";
 
 interface SuggestedFriend {
   id: string;

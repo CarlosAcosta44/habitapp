@@ -1,10 +1,11 @@
 /**
- * @file src/modules/comunidad/comunidad.repository.ts
+ * @file src/repositories/comunidad.repository.ts
  * @description Repositorio para el módulo de Comunidad.
  * Maneja foros, comentarios anidados y reacciones.
  *
  * @pattern Repository Pattern
  * @principle SRP — solo acceso a datos de comunidad
+ * @layer Data & Infrastructure (Capa 4)
  */
 
 import { createClient } from "@/lib/supabase/server";
@@ -20,7 +21,7 @@ import type {
   EntrenadorPublico,
   CreateComentarioDTO,
   CreateReaccionDTO,
-} from "./types";
+} from "@/types/domain/comunidad.types";
 
 // ─── Tipos crudos ─────────────────────────────────────────────────────────────
 interface RawForo {
@@ -106,12 +107,6 @@ export class ComunidadRepository {
   // ─── findComentariosByForo ─────────────────────────────────────────────────
   /**
    * ⭐ Trae comentarios de un foro con autor, reacciones y respuestas anidadas.
-   *
-   * ESTRATEGIA:
-   * 1. Traemos todos los comentarios del foro en una consulta
-   * 2. Separamos padres e hijos en memoria
-   * 3. Anidamos los hijos dentro de sus padres
-   * Esto evita N+1 queries y es más eficiente que consultas recursivas.
    */
   async findComentariosByForo(
     foroId: string
@@ -194,10 +189,6 @@ export class ComunidadRepository {
   }
 
   // ─── toggleReaccion ────────────────────────────────────────────────────────
-  /**
-   * ⭐ Operación compuesta: agrega o elimina una reacción.
-   * Si ya existe la reacción del usuario la elimina (toggle).
-   */
   async toggleReaccion(dto: CreateReaccionDTO): Promise<Result<boolean>> {
     const supabase = await createClient();
 

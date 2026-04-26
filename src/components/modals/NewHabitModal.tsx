@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { X, Sparkles, Plus, Ban, Smile, ArrowLeft } from 'lucide-react';
-import { createHabitoAction } from '@/modules/habitos/habito.actions';
+import { createHabitoAction } from '@/actions/habito.actions';
 
 interface NewHabitModalProps {
   isOpen: boolean;

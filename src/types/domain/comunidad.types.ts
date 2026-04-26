@@ -1,5 +1,5 @@
 /**
- * @file src/modules/comunidad/types.ts
+ * @file src/types/domain/comunidad.types.ts
  * @description Tipos de dominio para el módulo de Comunidad.
  */
 

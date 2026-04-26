@@ -1,5 +1,5 @@
 /**
- * @file src/modules/habitos/types.ts
+ * @file src/types/domain/habito.types.ts
  * @description Tipos de dominio para el módulo de Hábitos.
  * Mapea columnas PostgreSQL (snake_case) a propiedades TypeScript (camelCase).
  */
