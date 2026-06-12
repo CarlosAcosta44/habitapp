@@ -125,3 +125,4 @@ Basado en las dependencias técnicas, se sugiere abordar el desarrollo en las si
 - Pruebas exhaustivas y QA.
 - Exportación del proyecto (`next build` -> `out/`).
 - Despliegue en AWS S3.
+ 

@@ -37,7 +37,7 @@ HabitApp es un **MVP frontend funcional** (v0.1.0) con arquitectura de 4 capas e
 | Frontend core (hábitos, comunidad) | ✅ Funcional | Arquitectura limpia post-PR #24 |
 | Módulo Admin | ❌ Pendiente | Solo en middleware |
 | Módulo Entrenador | ⚠️ Parcial | Lógica en frontend + Supabase directo |
-| Backend propio | ❌ No existe | **Inicia mañana (V0.1)** |
+| Backend propio | ❌ No existe | **Inicia mañnicolas (V0.1)** |
 | RLS Supabase | ⚠️ Incompleto | Scripts en `.planeacion/`, no versionados |
 | CI/CD | ❌ Ausente | |
 | Tests | ❌ Ausente | |
@@ -233,7 +233,7 @@ sequenceDiagram
 
 ## Matriz de roles
 
-| | **Tú (TL)** | **Carlos (D2)** | **Ana (D3)** | **Luis (D4)** |
+| | **Carlos (TL)** | **Breiner (D2)** | **Nicolas (D3)** | **Juan (D4)** |
 |---|-------------|-----------------|--------------|---------------|
 | **Rol principal** | Architect + Backend Lead | Frontend Lead + DevOps | Full-stack — Usuario | Full-stack — Comunidad/Coach |
 | **Rol secundario** | Code review crítico | CI/CD + Infra | QA + Tests FE | Tests BE + Docs API |
@@ -329,11 +329,11 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/nest-bootstrap` | Bootstrap NestJS + scripts + ESLint | Carlos | TL | P0 | S | — |
+| `feature/nest-bootstrap` | Bootstrap NestJS + scripts + ESLint | Breiner | TL | P0 | S | — |
 | `feature/supabase-auth` | Guards JWT + SupabaseService | TL | — | P0 | M | bootstrap |
-| `feature/health-module` | GET /health + e2e | Carlos | TL | P0 | XS | bootstrap |
-| `feature/users-module` | Users endpoints (3) | Ana | TL | P0 | M | auth |
-| `feature/coach-module` | GET /coach/clients | Luis | TL | P0 | M | auth |
+| `feature/health-module` | GET /health + e2e | Breiner | TL | P0 | XS | bootstrap |
+| `feature/users-module` | Users endpoints (3) | Nicolas | TL | P0 | M | auth |
+| `feature/coach-module` | GET /coach/clients | Juan | TL | P0 | M | auth |
 
 ---
 
@@ -341,17 +341,17 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/be-supabase-migrations` | Migraciones CLI + RLS completo | TL | Carlos | P0 | L | V0.1 |
-| `feature/fe-fix-dashboard-routes` | Eliminar `/dashboard/*` | Carlos | Ana | P0 | S | — |
-| `feature/fe-auth-hardening` | getUser(), callback, reset password | Carlos | TL | P0 | M | — |
-| `feature/fe-env-example` | .env.example + gitignore fix | Carlos | TL | P0 | XS | — |
-| `feature/fe-habito-ownership` | Validar ownership en services | Ana | TL | P0 | S | — |
-| `feature/fe-mobile-nav` | Drawer/bottom nav móvil | Carlos | Luis | P1 | M | — |
-| `feature/fe-perfil-service` | Extraer PerfilService | Ana | Carlos | P1 | M | — |
-| `feature/fe-cleanup-dead-code` | Eliminar temp_hash, SidebarNav | Luis | Carlos | P2 | S | — |
-| `chore/fe-setup-ci` | GitHub Actions habitapp | Carlos | TL | P0 | M | — |
-| `chore/be-setup-ci` | GitHub Actions habitapp-api | Carlos | TL | P0 | S | V0.1 |
-| `bugfix/fe-foro-navigation` | ForoComunidadCard → detalle | Luis | Ana | P2 | XS | — |
+| `feature/be-supabase-migrations` | Migraciones CLI + RLS completo | TL | Breiner | P0 | L | V0.1 |
+| `feature/fe-fix-dashboard-routes` | Eliminar `/dashboard/*` | Breiner | Nicolas | P0 | S | — |
+| `feature/fe-auth-hardening` | getUser(), callback, reset password | Breiner | TL | P0 | M | — |
+| `feature/fe-env-example` | .env.example + gitignore fix | Breiner | TL | P0 | XS | — |
+| `feature/fe-habito-ownership` | Validar ownership en services | Nicolas | TL | P0 | S | — |
+| `feature/fe-mobile-nav` | Drawer/bottom nav móvil | Breiner | Juan | P1 | M | — |
+| `feature/fe-perfil-service` | Extraer PerfilService | Nicolas | Breiner | P1 | M | — |
+| `feature/fe-cleanup-dead-code` | Eliminar temp_hash, SidebarNav | Juan | Breiner | P2 | S | — |
+| `chore/fe-setup-ci` | GitHub Actions habitapp | Breiner | TL | P0 | M | — |
+| `chore/be-setup-ci` | GitHub Actions habitapp-api | Breiner | TL | P0 | S | V0.1 |
+| `bugfix/fe-foro-navigation` | ForoComunidadCard → detalle | Juan | Nicolas | P2 | XS | — |
 
 ---
 
@@ -359,13 +359,13 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/fe-api-client` | lib/api/client.ts + JWT | TL | Carlos | P0 | M | V0.1 |
-| `feature/be-openapi-v1` | Congelar spec OpenAPI | TL | Luis | P0 | S | V0.1 |
-| `feature/fe-supabase-types` | database.types.ts generado | Ana | TL | P1 | S | migrations |
-| `feature/fe-unify-habit-create` | Un solo flujo crear hábito | Ana | Carlos | P1 | M | — |
-| `feature/fe-require-user-helper` | requireUser/requireRole | Ana | TL | P1 | S | auth-hardening |
+| `feature/fe-api-client` | lib/api/client.ts + JWT | TL | Breiner | P0 | M | V0.1 |
+| `feature/be-openapi-v1` | Congelar spec OpenAPI | TL | Juan | P0 | S | V0.1 |
+| `feature/fe-supabase-types` | database.types.ts generado | Nicolas | TL | P1 | S | migrations |
+| `feature/fe-unify-habit-create` | Un solo flujo crear hábito | Nicolas | Breiner | P1 | M | — |
+| `feature/fe-require-user-helper` | requireUser/requireRole | Nicolas | TL | P1 | S | auth-hardening |
 | `docs/adr-001-hybrid-arch` | ADR arquitectura híbrida | TL | Todos | P1 | XS | — |
-| `chore/fe-deploy-vercel` | Vercel preview deploys | Carlos | TL | P1 | S | CI |
+| `chore/fe-deploy-vercel` | Vercel preview deploys | Breiner | TL | P1 | S | CI |
 
 ---
 
@@ -373,16 +373,16 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/be-admin-users` | Admin CRUD usuarios | Luis | TL | P0 | L | users-module |
-| `feature/be-admin-moderation` | Moderar comentarios/foros | Luis | TL | P0 | M | admin-users |
-| `feature/be-coach-routines` | CRUD rutinas | Luis | TL | P0 | L | coach-module |
-| `feature/be-coach-assign` | Asignar rutina a pupilo | Luis | TL | P0 | M | routines |
-| `feature/be-coach-progress` | Progreso detallado pupilo | Luis | Ana | P1 | M | assign |
-| `feature/be-notifications` | List + mark read + email | Carlos | TL | P1 | L | — |
-| `feature/be-reports-ranking` | Ranking con Redis cache | Ana | TL | P1 | M | — |
-| `feature/be-reports-user` | Reporte resumen usuario | Ana | TL | P2 | M | — |
-| `build/be-docker` | Dockerfile + compose | Carlos | TL | P1 | M | — |
-| `test/be-services-coverage` | Tests >70% services | Luis + Ana | TL | P1 | L | módulos |
+| `feature/be-admin-users` | Admin CRUD usuarios | Juan | TL | P0 | L | users-module |
+| `feature/be-admin-moderation` | Moderar comentarios/foros | Juan | TL | P0 | M | admin-users |
+| `feature/be-coach-routines` | CRUD rutinas | Juan | TL | P0 | L | coach-module |
+| `feature/be-coach-assign` | Asignar rutina a pupilo | Juan | TL | P0 | M | routines |
+| `feature/be-coach-progress` | Progreso detallado pupilo | Juan | Nicolas | P1 | M | assign |
+| `feature/be-notifications` | List + mark read + email | Breiner | TL | P1 | L | — |
+| `feature/be-reports-ranking` | Ranking con Redis cache | Nicolas | TL | P1 | M | — |
+| `feature/be-reports-user` | Reporte resumen usuario | Nicolas | TL | P2 | M | — |
+| `build/be-docker` | Dockerfile + compose | Breiner | TL | P1 | M | — |
+| `test/be-services-coverage` | Tests >70% services | Juan + Nicolas | TL | P1 | L | módulos |
 
 ---
 
@@ -390,11 +390,11 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/fe-admin-layout` | Layout + rutas /admin | Carlos | TL | P0 | M | admin BE |
-| `feature/fe-admin-users-ui` | UI gestión usuarios | Luis | Carlos | P0 | M | admin BE |
-| `feature/fe-coach-dashboard-api` | Entrenador via API | Luis | TL | P0 | L | coach BE |
-| `feature/fe-api-proxy-actions` | Server Actions → backend | TL | Ana | P0 | M | api-client |
-| `test/e2e-critical-flows` | Playwright 5 flujos | Ana + Luis | Carlos | P0 | L | integración |
+| `feature/fe-admin-layout` | Layout + rutas /admin | Breiner | TL | P0 | M | admin BE |
+| `feature/fe-admin-users-ui` | UI gestión usuarios | Juan | Breiner | P0 | M | admin BE |
+| `feature/fe-coach-dashboard-api` | Entrenador via API | Juan | TL | P0 | L | coach BE |
+| `feature/fe-api-proxy-actions` | Server Actions → backend | TL | Nicolas | P0 | M | api-client |
+| `test/e2e-critical-flows` | Playwright 5 flujos | Nicolas + Juan | Breiner | P0 | L | integración |
 
 ---
 
@@ -402,11 +402,11 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/prod-sentry` | Sentry FE + BE | Carlos | TL | P0 | S | — |
-| `feature/prod-security-headers` | CSP, HSTS, rate limit | TL | Carlos | P0 | M | — |
-| `feature/prod-monitoring` | Health + uptime | Carlos | TL | P1 | S | — |
+| `feature/prod-sentry` | Sentry FE + BE | Breiner | TL | P0 | S | — |
+| `feature/prod-security-headers` | CSP, HSTS, rate limit | TL | Breiner | P0 | M | — |
+| `feature/prod-monitoring` | Health + uptime | Breiner | TL | P1 | S | — |
 | `release/1.0.0` | Release branch | TL | Todos | P0 | M | all |
-| `docs/privacy-terms` | Legal docs | Carlos | TL | P0 | S | — |
+| `docs/privacy-terms` | Legal docs | Breiner | TL | P0 | S | — |
 
 ---
 
@@ -444,7 +444,7 @@ flowchart LR
 
 **Tareas en ruta crítica (no pueden retrasarse sin mover la fecha final):**
 
-1. V0.1 Backend (mañana)
+1. V0.1 Backend (mañnicolas)
 2. RLS migraciones (S1)
 3. API client (S3)
 4. AdminModule backend (S4)
@@ -459,18 +459,18 @@ flowchart LR
 | Dev | Track A | Track B |
 |-----|---------|---------|
 | TL | RLS migraciones | Review PRs |
-| Carlos | fix-dashboard-routes | setup-ci FE |
-| Ana | auth-hardening | habito-ownership |
-| Luis | cleanup + foro nav | Apoyo RLS testing |
+| Breiner | fix-dashboard-routes | setup-ci FE |
+| Nicolas | auth-hardening | habito-ownership |
+| Juan | cleanup + foro nav | Apoyo RLS testing |
 
 ### S4 (paralelo)
 
 | Dev | Track |
 |-----|-------|
 | TL | OpenAPI + reviews + proxy actions design |
-| Carlos | Notifications module |
-| Ana | Reports ranking |
-| Luis | Admin users + moderation |
+| Breiner | Notifications module |
+| Nicolas | Reports ranking |
+| Juan | Admin users + moderation |
 
 ## Gantt detallado — equipo completo
 
@@ -486,19 +486,19 @@ gantt
     Admin architecture + reviews   :tl3, 2026-08-01, 35d
     Security hardening + release   :tl4, 2026-09-19, 20d
 
-    section Carlos
+    section Breiner
     Bootstrap + CI + Health        :c0, 2026-06-11, 2d
     Fix routes + auth + mobile nav   :c1, 2026-06-13, 15d
     Vercel + Notifications BE      :c2, 2026-07-11, 25d
     Admin layout + Sentry + deploy   :c3, 2026-09-05, 30d
 
-    section Ana
+    section Nicolas
     Users module V0.1              :a0, 2026-06-11, 1d
     PerfilService + ownership      :a1, 2026-06-13, 15d
     Supabase types + Reports BE    :a2, 2026-07-11, 25d
     E2E tests Playwright           :a3, 2026-09-05, 20d
 
-    section Luis
+    section Juan
     Coach module V0.1              :l0, 2026-06-11, 1d
     Comunidad fixes + cleanup      :l1, 2026-06-13, 10d
     Admin + Coach BE modules       :l2, 2026-07-25, 35d
@@ -668,7 +668,7 @@ jobs:
 |-------|-------------|-------------------|-------------|
 | Unit | Jest | Services 70%+ | Cada owner del módulo |
 | Integration | Jest + Supabase test | Repositories 50%+ | TL + owner |
-| E2E | Supertest | Endpoints críticos 100% | Carlos + Luis |
+| E2E | Supertest | Endpoints críticos 100% | Breiner + Juan |
 
 ---
 
@@ -681,7 +681,7 @@ jobs:
 ## EPIC 0 — Backend V0.1 (24h)
 
 ### ISSUE-001: Bootstrap repositorio habitapp-api
-- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Carlos · **Dep.:** —
+- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Breiner · **Dep.:** —
 - **Descripción:** Crear repo NestJS, ESLint, scripts, `.env.example`, README instalación.
 - **Criterios:** `npm run start:dev` funciona; Swagger placeholder; CI stub.
 
@@ -691,17 +691,17 @@ jobs:
 - **Criterios:** Request sin token → 401; token inválido → 401; rol incorrecto → 403.
 
 ### ISSUE-003: Health endpoint
-- **Prioridad:** P0 · **Estimación:** 2 SP · **Responsable:** Carlos · **Dep.:** ISSUE-001
+- **Prioridad:** P0 · **Estimación:** 2 SP · **Responsable:** Breiner · **Dep.:** ISSUE-001
 - **Descripción:** GET /api/v1/health + test e2e.
 - **Criterios:** 200 JSON con status, version, timestamp.
 
 ### ISSUE-004: Users module V0.1
-- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Ana · **Dep.:** ISSUE-002
+- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Nicolas · **Dep.:** ISSUE-002
 - **Descripción:** GET /users, GET /users/me, PATCH /users/:id/role.
 - **Criterios:** Swagger documentado; tests manuales Postman OK.
 
 ### ISSUE-005: Coach module V0.1
-- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Luis · **Dep.:** ISSUE-002
+- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Juan · **Dep.:** ISSUE-002
 - **Descripción:** GET /api/v1/coach/clients.
 - **Criterios:** Entrenador ve pupilos; usuario normal → 403.
 
@@ -715,42 +715,42 @@ jobs:
 - **Criterios:** `supabase db push` exitoso; todas las tablas app tienen RLS; GRANT anon reducido.
 
 ### ISSUE-011: Corregir rutas /dashboard/*
-- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Carlos · **Dep.:** —
+- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Breiner · **Dep.:** —
 - **Descripción:** Buscar/reemplazar links y revalidatePath incorrectos.
 - **Criterios:** Grep `/dashboard` en src/ = 0 resultados.
 
 ### ISSUE-012: Auth hardening — getUser() everywhere
-- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Carlos · **Dep.:** —
+- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Breiner · **Dep.:** —
 - **Descripción:** Reemplazar getSession() por getUser() en pages y actions; helper requireUser().
 - **Criterios:** 0 ocurrencias getSession() en server code.
 
 ### ISSUE-013: Fix auth callback y reset password
-- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Carlos · **Dep.:** —
+- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Breiner · **Dep.:** —
 - **Descripción:** NEXT_PUBLIC_SITE_URL; whitelist `next` param en callback.
 - **Criterios:** Reset password funciona en staging; open redirect imposible.
 
 ### ISSUE-014: Validar ownership en HabitoService
-- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Ana · **Dep.:** —
+- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Nicolas · **Dep.:** —
 - **Descripción:** update/delete comparan idusuario con session user.
 - **Criterios:** Test manual IDOR bloqueado.
 
 ### ISSUE-015: CI pipeline — habitapp
-- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Carlos · **Dep.:** —
+- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Breiner · **Dep.:** —
 - **Descripción:** lint + tsc + build en PR.
 - **Criterios:** PR bloqueado si CI falla.
 
 ### ISSUE-016: CI pipeline — habitapp-api
-- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Carlos · **Dep.:** ISSUE-001
+- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Breiner · **Dep.:** ISSUE-001
 - **Descripción:** lint + test + build en PR.
 - **Criterios:** CI green en develop.
 
 ### ISSUE-017: Navegación móvil
-- **Prioridad:** P1 · **Estimación:** 5 SP · **Responsable:** Carlos · **Dep.:** —
+- **Prioridad:** P1 · **Estimación:** 5 SP · **Responsable:** Breiner · **Dep.:** —
 - **Descripción:** Drawer o bottom nav para rutas dashboard en móvil.
 - **Criterios:** Todas las rutas accesibles en viewport 375px.
 
 ### ISSUE-018: Refactor PerfilService
-- **Prioridad:** P1 · **Estimación:** 5 SP · **Responsable:** Ana · **Dep.:** —
+- **Prioridad:** P1 · **Estimación:** 5 SP · **Responsable:** Nicolas · **Dep.:** —
 - **Descripción:** Extraer lógica de perfil/page.tsx a service + subcomponentes.
 - **Criterios:** page.tsx < 100 líneas.
 
@@ -769,7 +769,7 @@ jobs:
 - **Criterios:** Spec versionada; cambios requieren PR + review TL.
 
 ### ISSUE-022: Generar database.types.ts
-- **Prioridad:** P1 · **Estimación:** 2 SP · **Responsable:** Ana · **Dep.:** ISSUE-010
+- **Prioridad:** P1 · **Estimación:** 2 SP · **Responsable:** Nicolas · **Dep.:** ISSUE-010
 - **Descripción:** supabase gen types → reemplazar stub.
 - **Criterios:** Tipos reflejan schemas gestion/seguimiento/comunidad.
 
@@ -783,37 +783,37 @@ jobs:
 ## EPIC 3 — Backend módulos completos
 
 ### ISSUE-030: AdminModule — gestión usuarios
-- **Prioridad:** P0 · **Estimación:** 8 SP · **Responsable:** Luis · **Dep.:** ISSUE-004
+- **Prioridad:** P0 · **Estimación:** 8 SP · **Responsable:** Juan · **Dep.:** ISSUE-004
 - **Descripción:** CRUD admin users, ban/unban, búsqueda paginada.
 - **Criterios:** Swagger; tests unitarios AdminUsersService.
 
 ### ISSUE-031: AdminModule — moderación
-- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Luis · **Dep.:** ISSUE-030
+- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Juan · **Dep.:** ISSUE-030
 - **Descripción:** DELETE comentarios, ocultar foros, listar reportes.
 - **Criterios:** Solo admin accede.
 
 ### ISSUE-032: CoachModule — rutinas CRUD
-- **Prioridad:** P0 · **Estimación:** 8 SP · **Responsable:** Luis · **Dep.:** ISSUE-005
+- **Prioridad:** P0 · **Estimación:** 8 SP · **Responsable:** Juan · **Dep.:** ISSUE-005
 - **Descripción:** POST/PATCH/DELETE rutinas; GET rutinas del entrenador.
 - **Criterios:** Validación DTOs; ownership entrenador.
 
 ### ISSUE-033: CoachModule — asignar rutina
-- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Luis · **Dep.:** ISSUE-032
+- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Juan · **Dep.:** ISSUE-032
 - **Descripción:** POST assign routine to client; validar relación entrenador-pupilo.
 - **Criterios:** 403 si pupilo no asignado.
 
 ### ISSUE-034: NotificationsModule
-- **Prioridad:** P1 · **Estimación:** 8 SP · **Responsable:** Carlos · **Dep.:** —
+- **Prioridad:** P1 · **Estimación:** 8 SP · **Responsable:** Breiner · **Dep.:** —
 - **Descripción:** GET notifications, PATCH read, email via Resend.
 - **Criterios:** Email de prueba enviado en staging.
 
 ### ISSUE-035: ReportsModule + Redis cache
-- **Prioridad:** P1 · **Estimación:** 5 SP · **Responsable:** Ana · **Dep.:** —
+- **Prioridad:** P1 · **Estimación:** 5 SP · **Responsable:** Nicolas · **Dep.:** —
 - **Descripción:** GET ranking cached TTL 5min; GET user summary.
 - **Criterios:** Redis en docker-compose; cache hit verificable.
 
 ### ISSUE-036: Docker + docker-compose
-- **Prioridad:** P1 · **Estimación:** 5 SP · **Responsable:** Carlos · **Dep.:** —
+- **Prioridad:** P1 · **Estimación:** 5 SP · **Responsable:** Breiner · **Dep.:** —
 - **Descripción:** Dockerfile multi-stage; compose con api + redis.
 - **Criterios:** `docker compose up` levanta API en :4000.
 
@@ -822,17 +822,17 @@ jobs:
 ## EPIC 4 — Integración frontend
 
 ### ISSUE-040: Admin UI — layout y rutas
-- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Carlos · **Dep.:** ISSUE-030
+- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Breiner · **Dep.:** ISSUE-030
 - **Descripción:** /admin layout, sidebar admin, role guard frontend.
 - **Criterios:** Usuario normal no ve /admin.
 
 ### ISSUE-041: Admin UI — gestión usuarios
-- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Luis · **Dep.:** ISSUE-040
+- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Juan · **Dep.:** ISSUE-040
 - **Descripción:** Tabla usuarios, cambio rol, paginación.
 - **Criterios:** Consume backend AdminModule.
 
 ### ISSUE-042: Coach dashboard via API
-- **Prioridad:** P0 · **Estimación:** 8 SP · **Responsable:** Luis · **Dep.:** ISSUE-032
+- **Prioridad:** P0 · **Estimación:** 8 SP · **Responsable:** Juan · **Dep.:** ISSUE-032
 - **Descripción:** Refactor /entrenador para consumir habitapp-api.
 - **Criterios:** Cero queries directas Supabase en entrenador pages.
 
@@ -842,7 +842,7 @@ jobs:
 - **Criterios:** Documentado en README frontend.
 
 ### ISSUE-044: E2E Playwright — flujos críticos
-- **Prioridad:** P0 · **Estimación:** 8 SP · **Responsable:** Ana + Luis · **Dep.:** ISSUE-041
+- **Prioridad:** P0 · **Estimación:** 8 SP · **Responsable:** Nicolas + Juan · **Dep.:** ISSUE-041
 - **Descripción:** login → hábito → admin role change → coach clients.
 - **Criterios:** 5 tests en CI.
 
@@ -851,17 +851,17 @@ jobs:
 ## EPIC 5 — Producción
 
 ### ISSUE-050: Deploy Vercel (frontend)
-- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Carlos · **Dep.:** ISSUE-015
+- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Breiner · **Dep.:** ISSUE-015
 - **Descripción:** Production + preview deploys; env vars configuradas.
 - **Criterios:** URL pública funcional.
 
 ### ISSUE-051: Deploy Railway/Fly (backend)
-- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Carlos · **Dep.:** ISSUE-036
+- **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Breiner · **Dep.:** ISSUE-036
 - **Descripción:** Staging develop auto-deploy; production manual desde main.
 - **Criterios:** /health responde en URL pública staging.
 
 ### ISSUE-052: Sentry FE + BE
-- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Carlos · **Dep.:** ISSUE-050
+- **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Breiner · **Dep.:** ISSUE-050
 - **Descripción:** Error tracking ambos repos.
 - **Criterios:** Error test visible en Sentry dashboard.
 
@@ -871,7 +871,7 @@ jobs:
 - **Criterios:** securityheaders.com score A- mínimo.
 
 ### ISSUE-054: Privacy policy + Terms
-- **Prioridad:** P0 · **Estimación:** 2 SP · **Responsable:** Carlos · **Dep.:** —
+- **Prioridad:** P0 · **Estimación:** 2 SP · **Responsable:** Breiner · **Dep.:** —
 - **Descripción:** Páginas legales /legal/privacy, /legal/terms.
 - **Criterios:** Enlazadas desde registro.
 
@@ -897,13 +897,13 @@ jobs:
 | R02 | JWT secret mal configurado — backend rechaza todos los tokens | Integración | Media | Alto | Documentar obtención secret; test en CI con token fixture | TL |
 | R03 | Conflictos Git con 4 devs en módulos compartidos | Equipo | Alta | Medio | Ownership estricto; ramas cortas; daily sync | TL |
 | R04 | Entrega 24h no completa — demo falla | Entrega | Media | Alto | Scope mínimo estricto; checklist; Postman collection backup | TL |
-| R05 | service_role key expuesta en frontend o git | Seguridad | Baja | Crítico | Pre-commit secret scan; code review; nunca NEXT_PUBLIC_ | Carlos |
+| R05 | service_role key expuesta en frontend o git | Seguridad | Baja | Crítico | Pre-commit secret scan; code review; nunca NEXT_PUBLIC_ | Breiner |
 | R06 | Drift OpenAPI — FE y BE desincronizados | Integración | Media | Alto | Spec versionada; CI diff check; TL aprueba cambios API | TL |
-| R07 | Supabase rate limits en producción | Escalabilidad | Media | Medio | Backend cache Redis; reducir queries directas FE | Ana |
-| R08 | Entrenador module depende de datos seed inexistentes | Integración | Media | Medio | Seed script documentado; demo con respuesta vacía OK | Luis |
-| R09 | Developer bottleneck en TL | Equipo | Alta | Alto | Documentar decisiones; Carlos como backup backend | TL |
-| R10 | Static export docs confunden deploy | Arquitectura | Alta | Medio | ADR + README update Fase 2; Vercel como target | Carlos |
-| R11 | Tests insuficientes — regresiones en refactor | Calidad | Alta | Alto | CI mandatory; coverage gate 70% services Fase 3 | Ana |
+| R07 | Supabase rate limits en producción | Escalabilidad | Media | Medio | Backend cache Redis; reducir queries directas FE | Nicolas |
+| R08 | Entrenador module depende de datos seed inexistentes | Integración | Media | Medio | Seed script documentado; demo con respuesta vacía OK | Juan |
+| R09 | Developer bottleneck en TL | Equipo | Alta | Alto | Documentar decisiones; Breiner como backup backend | TL |
+| R10 | Static export docs confunden deploy | Arquitectura | Alta | Medio | ADR + README update Fase 2; Vercel como target | Breiner |
+| R11 | Tests insuficientes — regresiones en refactor | Calidad | Alta | Alto | CI mandatory; coverage gate 70% services Fase 3 | Nicolas |
 | R12 | Roles IDs diferentes entre entornos | Integración | Media | Medio | Seed idempotente; constants en config; verificar en deploy | TL |
 
 ## Plan de contingencia — Entrega 24h

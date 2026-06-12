@@ -331,3 +331,4 @@ main ─────────────────────────
 | Reportes | Completo | Panel de estadisticas y progreso del usuario |
 | Entrenadores | Parcial | Asignacion de rutinas y seguimiento de clientes (en progreso) |
 | Administracion | Pendiente | Gestion de usuarios y moderacion de contenido |
+ 
