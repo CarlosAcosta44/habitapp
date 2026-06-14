@@ -29,6 +29,8 @@
 
 ---
 
+> **Checklist de control:** el avance por requerimientos, porcentajes estimados y frontera Supabase/NestJS se controla en `.docs/planeacion/00-general/checklist-requerimientos-progreso.md`.
+
 # 1. RESUMEN EJECUTIVO
 
 ## Estado actual del proyecto
@@ -858,7 +860,7 @@ jobs:
 
 ### ISSUE-023: ADR-001 Arquitectura modular NestJS inspirada en Clean Architecture
 - **Prioridad:** P1 · **Estimación:** 2 SP · **Responsable:** TL · **Dep.:** —
-- **Descripción:** Documento de decisión arquitectónica en `.docs/planeacion/backend/`.
+- **Descripción:** Documento de decisión arquitectónica en `.docs/planeacion/02-backend/`.
 - **Criterios:** Aprobado por equipo.
 
 ---
@@ -1108,20 +1110,24 @@ La documentación de planificación se centraliza en `.docs/planeacion`. La anti
 ├── planeacion/
 │   ├── 00-general/
 │   │   ├── plan-maestro-habitapp.md
+│   │   ├── checklist-requerimientos-progreso.md
 │   │   └── contexto-planeacion-general.md
+│   ├── 01-frontend/
+│   │   ├── casos-de-uso-frontend.md
+│   │   ├── objetivos-producto-frontend.md
+│   │   └── requerimientos-frontend.md
+│   ├── 02-backend/
+│   │   └── arquitectura-backend-nestjs.md
 │   ├── 03-base-datos/
 │   │   └── modelo-base-datos.md
 │   ├── 04-tecnologia/
 │   │   └── stack-tecnologico-y-gitflow.md
 │   ├── 05-planes-personales/
-│   │   └── PLAN_CARLOS.md
-│   ├── frontend/
-│   │   ├── casos-de-uso-frontend.md
-│   │   ├── objetivos-producto-frontend.md
-│   │   └── requerimientos-frontend.md
-│   ├── backend/
-│   │   └── arquitectura-backend-nestjs.md
-│   └── historico/
+│   │   ├── PLAN_CARLOS.md
+│   │   ├── PLAN_BREINER.md
+│   │   ├── PLAN_NICOLAS.md
+│   │   └── PLAN_JUAN.md
+│   └── 06-historico/
 │       └── plan-backend-24h-v0-presentado.md
 ├── assets/
 │   ├── disenos/
@@ -1137,12 +1143,12 @@ La documentación de planificación se centraliza en `.docs/planeacion`. La anti
 | Nombre anterior | Nombre nuevo |
 |-----------------|--------------|
 | `.planeacion/PLAN_MAESTRO_HABITAPP_V1.md` | `.docs/planeacion/00-general/plan-maestro-habitapp.md` |
-| `.planeacion/PLAN_24H_BACKEND_V0.md` | `.docs/planeacion/historico/plan-backend-24h-v0-presentado.md` |
+| `.planeacion/PLAN_24H_BACKEND_V0.md` | `.docs/planeacion/06-historico/plan-backend-24h-v0-presentado.md` |
 | `.planeacion/planeacion.md` | `.docs/planeacion/00-general/contexto-planeacion-general.md` |
-| `.planeacion/arquitectura/arquitectura.md` | `.docs/planeacion/backend/arquitectura-backend-nestjs.md` |
-| `.planeacion/casos de uso/casos.md` | `.docs/planeacion/frontend/casos-de-uso-frontend.md` |
-| `.planeacion/objetivos/obejtivos.md` | `.docs/planeacion/frontend/objetivos-producto-frontend.md` |
-| `.planeacion/requerimientos/requerimientos.md` | `.docs/planeacion/frontend/requerimientos-frontend.md` |
+| `.planeacion/arquitectura/arquitectura.md` | `.docs/planeacion/02-backend/arquitectura-backend-nestjs.md` |
+| `.planeacion/casos de uso/casos.md` | `.docs/planeacion/01-frontend/casos-de-uso-frontend.md` |
+| `.planeacion/objetivos/obejtivos.md` | `.docs/planeacion/01-frontend/objetivos-producto-frontend.md` |
+| `.planeacion/requerimientos/requerimientos.md` | `.docs/planeacion/01-frontend/requerimientos-frontend.md` |
 | `.planeacion/base de datos/1. Estructura y Datos/database.md` | `.docs/planeacion/03-base-datos/modelo-base-datos.md` |
 | `.planeacion/stack tecnologico/stack.md` | `.docs/planeacion/04-tecnologia/stack-tecnologico-y-gitflow.md` |
 
@@ -1189,7 +1195,7 @@ npm run start:dev      # http://localhost:4000/api/docs
 |-----------|-----------|
 | Auditoría técnica | Conversación previa / informe auditoría |
 | Contexto general | `.docs/planeacion/00-general/contexto-planeacion-general.md` |
-| Arquitectura backend | `.docs/planeacion/backend/arquitectura-backend-nestjs.md` |
+| Arquitectura backend | `.docs/planeacion/02-backend/arquitectura-backend-nestjs.md` |
 | SQL + RLS | `.docs/base-datos/sql/` |
 | Skills agente | `.agent/skills/` |
 

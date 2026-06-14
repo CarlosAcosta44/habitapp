@@ -68,6 +68,34 @@
 - [ ] Ejecutar `npm run lint` si aplica.
 - [ ] Ejecutar `npm run build` si aplica.
 
+## Checklist por rama
+
+Antes de iniciar:
+
+- [ ] Crear rama desde `develop`.
+- [ ] Usar prefijo correcto: `feature/*`, `bugfix/*` o `chore/*`.
+- [ ] Confirmar issue asociado.
+- [ ] Confirmar revisor.
+
+Antes de abrir PR:
+
+- [ ] El PR apunta a `develop`.
+- [ ] La descripción incluye qué cambió y cómo probarlo.
+- [ ] Se adjunta evidencia visual si el cambio afecta UI.
+- [ ] Se verificó que login/logout siguen funcionando.
+- [ ] Se verificó responsive en mobile si el cambio afecta layout.
+- [ ] Se actualizaron docs si cambió flujo o configuración.
+
+## Cronograma personal
+
+| Periodo | Actividad |
+|---------|-----------|
+| Fase 1 | Rutas, auth hardening, `.env.example`, CI frontend |
+| Fase 2 | Deploy preview, apoyo API client y revisión de integración |
+| Fase 3 | Notifications, Docker/CI backend con apoyo de Carlos |
+| Fase 4 | Admin layout y validación UI con backend |
+| Fase 5 | Sentry, monitoring, despliegue y legal docs |
+
 ## Trabajo con agentes
 
 Agente frontend:
@@ -78,6 +106,25 @@ Agente DevOps:
 
 Agente QA:
 - Probar login, navegación móvil, rutas protegidas y build.
+
+## Plantilla de handoff
+
+```md
+## Resumen
+- Qué se cambió.
+
+## Validación
+- Comandos o pruebas manuales.
+
+## Evidencia visual
+- Capturas o descripción del viewport probado.
+
+## Riesgos
+- Riesgos pendientes.
+
+## Siguiente paso
+- Acción recomendada.
+```
 
 ## Prioridades
 
@@ -103,3 +150,6 @@ Agente QA:
 - Build/lint verificado si aplica.
 - PR hacia `develop`.
 - Evidencia manual de pruebas frontend.
+- Sin secretos en variables públicas.
+- UI validada en desktop y mobile cuando aplique.
+- Documentación actualizada si cambió configuración, flujo o despliegue.

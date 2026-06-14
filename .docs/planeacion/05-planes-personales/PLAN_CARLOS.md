@@ -142,8 +142,8 @@ Regla clave: no crear `domain/`, `application/`, `infrastructure/` y `presentati
 Antes de iniciar desarrollo:
 
 - [ ] Leer `.docs/planeacion/00-general/plan-maestro-habitapp.md`.
-- [ ] Leer `.docs/planeacion/backend/arquitectura-backend-nestjs.md`.
-- [ ] Leer `.docs/planeacion/frontend/requerimientos-frontend.md`.
+- [ ] Leer `.docs/planeacion/02-backend/arquitectura-backend-nestjs.md`.
+- [ ] Leer `.docs/planeacion/01-frontend/requerimientos-frontend.md`.
 - [ ] Confirmar ramas `main` y `develop`.
 - [ ] Confirmar que no se hará push directo a `main`.
 - [ ] Confirmar variables necesarias de Supabase.
@@ -247,7 +247,7 @@ Checklist:
 - [ ] Actualiza plan maestro si cambia roadmap.
 - [ ] Actualiza Swagger/OpenAPI si cambia API.
 - [ ] Actualiza `PLAN_CARLOS.md` si cambia responsabilidad.
-- [ ] Usa rutas `.docs/planeacion/frontend`, `.docs/planeacion/backend` o `.docs/planeacion/historico`.
+- [ ] Usa rutas `.docs/planeacion/01-frontend`, `.docs/planeacion/02-backend` o `.docs/planeacion/06-historico`.
 
 ### Agente QA
 
