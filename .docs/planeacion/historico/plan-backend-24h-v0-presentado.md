@@ -1,17 +1,20 @@
 # PLAN DE ENTREGA INMEDIATA (24 HORAS) - MVP BACKEND V0.1
 
 **Documento:** Guía de ejecución rápida para Backend V0.1
-**Responsable (Único):** Kairos (Tech Lead / Software Architect / Backend Lead)
-**Prioridad:** Entrega rápida, arquitectura limpia, buena presentación, base sólida. NO optimizar para producción todavía.
+**Estado:** Histórico / entrega inmediata ya presentada
+**Responsable (Único):** Carlos (Tech Lead / Software Architect / Backend Lead)
+**Prioridad:** Entrega rápida, arquitectura modular, buena presentación, base sólida. NO optimizar para producción todavía.
+
+> Este documento se conserva como evidencia de la entrega inmediata presentada. No es el plan activo del proyecto. La guía vigente es el plan maestro ubicado en `.docs/planeacion/00-general/plan-maestro-habitapp.md`.
 
 ## 1. Objetivo de la entrega
 
-Demostrar que HabitApp **inició la transición a arquitectura híbrida** con un backend NestJS funcional, que:
+Demostrar que HabitApp **inició la transición a arquitectura modular NestJS inspirada en Clean Architecture** con un backend NestJS funcional, que:
 1. Arranca, expone documentación Swagger y responde a health checks.
 2. Valida JWT emitidos por **Supabase Auth**.
 3. Lee datos reales de **Supabase PostgreSQL** (`gestion.usuarios`, relaciones).
 4. Expone endpoints mínimos de **Usuarios** y **Entrenador**.
-5. Sigue convenciones profesionales (módulos, guards, DTOs, validación).
+5. Sigue convenciones profesionales (módulos, controllers, services, repositories, DTOs, entities, guards y validación).
 
 ## 2. Alcance del MVP Backend V0.1
 
@@ -30,7 +33,7 @@ Demostrar que HabitApp **inició la transición a arquitectura híbrida** con un
 
 ## 4. Cronograma Detallado y Siguiente Paso (Próximas 24 horas)
 
-El desarrollo del backend V0.1 será realizado **únicamente por Kairos**, simplificando el flujo de ramas y eliminando los bloqueos por reviews cruzados.
+El desarrollo del backend V0.1 será realizado **únicamente por Carlos**, simplificando el flujo de ramas y eliminando los bloqueos por reviews cruzados.
 
 ### Siguiente tarea INMEDIATA:
 👉 **Paso 1: Bootstrap de la aplicación NestJS.** (Generar proyecto con Nest CLI, limpiar archivos base, configurar variables de entorno iniciales y el prefijo global `/api/v1`).
@@ -77,12 +80,15 @@ habitapp-api/
 │   ├── main.ts                 # Bootstrap, Swagger, CORS, API prefix
 │   ├── app.module.ts           # Root module
 │   ├── config/                 # config.module.ts, variables de entorno tipadas
-│   ├── common/                 # guards/, decorators/, filters/, interceptors/
+│   ├── common/                 # decorators/, guards/, filters/, interceptors/, pipes/, dto/
 │   ├── supabase/               # supabase.module.ts, supabase.service.ts
 │   ├── auth/                   # estrategias passport JWT
 │   ├── health/                 # health.controller.ts
-│   ├── users/                  # modulo usuarios, repositorios, DTOs
-│   └── coach/                  # modulo entrenador, repositorios, DTOs
+│   ├── users/                  # controllers/, services/, repositories/, dto/, entities/
+│   ├── coach/                  # controllers/, services/, repositories/, dto/, entities/
+│   ├── admin/                  # controllers/, services/, repositories/, dto/, entities/
+│   ├── notifications/          # modulo futuro
+│   └── reports/                # modulo futuro
 ├── .env.example
 ├── package.json
 └── README.md
@@ -100,7 +106,7 @@ npm i @nestjs/config @nestjs/swagger @nestjs/passport @nestjs/jwt passport passp
 npm i -D @types/passport-jwt supertest @types/supertest
 ```
 
-## 8. Endpoints Mínimos para Mañana
+## 8. Endpoints Mínimos para el 12 de junio de 2026
 
 1. `GET /api/v1/health` (Sin Auth) - Health check rápido.
 2. `GET /api/v1/users/me` (Auth: JWT válido) - Devuelve perfil asociado al JWT.
@@ -111,7 +117,7 @@ npm i -D @types/passport-jwt supertest @types/supertest
 ## 9. GitFlow Simplificado (Un Desarrollador)
 
 Como único desarrollador para esta fase inmediata:
-- Trabaja preferiblemente desde `develop` o en ramas temporales por módulo (ej: `feature/users-module`) y fuziónalas a `develop` directamente.
+- Trabaja preferiblemente desde `develop` o en ramas temporales por módulo (ej: `feature/be-users-module`) y fusiónalas a `develop` directamente.
 - No hay necesidad de PR reviews ni aprobaciones externas.
 - Al terminar la presentación / V0.1, haz un PR/merge de `develop` a `main` y taggea `v0.1.0-backend`.
 

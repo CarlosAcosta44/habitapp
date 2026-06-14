@@ -35,7 +35,7 @@ Next.js es un framework de React orientado a producción que permite construir a
 | Característica | Beneficio para el proyecto |
 |----------------|---------------------------|
 | **App Router** | Gestión de rutas clara y escalable por módulos (gestión, seguimiento, comunidad) |
-| **Static Export (SSG)** | Generación estática que permite desplegar nativamente toda la aplicación en un bucket de Amazon S3 |
+| **Static Export (SSG)** | Renderizado y build de Next.js para despliegue en Vercel o plataforma equivalente |
 | **Client-side Rendering** | Interacción en tiempo real y carga dinámica de datos directamente desde Supabase |
 | **React Components** | Reutilización de componentes de interfaz para mayor velocidad de desarrollo |
 | **TypeScript nativo** | Tipado estricto para mayor confiabilidad del código |
@@ -95,20 +95,20 @@ Supabase es una plataforma open source que ofrece base de datos PostgreSQL, aute
 
 ---
 
-## 3. ☁️ AWS — Infraestructura en la Nube
+## 3. ☁️ Infraestructura en la Nube
 
 ### ¿Qué es?
 
-Amazon Web Services (AWS) es la plataforma de servicios en la nube más utilizada del mundo, que ofrece infraestructura escalable, segura y de alta disponibilidad para alojar y operar aplicaciones.
+La infraestructura del proyecto combina plataformas de despliegue administradas para frontend y backend, con Supabase como BaaS de datos, autenticación y almacenamiento.
 
 ### ¿Por qué lo usamos?
 
-| Servicio AWS | Uso en el proyecto |
-|-------------|-------------------|
-| **Amazon S3** | Alojamiento de la aplicación web estática (Next.js Static Export) para el frontend |
-| **Amazon CloudFront** | (Opcional) CDN global para enrutamiento HTTPS y distribución de assets en S3 |
-| **AWS IAM** | Gestión de los permisos necesarios (roles y políticas) para administrar de forma segura los buckets |
-| **AWS Academy** | Entorno educativo bajo el cual se utilizarán los recursos, limitando el uso a servicios core como S3 |
+| Servicio | Uso en el proyecto |
+|----------|-------------------|
+| **Vercel** | Despliegue frontend con previews por Pull Request y producción controlada |
+| **Railway / Fly** | Despliegue backend NestJS como API independiente |
+| **Supabase Cloud** | PostgreSQL, Auth, Storage, RLS y service role server-side |
+| **GitHub Actions** | CI/CD para validar lint, tests y build antes de integrar |
 
 ### Arquitectura de despliegue
 
@@ -116,28 +116,27 @@ Amazon Web Services (AWS) es la plataforma de servicios en la nube más utilizad
 Usuario Final
      │
      ▼
-Amazon S3 (Hosting de Bucket Estático)
-     │ (Next.js App exportada)
+Frontend Next.js (Vercel)
      │
-     ├──► Supabase (DB + Auth + Storage)
-     │         ▲
-     │         │ Consultas directas desde el cliente
-     │
+     ├──► Backend NestJS API (Railway/Fly)
+     │          │
+     │          ▼
+     └────► Supabase Cloud (Auth + DB + Storage + RLS)
 ```
 
 ### Flujo de despliegue
 
 1. El equipo finaliza una funcionalidad y genera la versión de producción (`next build`).
-2. Se genera el "Static HTML Export" de Next.js configurado en las pruebas locales.
-3. Se copian los archivos estáticos generados en la carpeta de salida (por lo general `out/`).
-4. Se suben manualmente al bucket de almacenamiento público configurado en Amazon S3.
-5. La aplicación queda disponible públicamente a través del endpoint del web hosting de Amazon S3.
+2. GitHub Actions valida lint, tests y build.
+3. Vercel publica preview por Pull Request y producción desde `main`.
+4. Railway/Fly despliega el backend NestJS por ambiente.
+5. La aplicación queda disponible públicamente con frontend, backend y Supabase integrados.
 
 ### Rol en el proyecto
 
-- Provee la infraestructura de producción donde vive la aplicación.
-- Garantiza escalabilidad automática ante picos de tráfico.
-- Asegura alta disponibilidad (99.99% uptime SLA de AWS).
+- Provee ambientes claros para desarrollo, staging y producción.
+- Permite previews revisables antes de mergear a `main`.
+- Separa despliegue frontend y backend sin perder trazabilidad.
 - Centraliza el monitoreo y logging del sistema en producción.
 
 ---
@@ -177,7 +176,7 @@ develop
 
 - Aloja el repositorio oficial del proyecto.
 - Coordina el flujo de trabajo entre los miembros del equipo.
-- Contiene el código base listo para ser exportado a AWS S3.
+- Contiene el código base listo para despliegue frontend y backend.
 - Mantiene el historial completo de cambios del código.
 
 ---
@@ -200,13 +199,15 @@ main ─────────────────────────
   │
   └── develop ────────────────────────────── (integración continua)
         │
-        ├── feature/auth-setup
-        ├── feature/habit-daily-tracking
-        ├── feature/community-forums
+        ├── feature/be-users-module
+        ├── feature/fe-auth-hardening
+        ├── feature/fe-mobile-nav
         │
-        ├── release/v1.0.0 ──────────────── (preparación de release)
+        ├── chore/be-setup-ci
+        ├── bugfix/fe-foro-navigation
+        ├── release/1.0.0 ───────────────── (preparación de release)
         │
-        └── hotfix/fix-login-error ───────── (corrección urgente)
+        └── hotfix/fix-login-error ──────── (corrección urgente)
 ```
 
 ### Tipos de ramas y su propósito
@@ -216,6 +217,8 @@ main ─────────────────────────
 | **Main** | `main` | Código en producción | — |
 | **Develop** | `develop` | Integración de features | `main` (en release) |
 | **Feature** | `feature/` | Desarrollo de nuevas funcionalidades | `develop` |
+| **Bugfix** | `bugfix/` | Correcciones no urgentes | `develop` |
+| **Chore** | `chore/` | Mantenimiento, documentación, CI/CD | `develop` |
 | **Release** | `release/` | Preparación y QA de una versión | `main` + `develop` |
 | **Hotfix** | `hotfix/` | Corrección urgente en producción | `main` + `develop` |
 
@@ -223,15 +226,24 @@ main ─────────────────────────
 
 ```bash
 # Features (nuevas funcionalidades)
-feature/auth-setup
-feature/habit-daily-tracking
-feature/community-forums
-feature/forum-creation
-feature/base-app-config
+feature/be-users-module
+feature/be-coach-module
+feature/be-admin-users
+feature/fe-auth-hardening
+feature/fe-mobile-nav
+
+# Bugfixes no urgentes
+bugfix/fe-foro-navigation
+bugfix/fe-fix-dashboard-routes
+
+# Chores, documentación y CI
+chore/be-setup-ci
+chore/fe-setup-ci
+chore/docs-adr-nestjs-modular-architecture
 
 # Releases
-release/v1.0.0
-release/v1.1.0
+release/1.0.0
+release/1.1.0
 
 # Hotfixes
 hotfix/fix-auth-token-expiry
@@ -243,7 +255,7 @@ hotfix/fix-ranking-calculation
 ```
 1. Crear rama desde develop:
    git checkout develop
-   git checkout -b feature/crear-habito-personalizado
+   git checkout -b feature/fe-crear-habito-personalizado
 
 2. Desarrollar la funcionalidad con commits semánticos
 
@@ -254,7 +266,7 @@ hotfix/fix-ranking-calculation
 5. Merge a develop tras aprobación
 
 6. Cuando develop está listo para release:
-   git checkout -b release/v1.0.0
+   git checkout -b release/1.0.0
 
 7. QA y correcciones menores en la rama release
 
@@ -358,8 +370,9 @@ v2.0.0 → Cambio que rompe compatibilidad hacia atrás
 | Tecnología | Categoría | Responsabilidad principal |
 |------------|-----------|--------------------------|
 | **Next.js** | Frontend | Interfaz de usuario, rutas, SSR, consumo de APIs |
+| **NestJS** | Backend API | Arquitectura modular, Swagger, guards, services y repositories |
 | **Supabase** | Backend / BaaS | Base de datos, autenticación, almacenamiento, triggers, realtime |
-| **AWS** | Infraestructura | Despliegue, CDN, emails, monitoreo, escalabilidad |
+| **Vercel / Railway / Fly** | Infraestructura | Despliegue frontend y backend por ambientes |
 | **GitHub** | Repositorio | Código fuente, PRs, CI/CD, gestión de tareas |
 | **Gitflow** | Flujo de trabajo | Estrategia de ramas para desarrollo paralelo y ordenado |
 | **Git Semántico** | Convención | Mensajes de commit estandarizados y versionado automático |
@@ -390,11 +403,11 @@ Merge a develop tras aprobación (Gitflow)
 Release branch → QA → Merge a main (Gitflow)
           │
           ▼
-Build manual de la aplicación Next.js (Static Export)
+Deploy controlado por ambiente
           │
           ▼
-Subida manual de los archivos estáticos al Bucket de Amazon S3
+Publicación frontend y backend en sus plataformas
           │
           ▼
-Aplicación disponible para usuarios consultando y guardando datos en Supabase
+Aplicación disponible para usuarios con NestJS y Supabase integrados
 ```
