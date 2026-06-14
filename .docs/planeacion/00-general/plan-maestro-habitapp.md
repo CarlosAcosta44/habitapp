@@ -9,6 +9,8 @@
 
 ---
 
+> **Documento vigente:** este plan maestro es la guía activa para corregir imperfecciones del frontend ya desarrollado y construir el backend propio con NestJS. El plan de 24 horas del backend V0.1 queda como documento histórico de una entrega inmediata ya presentada.
+
 ## Índice
 
 1. [Resumen Ejecutivo](#1-resumen-ejecutivo)
@@ -23,37 +25,43 @@
 10. [Backlog GitHub](#10-backlog-github)
 11. [Riesgos Técnicos](#11-riesgos-técnicos)
 12. [MVP Productivo](#12-mvp-productivo)
+13. [Organización Documental](#13-organización-documental)
 
 ---
 
 # 1. RESUMEN EJECUTIVO
 
-## Estado actual (post-auditoría)
+## Estado actual del proyecto
 
-HabitApp es un **MVP frontend funcional** (v0.1.0) con arquitectura de 4 capas en Next.js 16, Supabase como BaaS, y documentación de planificación sólida. **No está listo para producción** (puntuación ~3/10).
+HabitApp cuenta con un **frontend funcional ya realizado** en Next.js, Supabase y Tailwind CSS. El nuevo objetivo del proyecto es corregir las imperfecciones del frontend, reforzar seguridad y evolucionar hacia un **proyecto híbrido** con backend propio en NestJS.
 
 | Área | Estado | Nota |
 |------|--------|------|
 | Frontend core (hábitos, comunidad) | ✅ Funcional | Arquitectura limpia post-PR #24 |
 | Módulo Admin | ❌ Pendiente | Solo en middleware |
 | Módulo Entrenador | ⚠️ Parcial | Lógica en frontend + Supabase directo |
-| Backend propio | ❌ No existe | **Inicia mañnicolas (V0.1)** |
-| RLS Supabase | ⚠️ Incompleto | Scripts en `.planeacion/`, no versionados |
+| Backend propio | 🟡 En inicio | V0.1 inmediato ya presentado; evolución guiada por este plan maestro |
+| RLS Supabase | ⚠️ Incompleto | Scripts en `.docs/base-datos/sql/`, pendientes de migraciones versionadas |
 | CI/CD | ❌ Ausente | |
 | Tests | ❌ Ausente | |
 
 ## Objetivos del plan maestro
 
-1. Entregar **Backend NestJS V0.1** en 24 h (demostración arquitectura híbrida).
-2. Completar **correcciones críticas** de seguridad y deuda frontend (Fase 1, semanas 1–3).
-3. Establecer **contratos API** y capa de integración frontend ↔ backend (Fase 2, semanas 3–5).
-4. Desarrollar **backend completo** Admin + Entrenador + Notificaciones (Fase 3, semanas 5–10).
-5. **Integrar** frontend con backend (Fase 4, semanas 10–13).
-6. Alcanzar **MVP productivo** desplegable (Fase 5, semanas 13–18).
+1. Consolidar el frontend existente (Next.js + Supabase + Tailwind CSS) corrigiendo seguridad, rutas, documentación y deuda técnica.
+2. Establecer **contratos API** y capa de integración frontend ↔ backend (Fase 2, semanas 3–5).
+3. Desarrollar **backend propio NestJS** para Admin, Entrenador, Notificaciones y Reportes (Fase 3, semanas 5–10).
+4. **Integrar** frontend con backend de forma gradual, sin romper flujos existentes (Fase 4, semanas 10–13).
+5. Alcanzar **MVP productivo** desplegable (Fase 5, semanas 13–18).
+
+## Decisión arquitectónica oficial
+
+HabitApp evoluciona hacia un **proyecto híbrido**: frontend existente en Next.js/Supabase y backend propio con **arquitectura modular basada en NestJS e inspirada en principios de Clean Architecture**. Esta decisión es oficial para el backend y complementa la arquitectura frontend existente. Reemplaza cualquier propuesta de Clean Architecture estricta con carpetas `domain/`, `application/`, `infrastructure/` y `presentation/` replicadas por cada módulo.
+
+La arquitectura frontend realizada se mantiene como base del sistema actual. Para el backend se adopta una separación profesional de responsabilidades mediante módulos de negocio, controllers, services, repositories, DTOs y entities. El objetivo es equilibrar escalabilidad, mantenibilidad, productividad del equipo, simplicidad y entregas académicas frecuentes.
 
 ## Arquitectura objetivo (visión 6 meses)
 
-**Híbrida:** Supabase mantiene Auth + PostgreSQL + CRUD de usuario con RLS; NestJS concentra lógica privilegiada, orquestación, integraciones y operaciones con `service_role`.
+**Proyecto híbrido Next.js + Supabase + NestJS:** Supabase mantiene Auth, PostgreSQL, RLS y operaciones directas seguras del usuario; NestJS concentra lógica privilegiada, orquestación, integraciones, administración, entrenador, reportes, notificaciones y operaciones con `service_role`.
 
 ## Justificación de NestJS
 
@@ -64,7 +72,7 @@ HabitApp es un **MVP frontend funcional** (v0.1.0) con arquitectura de 4 capas e
 - `.env.example` del frontend ya anticipaba NestJS en `:4000/api/v1`.
 - Ecosistema SaaS: colas, cron, throttling, caché Redis.
 
-## Justificación arquitectura híbrida
+## Justificación arquitectura modular NestJS inspirada en Clean Architecture
 
 | Mantener en Supabase | Mover a NestJS |
 |---------------------|----------------|
@@ -77,9 +85,66 @@ HabitApp es un **MVP frontend funcional** (v0.1.0) con arquitectura de 4 capas e
 
 **Strangler Fig Pattern:** migrar módulo a módulo sin big-bang rewrite.
 
+## Principios oficiales
+
+- Organizar el backend por **módulos de negocio**: `users`, `coach`, `admin`, `notifications`, `reports`.
+- Mantener carpetas internas simples y consistentes: `controllers/`, `services/`, `repositories/`, `dto/`, `entities/`.
+- Centralizar responsabilidades transversales en `common/`, `config/`, `auth/` y `supabase/`.
+- Evitar estructuras excesivamente complejas tipo `domain/application/infrastructure/presentation` dentro de cada módulo.
+- Usar repositories para acceso a Supabase y services para reglas de negocio.
+- Documentar APIs con Swagger y proteger endpoints con guards y decorators reutilizables.
+
 ---
 
 # 2. ARQUITECTURA OBJETIVO
+
+## Estructura oficial del backend NestJS
+
+```text
+src/
+├── config/
+├── common/
+│   ├── decorators/
+│   ├── guards/
+│   ├── filters/
+│   ├── interceptors/
+│   ├── pipes/
+│   └── dto/
+│
+├── supabase/
+├── auth/
+├── health/
+│
+├── users/
+│   ├── controllers/
+│   ├── services/
+│   ├── repositories/
+│   ├── dto/
+│   ├── entities/
+│   └── users.module.ts
+│
+├── coach/
+│   ├── controllers/
+│   ├── services/
+│   ├── repositories/
+│   ├── dto/
+│   ├── entities/
+│   └── coach.module.ts
+│
+├── admin/
+│   ├── controllers/
+│   ├── services/
+│   ├── repositories/
+│   ├── dto/
+│   ├── entities/
+│   └── admin.module.ts
+│
+├── notifications/
+├── reports/
+└── main.ts
+```
+
+Esta estructura es deliberadamente modular y pragmática. No se implementará una Clean Architecture estricta por módulo; se tomarán sus principios útiles, como inversión de dependencias, separación de responsabilidades y límites claros entre lógica de negocio y acceso a datos.
 
 ## Diagrama de componentes
 
@@ -265,7 +330,7 @@ gantt
     section Fase 1
     Correcciones críticas           :f1, 2026-06-12, 3w
     section Fase 2
-    Prep arquitectura híbrida       :f2, after f1, 2w
+    Preparación arquitectura modular NestJS       :f2, after f1, 2w
     section Fase 3
     Backend NestJS completo         :f3, after f2, 5w
     section Fase 4
@@ -280,7 +345,7 @@ gantt
 **Entregables:** Migraciones RLS, rutas corregidas, getUser(), CI ambos repos, nav móvil.  
 **Criterio:** RLS completo + CI green + cero `/dashboard/*`.
 
-## FASE 2 — Prep híbrida (Semanas 4–5)
+## FASE 2 — Preparación modular NestJS (Semanas 4–5)
 
 **Objetivos:** API client, OpenAPI v1, tipos Supabase, ADR-001.  
 **Criterio:** Frontend llama `/users/me` via API client.
@@ -325,15 +390,17 @@ gantt
 
 ---
 
-## FASE 0 — Entrega 24h (Backend V0.1)
+## ANTECEDENTE — Entrega 24h ya presentada (Backend V0.1)
+
+> Esta entrega se conserva como antecedente histórico. No define el trabajo activo actual; el trabajo vigente inicia con correcciones críticas del frontend y evolución planificada del backend.
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/nest-bootstrap` | Bootstrap NestJS + scripts + ESLint | Breiner | TL | P0 | S | — |
-| `feature/supabase-auth` | Guards JWT + SupabaseService | TL | — | P0 | M | bootstrap |
-| `feature/health-module` | GET /health + e2e | Breiner | TL | P0 | XS | bootstrap |
-| `feature/users-module` | Users endpoints (3) | Nicolas | TL | P0 | M | auth |
-| `feature/coach-module` | GET /coach/clients | Juan | TL | P0 | M | auth |
+| `feature/be-nest-bootstrap` | Bootstrap NestJS + scripts + ESLint | Breiner | TL | P0 | S | — |
+| `feature/be-supabase-auth` | Guards JWT + SupabaseService | TL | — | P0 | M | be-nest-bootstrap |
+| `feature/be-health-module` | GET /health + e2e | Breiner | TL | P0 | XS | be-nest-bootstrap |
+| `feature/be-users-module` | Users endpoints (3) | Nicolas | TL | P0 | M | be-supabase-auth |
+| `feature/be-coach-module` | GET /coach/clients | Juan | TL | P0 | M | be-supabase-auth |
 
 ---
 
@@ -355,17 +422,17 @@ gantt
 
 ---
 
-## FASE 2 — Prep arquitectura híbrida
+## FASE 2 — Preparación arquitectura modular NestJS
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
 | `feature/fe-api-client` | lib/api/client.ts + JWT | TL | Breiner | P0 | M | V0.1 |
 | `feature/be-openapi-v1` | Congelar spec OpenAPI | TL | Juan | P0 | S | V0.1 |
-| `feature/fe-supabase-types` | database.types.ts generado | Nicolas | TL | P1 | S | migrations |
+| `feature/fe-supabase-types` | database.types.ts generado | Nicolas | TL | P1 | S | be-supabase-migrations |
 | `feature/fe-unify-habit-create` | Un solo flujo crear hábito | Nicolas | Breiner | P1 | M | — |
-| `feature/fe-require-user-helper` | requireUser/requireRole | Nicolas | TL | P1 | S | auth-hardening |
-| `docs/adr-001-hybrid-arch` | ADR arquitectura híbrida | TL | Todos | P1 | XS | — |
-| `chore/fe-deploy-vercel` | Vercel preview deploys | Breiner | TL | P1 | S | CI |
+| `feature/fe-require-user-helper` | requireUser/requireRole | Nicolas | TL | P1 | S | fe-auth-hardening |
+| `chore/docs-adr-nestjs-modular-architecture` | ADR arquitectura modular NestJS | TL | Todos | P1 | XS | — |
+| `chore/fe-deploy-vercel` | Vercel preview deploys | Breiner | TL | P1 | S | fe-setup-ci |
 
 ---
 
@@ -373,16 +440,16 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/be-admin-users` | Admin CRUD usuarios | Juan | TL | P0 | L | users-module |
-| `feature/be-admin-moderation` | Moderar comentarios/foros | Juan | TL | P0 | M | admin-users |
-| `feature/be-coach-routines` | CRUD rutinas | Juan | TL | P0 | L | coach-module |
-| `feature/be-coach-assign` | Asignar rutina a pupilo | Juan | TL | P0 | M | routines |
-| `feature/be-coach-progress` | Progreso detallado pupilo | Juan | Nicolas | P1 | M | assign |
+| `feature/be-admin-users` | Admin CRUD usuarios | Juan | TL | P0 | L | be-users-module |
+| `feature/be-admin-moderation` | Moderar comentarios/foros | Juan | TL | P0 | M | be-admin-users |
+| `feature/be-coach-routines` | CRUD rutinas | Juan | TL | P0 | L | be-coach-module |
+| `feature/be-coach-assign` | Asignar rutina a pupilo | Juan | TL | P0 | M | be-coach-routines |
+| `feature/be-coach-progress` | Progreso detallado pupilo | Juan | Nicolas | P1 | M | be-coach-assign |
 | `feature/be-notifications` | List + mark read + email | Breiner | TL | P1 | L | — |
 | `feature/be-reports-ranking` | Ranking con Redis cache | Nicolas | TL | P1 | M | — |
 | `feature/be-reports-user` | Reporte resumen usuario | Nicolas | TL | P2 | M | — |
-| `build/be-docker` | Dockerfile + compose | Breiner | TL | P1 | M | — |
-| `test/be-services-coverage` | Tests >70% services | Juan + Nicolas | TL | P1 | L | módulos |
+| `chore/be-docker` | Dockerfile + compose | Breiner | TL | P1 | M | — |
+| `chore/be-services-coverage` | Tests >70% services | Juan + Nicolas | TL | P1 | L | módulos |
 
 ---
 
@@ -393,8 +460,8 @@ gantt
 | `feature/fe-admin-layout` | Layout + rutas /admin | Breiner | TL | P0 | M | admin BE |
 | `feature/fe-admin-users-ui` | UI gestión usuarios | Juan | Breiner | P0 | M | admin BE |
 | `feature/fe-coach-dashboard-api` | Entrenador via API | Juan | TL | P0 | L | coach BE |
-| `feature/fe-api-proxy-actions` | Server Actions → backend | TL | Nicolas | P0 | M | api-client |
-| `test/e2e-critical-flows` | Playwright 5 flujos | Nicolas + Juan | Breiner | P0 | L | integración |
+| `feature/fe-api-proxy-actions` | Server Actions → backend | TL | Nicolas | P0 | M | fe-api-client |
+| `chore/e2e-critical-flows` | Playwright 5 flujos | Nicolas + Juan | Breiner | P0 | L | integración |
 
 ---
 
@@ -406,7 +473,7 @@ gantt
 | `feature/prod-security-headers` | CSP, HSTS, rate limit | TL | Breiner | P0 | M | — |
 | `feature/prod-monitoring` | Health + uptime | Breiner | TL | P1 | S | — |
 | `release/1.0.0` | Release branch | TL | Todos | P0 | M | all |
-| `docs/privacy-terms` | Legal docs | Breiner | TL | P0 | S | — |
+| `chore/docs-privacy-terms` | Legal docs | Breiner | TL | P0 | S | — |
 
 ---
 
@@ -444,7 +511,7 @@ flowchart LR
 
 **Tareas en ruta crítica (no pueden retrasarse sin mover la fecha final):**
 
-1. V0.1 Backend (mañnicolas)
+1. V0.1 Backend (12 de junio de 2026)
 2. RLS migraciones (S1)
 3. API client (S3)
 4. AdminModule backend (S4)
@@ -460,7 +527,7 @@ flowchart LR
 |-----|---------|---------|
 | TL | RLS migraciones | Review PRs |
 | Breiner | fix-dashboard-routes | setup-ci FE |
-| Nicolas | auth-hardening | habito-ownership |
+| Nicolas | fe-auth-hardening | habito-ownership |
 | Juan | cleanup + foro nav | Apoyo RLS testing |
 
 ### S4 (paralelo)
@@ -514,7 +581,6 @@ gantt
 ```
 habitapp-api/
 ├── src/
-│   ├── main.ts
 │   ├── app.module.ts
 │   ├── config/
 │   ├── common/
@@ -528,17 +594,32 @@ habitapp-api/
 │   ├── auth/
 │   ├── health/
 │   ├── users/
+│   │   ├── controllers/
+│   │   ├── services/
+│   │   ├── repositories/
+│   │   ├── dto/
+│   │   ├── entities/
+│   │   └── users.module.ts
 │   ├── coach/
+│   │   ├── controllers/
+│   │   ├── services/
+│   │   ├── repositories/
+│   │   ├── dto/
+│   │   ├── entities/
+│   │   └── coach.module.ts
 │   ├── admin/
 │   │   ├── admin.module.ts
 │   │   ├── controllers/
 │   │   │   ├── admin-users.controller.ts
 │   │   │   └── admin-moderation.controller.ts
 │   │   ├── services/
-│   │   └── dto/
+│   │   ├── repositories/
+│   │   ├── dto/
+│   │   └── entities/
 │   ├── notifications/
 │   ├── reports/
-│   └── redis/                # Fase 3
+│   ├── redis/                # Fase 3
+│   └── main.ts
 ├── test/
 ├── docker/
 │   ├── Dockerfile
@@ -678,7 +759,9 @@ jobs:
 
 ---
 
-## EPIC 0 — Backend V0.1 (24h)
+## EPIC 0 — Backend V0.1 ya presentado
+
+> Epic histórico conservado para trazabilidad. No debe priorizarse nuevamente salvo que se necesite recuperar evidencia o validar decisiones tomadas durante la entrega inmediata.
 
 ### ISSUE-001: Bootstrap repositorio habitapp-api
 - **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Breiner · **Dep.:** —
@@ -711,7 +794,7 @@ jobs:
 
 ### ISSUE-010: Migraciones Supabase CLI + RLS completo
 - **Prioridad:** P0 · **Estimación:** 8 SP · **Responsable:** TL · **Dep.:** —
-- **Descripción:** Crear `supabase/migrations/`, portar SQL de `.planeacion/`, completar políticas faltantes (amigos, retos, logros, usuario_rutina, seguimientos).
+- **Descripción:** Crear `supabase/migrations/`, portar SQL de `.docs/base-datos/sql/`, completar políticas faltantes (amigos, retos, logros, usuario_rutina, seguimientos).
 - **Criterios:** `supabase db push` exitoso; todas las tablas app tienen RLS; GRANT anon reducido.
 
 ### ISSUE-011: Corregir rutas /dashboard/*
@@ -756,7 +839,7 @@ jobs:
 
 ---
 
-## EPIC 2 — Arquitectura híbrida
+## EPIC 2 — Arquitectura modular NestJS
 
 ### ISSUE-020: API Client frontend
 - **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** TL · **Dep.:** ISSUE-004
@@ -773,9 +856,9 @@ jobs:
 - **Descripción:** supabase gen types → reemplazar stub.
 - **Criterios:** Tipos reflejan schemas gestion/seguimiento/comunidad.
 
-### ISSUE-023: ADR-001 Arquitectura Híbrida
+### ISSUE-023: ADR-001 Arquitectura modular NestJS inspirada en Clean Architecture
 - **Prioridad:** P1 · **Estimación:** 2 SP · **Responsable:** TL · **Dep.:** —
-- **Descripción:** Documento decisión arquitectónica en docs/adr/.
+- **Descripción:** Documento de decisión arquitectónica en `.docs/planeacion/backend/`.
 - **Criterios:** Aprobado por equipo.
 
 ---
@@ -878,7 +961,7 @@ jobs:
 ### ISSUE-055: Load test k6
 - **Prioridad:** P1 · **Estimación:** 3 SP · **Responsable:** TL · **Dep.:** ISSUE-051
 - **Descripción:** 100 VUs en /health y /users/me; p95 < 500ms.
-- **Criterios:** Reporte commiteado en docs/perf/.
+- **Criterios:** Reporte commiteado en `.docs/planeacion/00-general/` o carpeta técnica equivalente.
 
 ### ISSUE-056: Release v1.0.0
 - **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** TL · **Dep.:** All EPIC 5
@@ -896,24 +979,24 @@ jobs:
 | R01 | RLS rompe app existente al aplicar migraciones | Seguridad | Alta | Alto | Staging Supabase; tests smoke; rollback plan | TL |
 | R02 | JWT secret mal configurado — backend rechaza todos los tokens | Integración | Media | Alto | Documentar obtención secret; test en CI con token fixture | TL |
 | R03 | Conflictos Git con 4 devs en módulos compartidos | Equipo | Alta | Medio | Ownership estricto; ramas cortas; daily sync | TL |
-| R04 | Entrega 24h no completa — demo falla | Entrega | Media | Alto | Scope mínimo estricto; checklist; Postman collection backup | TL |
+| R04 | Migración al backend rompe flujos existentes del frontend | Integración | Media | Alto | Migración por módulo; smoke tests; mantener fallback temporal | TL |
 | R05 | service_role key expuesta en frontend o git | Seguridad | Baja | Crítico | Pre-commit secret scan; code review; nunca NEXT_PUBLIC_ | Breiner |
 | R06 | Drift OpenAPI — FE y BE desincronizados | Integración | Media | Alto | Spec versionada; CI diff check; TL aprueba cambios API | TL |
 | R07 | Supabase rate limits en producción | Escalabilidad | Media | Medio | Backend cache Redis; reducir queries directas FE | Nicolas |
 | R08 | Entrenador module depende de datos seed inexistentes | Integración | Media | Medio | Seed script documentado; demo con respuesta vacía OK | Juan |
 | R09 | Developer bottleneck en TL | Equipo | Alta | Alto | Documentar decisiones; Breiner como backup backend | TL |
-| R10 | Static export docs confunden deploy | Arquitectura | Alta | Medio | ADR + README update Fase 2; Vercel como target | Breiner |
+| R10 | Documentación antigua confunde decisiones actuales | Arquitectura | Media | Medio | Separar frontend/backend/histórico; plan maestro como fuente oficial | TL |
 | R11 | Tests insuficientes — regresiones en refactor | Calidad | Alta | Alto | CI mandatory; coverage gate 70% services Fase 3 | Nicolas |
 | R12 | Roles IDs diferentes entre entornos | Integración | Media | Medio | Seed idempotente; constants en config; verificar en deploy | TL |
 
-## Plan de contingencia — Entrega 24h
+## Plan de contingencia — Integración híbrida
 
 | Escenario | Acción |
 |-----------|--------|
-| Guards no listos a tiempo | D3/D4 mockean con `@Public()` temporal — **no mergear a main** |
-| Supabase caído | Respuestas hardcodeadas en demo branch `demo/fallback` |
-| Coach sin datos | Demo muestra `data: []` explicando relación entrenador-pupilo |
-| Swagger no compila | Demo via Postman collection exportada |
+| Backend no listo para un flujo | Mantener flujo actual en Supabase y migrar después |
+| Guard rompe rutas válidas | Revisar JWT, roles y fixture de pruebas antes de mergear |
+| Supabase rechaza RLS nueva | Rollback de migración y prueba en staging |
+| Swagger se desactualiza | Bloquear PR hasta actualizar OpenAPI |
 
 ---
 
@@ -1011,6 +1094,69 @@ HabitApp MVP Productivo = plataforma desplegada en URLs públicas, con auth segu
 
 ---
 
+# 13. ORGANIZACIÓN DOCUMENTAL
+
+## Decisión oficial
+
+La documentación de planificación se centraliza en `.docs/planeacion`. La antigua carpeta `.planeacion` queda reemplazada por `.docs` para separar la documentación mantenible del código fuente y permitir una organización por propósito.
+
+## Estructura documental
+
+```text
+.docs/
+├── README.md
+├── planeacion/
+│   ├── 00-general/
+│   │   ├── plan-maestro-habitapp.md
+│   │   └── contexto-planeacion-general.md
+│   ├── 03-base-datos/
+│   │   └── modelo-base-datos.md
+│   ├── 04-tecnologia/
+│   │   └── stack-tecnologico-y-gitflow.md
+│   ├── 05-planes-personales/
+│   │   └── PLAN_CARLOS.md
+│   ├── frontend/
+│   │   ├── casos-de-uso-frontend.md
+│   │   ├── objetivos-producto-frontend.md
+│   │   └── requerimientos-frontend.md
+│   ├── backend/
+│   │   └── arquitectura-backend-nestjs.md
+│   └── historico/
+│       └── plan-backend-24h-v0-presentado.md
+├── assets/
+│   ├── disenos/
+│   └── casos-uso/
+├── base-datos/
+│   └── sql/
+├── anexos/
+└── presentaciones/
+```
+
+## Nombres profesionales aplicados
+
+| Nombre anterior | Nombre nuevo |
+|-----------------|--------------|
+| `.planeacion/PLAN_MAESTRO_HABITAPP_V1.md` | `.docs/planeacion/00-general/plan-maestro-habitapp.md` |
+| `.planeacion/PLAN_24H_BACKEND_V0.md` | `.docs/planeacion/historico/plan-backend-24h-v0-presentado.md` |
+| `.planeacion/planeacion.md` | `.docs/planeacion/00-general/contexto-planeacion-general.md` |
+| `.planeacion/arquitectura/arquitectura.md` | `.docs/planeacion/backend/arquitectura-backend-nestjs.md` |
+| `.planeacion/casos de uso/casos.md` | `.docs/planeacion/frontend/casos-de-uso-frontend.md` |
+| `.planeacion/objetivos/obejtivos.md` | `.docs/planeacion/frontend/objetivos-producto-frontend.md` |
+| `.planeacion/requerimientos/requerimientos.md` | `.docs/planeacion/frontend/requerimientos-frontend.md` |
+| `.planeacion/base de datos/1. Estructura y Datos/database.md` | `.docs/planeacion/03-base-datos/modelo-base-datos.md` |
+| `.planeacion/stack tecnologico/stack.md` | `.docs/planeacion/04-tecnologia/stack-tecnologico-y-gitflow.md` |
+
+## Cambios realizados
+
+- Se oficializa la arquitectura modular NestJS inspirada en Clean Architecture.
+- Se descarta Clean Architecture estricta con `domain/application/infrastructure/presentation` por módulo.
+- Se conserva GitFlow con ramas `main`, `develop`, `feature/*`, `bugfix/*`, `hotfix/*`, `release/*` y `chore/*`.
+- Se normalizan ramas de documentación como `chore/docs-*`.
+- Se mantienen ejemplos de commits con Conventional Commits.
+- Se crea el plan personal de Carlos como guía operativa individual.
+
+---
+
 ## Apéndice A — Comandos rápidos V0.1
 
 ```bash
@@ -1042,9 +1188,9 @@ npm run start:dev      # http://localhost:4000/api/docs
 | Documento | Ubicación |
 |-----------|-----------|
 | Auditoría técnica | Conversación previa / informe auditoría |
-| Planificación original | `.planeacion/planeacion.md` |
-| Arquitectura original | `.planeacion/arquitectura/arquitectura.md` |
-| SQL + RLS | `.planeacion/base de datos/` |
+| Contexto general | `.docs/planeacion/00-general/contexto-planeacion-general.md` |
+| Arquitectura backend | `.docs/planeacion/backend/arquitectura-backend-nestjs.md` |
+| SQL + RLS | `.docs/base-datos/sql/` |
 | Skills agente | `.agent/skills/` |
 
 ---
