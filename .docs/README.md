@@ -8,12 +8,12 @@ Esta carpeta centraliza la documentación mantenible del proyecto HabitApp.
 .docs/
 ├── planeacion/
 │   ├── 00-general/
+│   ├── 01-frontend/
+│   ├── 02-backend/
 │   ├── 03-base-datos/
 │   ├── 04-tecnologia/
 │   ├── 05-planes-personales/
-│   ├── frontend/
-│   ├── backend/
-│   └── historico/
+│   └── 06-historico/
 ├── assets/
 ├── base-datos/
 ├── anexos/
@@ -25,14 +25,29 @@ Esta carpeta centraliza la documentación mantenible del proyecto HabitApp.
 | Documento | Uso |
 |-----------|-----|
 | `planeacion/00-general/plan-maestro-habitapp.md` | Plan maestro oficial vigente |
-| `planeacion/frontend/` | Documentación del frontend ya realizado |
-| `planeacion/backend/arquitectura-backend-nestjs.md` | Decisión arquitectónica oficial del backend |
-| `planeacion/historico/plan-backend-24h-v0-presentado.md` | Entrega inmediata ya presentada |
+| `planeacion/00-general/checklist-requerimientos-progreso.md` | Checklist de cumplimiento, progreso y frontera Supabase/NestJS |
+| `planeacion/01-frontend/` | Documentación del frontend ya realizado |
+| `planeacion/02-backend/arquitectura-backend-nestjs.md` | Decisión arquitectónica oficial del backend |
+| `planeacion/06-historico/plan-backend-24h-v0-presentado.md` | Entrega inmediata ya presentada |
 | `planeacion/04-tecnologia/stack-tecnologico-y-gitflow.md` | Stack, GitFlow y Git semántico |
 | `planeacion/05-planes-personales/PLAN_CARLOS.md` | Guía personal de Carlos |
 | `planeacion/05-planes-personales/PLAN_BREINER.md` | Guía personal de Breiner |
 | `planeacion/05-planes-personales/PLAN_NICOLAS.md` | Guía personal de Nicolas |
 | `planeacion/05-planes-personales/PLAN_JUAN.md` | Guía personal de Juan |
+
+## Criterio de numeración
+
+Las carpetas de `planeacion/` usan prefijos numéricos para mantener un orden de lectura estable. La numeración correcta es:
+
+1. `00-general`: visión, plan maestro y checklist de progreso.
+2. `01-frontend`: documentación del frontend ya construido.
+3. `02-backend`: arquitectura y decisiones del backend NestJS.
+4. `03-base-datos`: modelo y referencia de datos.
+5. `04-tecnologia`: stack, GitFlow y Git semántico.
+6. `05-planes-personales`: planes individuales de trabajo.
+7. `06-historico`: entregas o planes ya presentados que no son la guía activa.
+
+Si antes parecía saltarse `01` y `02`, era por una reorganización intermedia donde esas carpetas habían quedado con nombres semánticos (`frontend`, `backend`, `historico`) en vez de prefijos numéricos. Ya quedó corregido.
 
 ## Decisión vigente
 
@@ -52,7 +67,9 @@ El frontend debe estabilizarse antes de migrar flujos complejos al backend. Las 
 
 ## Backend NestJS en construcción
 
-El backend propio se construye con NestJS y Supabase. NestJS se usará para lógica privilegiada, administración, entrenador, notificaciones, reportes e integraciones que requieren mayor control o uso seguro de `service_role`.
+El backend propio se construye en el repositorio `habitapp-api` con NestJS y Supabase. El nombre `habitapp-api` es adecuado porque comunica con claridad que es la API backend del producto y evita mezclar responsabilidades con el frontend `habitapp`.
+
+NestJS se usará para lógica privilegiada, administración, entrenador, notificaciones, reportes e integraciones que requieren mayor control o uso seguro de `service_role`.
 
 Razones de la elección:
 
@@ -72,10 +89,32 @@ Flujo objetivo de una petición:
 6. El repository consulta Supabase.
 7. NestJS responde JSON al frontend.
 
+## Documentación para `habitapp-api`
+
+No se recomienda copiar toda la carpeta `.docs` al repositorio `habitapp-api`, porque esta documentación contiene contexto del frontend, diseños, base de datos, anexos y planes personales del equipo completo.
+
+Lo recomendado es copiar al backend solo un subconjunto mínimo:
+
+- `planeacion/02-backend/arquitectura-backend-nestjs.md`.
+- `planeacion/00-general/checklist-requerimientos-progreso.md`.
+- `planeacion/00-general/plan-maestro-habitapp.md` como referencia o resumen.
+- `planeacion/04-tecnologia/stack-tecnologico-y-gitflow.md`.
+
+En `habitapp-api` debería existir su propio `README.md` con:
+
+- propósito del backend;
+- arquitectura modular NestJS;
+- variables de entorno;
+- scripts de desarrollo;
+- Swagger/OpenAPI;
+- conexión segura a Supabase;
+- reglas de GitFlow y Conventional Commits;
+- enlace al plan maestro del frontend si el repositorio está en la misma organización.
+
 ## Fuente de verdad documental
 
 - El plan activo es `planeacion/00-general/plan-maestro-habitapp.md`.
-- La documentación del frontend está en `planeacion/frontend/`.
-- La arquitectura backend está en `planeacion/backend/`.
+- La documentación del frontend está en `planeacion/01-frontend/`.
+- La arquitectura backend está en `planeacion/02-backend/`.
 - Los planes personales están en `planeacion/05-planes-personales/`.
-- Los documentos de entregas ya presentadas están en `planeacion/historico/`.
+- Los documentos de entregas ya presentadas están en `planeacion/06-historico/`.

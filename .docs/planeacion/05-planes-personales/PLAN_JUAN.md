@@ -68,6 +68,34 @@
 - [ ] Tests unitarios agregados si la lógica lo amerita.
 - [ ] UI consume API, no queries directas en flujos migrados.
 
+## Checklist por rama
+
+Antes de iniciar:
+
+- [ ] Crear rama desde `develop`.
+- [ ] Confirmar si el cambio es frontend, backend o integración.
+- [ ] Confirmar roles necesarios: usuario, entrenador o admin.
+- [ ] Confirmar endpoints y DTOs esperados.
+
+Antes de abrir PR:
+
+- [ ] PR apunta a `develop`.
+- [ ] Endpoints protegidos prueban 401 y 403 cuando aplique.
+- [ ] Swagger actualizado si hay cambio de API.
+- [ ] UI admin/coach consume API en flujos migrados.
+- [ ] No se exponen datos de usuarios no autorizados.
+- [ ] Se documentan pruebas manuales.
+
+## Cronograma personal
+
+| Periodo | Actividad |
+|---------|-----------|
+| Fase 1 | Limpieza comunidad y bugfix foro |
+| Fase 2 | Apoyo OpenAPI y revisión endpoints coach |
+| Fase 3 | Admin users, moderation, coach routines/assign/progress |
+| Fase 4 | Admin users UI, coach dashboard API y E2E |
+| Fase 5 | Soporte release y pruebas finales |
+
 ## Trabajo con agentes
 
 Agente backend:
@@ -78,6 +106,25 @@ Agente frontend:
 
 Agente QA:
 - Probar roles, moderación, asignación de rutina y progreso.
+
+## Plantilla de handoff
+
+```md
+## Resumen
+- Qué módulo o flujo se cambió.
+
+## Endpoints/Interfaces
+- Rutas o pantallas afectadas.
+
+## Validación
+- Pruebas 401/403, Swagger o UI.
+
+## Riesgos
+- Riesgos pendientes.
+
+## Siguiente paso
+- Acción recomendada.
+```
 
 ## Prioridades
 
@@ -105,3 +152,5 @@ Agente QA:
 - Prueba manual de 401/403.
 - PR hacia `develop`.
 - Evidencia funcional del flujo admin/coach.
+- Validación de relación entrenador-pupilo cuando aplique.
+- Moderación/admin sin acceso para usuario normal.
