@@ -14,7 +14,7 @@ HabitApp es una plataforma web diseñada para ayudar a las personas a mejorar su
 - [Instalación](#instalación)
 - [Ejecución en Desarrollo](#ejecución-en-desarrollo)
 - [Construcción para Producción](#construcción-para-producción)
-- [Despliegue en AWS S3](#despliegue-en-aws-s3)
+- [Despliegue](#despliegue)
 - [Convención de Commits](#convención-de-commits)
 - [Flujo de Ramas (Gitflow)](#flujo-de-ramas-gitflow)
 - [Módulos Implementados](#módulos-implementados)
@@ -55,13 +55,14 @@ HabitApp permite a los usuarios:
 | Zod 4 | Validación | Validación de entradas en Server Actions |
 | Framer Motion | Animaciones | Transiciones y micro-animaciones de la UI |
 | Lucide React | Iconografía | Iconos de la interfaz |
-| AWS S3 | Infraestructura | Hosting estático del frontend en producción |
+| NestJS | Backend API | Arquitectura modular para operaciones privilegiadas |
+| Vercel / Railway / Fly | Infraestructura | Despliegue frontend y backend por ambientes |
 
 ---
 
 ## Arquitectura
 
-El proyecto implementa una **Arquitectura de 4 Capas por Dominio**, donde el flujo de datos es estrictamente unidireccional. Ninguna capa puede saltarse a otra ni comunicarse con capas no adyacentes.
+El frontend implementa una **Arquitectura de 4 Capas por Dominio**, donde el flujo de datos es estrictamente unidireccional. Para el backend, la decisión oficial es una **arquitectura modular NestJS inspirada en Clean Architecture**, sin replicar carpetas `domain/`, `application/`, `infrastructure/` y `presentation/` por cada módulo.
 
 ```
 UI / Page (Server Component)
@@ -185,7 +186,7 @@ Antes de clonar e instalar el proyecto, asegurarse de tener instalado:
 - **Node.js** v20 o superior — [https://nodejs.org](https://nodejs.org)
 - **npm** v10 o superior (incluido con Node.js)
 - Una cuenta en **Supabase** con un proyecto configurado — [https://supabase.com](https://supabase.com)
-- El schema de base de datos aplicado (ver carpeta `.planeacion/base de datos/`)
+- El schema de base de datos aplicado (ver carpeta `.docs/base-datos/sql/`)
 
 ---
 
@@ -229,14 +230,12 @@ El servidor de desarrollo incluye hot-reload. Cualquier cambio en los archivos s
 
 ## Construcción para Producción
 
-Este proyecto utiliza **Static Export** de Next.js para generar un sitio completamente estatico desplegable en AWS S3.
+Este proyecto se construye con Next.js para despliegue frontend en Vercel o plataforma equivalente. El backend NestJS se despliega como API independiente en Railway, Fly o plataforma equivalente.
 
 ```bash
 # Generar el build de produccion
 npm run build
 ```
-
-Los archivos estaticos generados quedaran en la carpeta `out/` (segun la configuracion de `next.config.ts`).
 
 Para verificar el build localmente antes de desplegarlo:
 
@@ -246,21 +245,14 @@ npm run start
 
 ---
 
-## Despliegue en AWS S3
-
-Una vez generado el build de produccion, el contenido de la carpeta `out/` se sube manualmente al bucket de S3 configurado como sitio web estatico.
-
-```bash
-# Ejemplo con AWS CLI (requiere credenciales configuradas)
-aws s3 sync out/ s3://<nombre-del-bucket>/ --delete
-```
+## Despliegue
 
 Pasos generales:
-1. Crear un bucket S3 con hosting estatico habilitado.
-2. Configurar la politica del bucket para acceso publico de lectura.
-3. Ejecutar `npm run build` para generar los archivos estaticos.
-4. Subir el contenido de `out/` al bucket.
-5. (Opcional) Configurar Amazon CloudFront como CDN para HTTPS y mejor rendimiento.
+1. Ejecutar `npm run build` y validar que el frontend compile correctamente.
+2. Publicar previews por Pull Request desde Vercel o plataforma equivalente.
+3. Desplegar producción desde `main`.
+4. Desplegar el backend NestJS como API independiente.
+5. Configurar variables de entorno de Supabase solo en los ambientes correspondientes.
 
 ---
 
@@ -300,10 +292,11 @@ chore(deps): actualizar supabase-js a v2.45.0
 ```
 main ──────────────────────────────── (produccion estable)
   └── develop ────────────────────── (integracion continua)
-        ├── feature/auth-setup
-        ├── feature/habit-daily-tracking
-        ├── feature/community-forums
-        ├── release/v1.0.0
+        ├── feature/be-users-module
+        ├── feature/fe-auth-hardening
+        ├── chore/be-setup-ci
+        ├── bugfix/fe-foro-navigation
+        ├── release/1.0.0
         └── hotfix/fix-login-error
 ```
 
@@ -312,6 +305,8 @@ main ─────────────────────────
 | Main | `main` | Codigo en produccion | — |
 | Develop | `develop` | Integracion de features | `main` en release |
 | Feature | `feature/` | Desarrollo de nuevas funcionalidades | `develop` |
+| Bugfix | `bugfix/` | Correcciones no urgentes | `develop` |
+| Chore | `chore/` | Mantenimiento, documentación y CI/CD | `develop` |
 | Release | `release/` | Preparacion y QA de una version | `main` y `develop` |
 | Hotfix | `hotfix/` | Correccion urgente en produccion | `main` y `develop` |
 
