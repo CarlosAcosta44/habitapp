@@ -1,6 +1,6 @@
 # Contexto y Planeación General — HabitApp (Sistema de Gestión de Hábitos Saludables)
 
-Este documento centraliza y resume el contexto del proyecto basándose en los documentos de arquitectura, base de datos, casos de uso, objetivos, requerimientos y stack tecnológico presentes en la carpeta `.planeacion`.
+Este documento centraliza y resume el contexto del proyecto basándose en los documentos de arquitectura, base de datos, casos de uso, objetivos, requerimientos y stack tecnológico presentes en la carpeta `.docs`.
 
 ---
 
@@ -15,18 +15,19 @@ Este documento centraliza y resume el contexto del proyecto basándose en los do
 ---
 
 ## 🏗️ 2. Arquitectura y Stack Tecnológico
-El proyecto se basa en una **Arquitectura de 4 Capas por Dominio (Feature-Based Layered Architecture)**.
+El proyecto combina un frontend Next.js ya organizado por capas con un backend objetivo basado en **arquitectura modular NestJS inspirada en Clean Architecture**.
 
 - **Frontend:** Next.js 14+ (App Router) con estilización a través de **Tailwind CSS**. Uso de React Server Components, Server Actions y separaciones por dominios (features).
 - **Gestión de Estado:** Arquitectura minimalista sin dependencias extra (sin Redux, Zustand, etc.). El estado pesado (hábitos, rachas, puntos) se gestiona vía *Server Actions* y la caché nativa de Next.js. *React Context* se usa solo para datos de sesión del usuario autenticado.
 - **Diseño UI/UX:** Enfoque orientado a móviles (similar a una App nativa), con adaptación a escritorio. Los prototipos están en la carpeta de documentación (`/Diseños`).
-- **Backend (BaaS):** Supabase (PostgreSQL, Auth, Storage, Edge Functions). Única fuente de verdad para persistencia con seguridad por RLS y automatizaciones mediante triggers.
+- **Backend NestJS:** Arquitectura modular por negocio (`users`, `coach`, `admin`, `notifications`, `reports`) con controllers, services, repositories, DTOs y entities.
+- **Backend (BaaS):** Supabase (PostgreSQL, Auth, Storage, Edge Functions). Fuente de verdad para persistencia con seguridad por RLS y automatizaciones mediante triggers.
 - **Validación:** Zod en las Server Actions para validar la entrada antes de tocar la lógica de negocio.
 - **Manejo de Errores:** Patrón `Result<T>` en servicios y repositorios — sin excepciones no capturadas, los errores son valores explícitos.
-- **Infraestructura:** Despliegue estático en Amazon Web Services (AWS S3) con Static HTML Export de Next.js.
+- **Infraestructura:** Frontend desplegable en Vercel o target equivalente; backend NestJS desplegable como API independiente.
 - **Colaboración:** Git/GitHub con Gitflow manual y commits semánticos.
 
-### Flujo de Capas (unidireccional y estricto)
+### Flujo actual del frontend
 
 ```
 UI / Page (Server Component)
@@ -36,7 +37,50 @@ UI / Page (Server Component)
                     └── Supabase (PostgreSQL + RLS + Triggers)
 ```
 
-### Estructura de Carpetas
+### Estructura objetivo del backend NestJS
+
+```
+src/
+├── config/
+├── common/
+│   ├── decorators/
+│   ├── guards/
+│   ├── filters/
+│   ├── interceptors/
+│   ├── pipes/
+│   └── dto/
+├── supabase/
+├── auth/
+├── health/
+├── users/
+│   ├── controllers/
+│   ├── services/
+│   ├── repositories/
+│   ├── dto/
+│   ├── entities/
+│   └── users.module.ts
+├── coach/
+│   ├── controllers/
+│   ├── services/
+│   ├── repositories/
+│   ├── dto/
+│   ├── entities/
+│   └── coach.module.ts
+├── admin/
+│   ├── controllers/
+│   ├── services/
+│   ├── repositories/
+│   ├── dto/
+│   ├── entities/
+│   └── admin.module.ts
+├── notifications/
+├── reports/
+└── main.ts
+```
+
+No se utilizará una Clean Architecture estricta con `domain/`, `application/`, `infrastructure/` y `presentation/` replicadas por módulo.
+
+### Estructura actual del frontend
 
 ```
 src/
@@ -49,12 +93,12 @@ src/
 ├── lib/supabase/          # Clientes de Supabase (server, client, middleware)
 ├── types/
 │   ├── database.types.ts  # Generado por Supabase CLI (no editar)
-│   ├── domain/            # Entidades, DTOs e interfaces del negocio
+│   ├── domain/            # Tipos del negocio en frontend
 │   └── common/            # Result<T>, paginación y utilidades
 └── middleware.ts           # Protección de rutas por sesión
 ```
 
-### Reglas entre capas
+### Reglas entre capas del frontend
 
 | Capa | Puede llamar a | No puede llamar a |
 |---|---|---|
@@ -124,5 +168,5 @@ Basado en las dependencias técnicas, se sugiere abordar el desarrollo en las si
 - Implementación de automatizaciones y notificaciones (recordatorios).
 - Pruebas exhaustivas y QA.
 - Exportación del proyecto (`next build` -> `out/`).
-- Despliegue en AWS S3.
+- Despliegue frontend en Vercel o plataforma equivalente y backend NestJS en Railway/Fly o plataforma equivalente.
  

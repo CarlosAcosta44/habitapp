@@ -146,11 +146,13 @@
 
 | ID | Requerimiento |
 |----|---------------|
-| RNF-04.1 | El código debe seguir la arquitectura por capas: Tipos → Repositorio → Servicio → Actions → UI |
-| RNF-04.2 | Toda la lógica de acceso a datos debe estar encapsulada en repositorios — nunca en componentes |
-| RNF-04.3 | Toda la lógica de negocio debe estar en la capa de servicios — nunca en Server Actions directamente |
-| RNF-04.4 | Los tipos de Supabase deben regenerarse (`supabase gen types`) cada vez que cambie el schema |
-| RNF-04.5 | La documentación del proyecto (carpeta .planeacion) debe mantenerse actualizada con los cambios de arquitectura |
+| RNF-04.1 | El frontend debe mantener la arquitectura por capas: Tipos → Repositorio → Servicio → Actions → UI |
+| RNF-04.2 | El backend NestJS debe seguir arquitectura modular por negocio con controllers, services, repositories, dto y entities |
+| RNF-04.3 | No se debe implementar Clean Architecture estricta con `domain/application/infrastructure/presentation` por cada módulo |
+| RNF-04.4 | Toda la lógica de acceso a datos debe estar encapsulada en repositorios — nunca en componentes ni controllers |
+| RNF-04.5 | Toda la lógica de negocio debe estar en services — nunca en Server Actions ni controllers directamente |
+| RNF-04.6 | Los tipos de Supabase deben regenerarse (`supabase gen types`) cada vez que cambie el schema |
+| RNF-04.7 | La documentación del proyecto (carpeta `.docs`) debe mantenerse actualizada con los cambios de arquitectura |
 
 ---
 
@@ -180,7 +182,7 @@
 |--------|--------------|----------------------------|
 | Autenticación | Login, registro, control de vista | Supabase Auth + Rutas protegidas |
 | Dominio | Tipos, entidades TypeScript | Modelos derivados de la BD |
-| Base de datos | Schema SQL, RLS, triggers | Scripts SQL documentados en `.planeacion` |
+| Base de datos | Schema SQL, RLS, triggers | Scripts SQL documentados en `.docs/base-datos/sql` |
 | Acceso a datos | Consultas a Supabase | `@supabase/supabase-js` y funciones JS |
 | Mutaciones | Formularios y envío de datos | Llamadas a funciones de Supabase DB |
 | Interfaz | Componentes, páginas | Componentes de UI de React / Next.js |
