@@ -80,7 +80,7 @@ export async function createRutinaAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/entrenador/rutinas");
+  revalidatePath("/entrenador");
   return { success: true, message: "Rutina creada exitosamente" };
 }
 
@@ -122,7 +122,7 @@ export async function asignarRutinaAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/entrenador");
+  revalidatePath("/entrenador");
   return { success: true, message: "Rutina asignada exitosamente" };
 }
 
@@ -167,6 +167,6 @@ export async function registrarSeguimientoAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/entrenador");
+  revalidatePath("/entrenador");
   return { success: true, message: "Seguimiento registrado exitosamente" };
 }

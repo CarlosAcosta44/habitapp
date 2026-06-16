@@ -64,8 +64,8 @@ export async function marcarCompletadoAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/habitos");
+  revalidatePath("/");
+  revalidatePath("/habitos");
   return { success: true, message: "¡Hábito completado! +puntos 🎯" };
 }
 
@@ -86,8 +86,8 @@ export async function desmarcarCompletadoAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/habitos");
+  revalidatePath("/");
+  revalidatePath("/habitos");
   return { success: true, message: "Registro desmarcado" };
 }
 
