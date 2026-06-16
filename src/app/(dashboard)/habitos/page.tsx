@@ -13,8 +13,7 @@
  */
 
 import Link                from "next/link";
-import { createClient }    from "@/lib/supabase/server";
-import { redirect }        from "next/navigation";
+import { createClient, requireUser } from "@/lib/supabase/server";
 import { HabitoService }   from "@/services/habito.service";
 import { RegistroService } from "@/services/registro.service";
 import { HabitCard }       from "@/components/habitos/HabitCard";
@@ -28,11 +27,10 @@ const registroService = new RegistroService();
 
 export default async function HabitosPage() {
   // ── Verificar sesión ────────────────────────────────────────────────────────
+  const user = await requireUser();
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect("/login");
 
-  const usuarioId = session.user.id;
+  const usuarioId = user.id;
 
   // ── Obtener hábitos con progreso del día ────────────────────────────────────
   const habitosResult = await habitoService.getDashboard(usuarioId);
@@ -57,12 +55,12 @@ export default async function HabitosPage() {
   const { data: perfil } = await supabase
     .from("perfiles_usuarios_api")
     .select("nombre, apellido")
-    .eq("idusuario", session.user.id)
+    .eq("idusuario", user.id)
     .single();
 
   const nombreReal = perfil?.nombre && perfil?.apellido 
     ? `${perfil.nombre} ${perfil.apellido}` 
-    : (session.user.user_metadata?.full_name?.split(" ")?.[0] || session.user.email?.split("@")[0] || "Campeón");
+    : (user.user_metadata?.full_name?.split(" ")?.[0] || user.email?.split("@")[0] || "Campeón");
 
   // ── Obtener últimos 7 días para el panel semanal ──────────────────────────
   const historialResult = await registroService.getHistorialUsuario(usuarioId);

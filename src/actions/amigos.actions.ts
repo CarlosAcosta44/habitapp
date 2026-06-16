@@ -24,10 +24,10 @@ export async function addFriendAction(
 ): Promise<ActionState> {
   const supabase = await createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) return { success: false, message: "No autorizado" };
+  if (!user) return { success: false, message: "No autorizado" };
 
   const validation = AddFriendSchema.safeParse({
     targetUserId: formData.get("targetUserId"),
@@ -41,7 +41,7 @@ export async function addFriendAction(
     };
   }
 
-  const result = await service.addFriend(session.user.id, validation.data.targetUserId);
+  const result = await service.addFriend(user.id, validation.data.targetUserId);
   if (!result.success) return { success: false, message: result.error };
 
   revalidatePath("/perfil");
