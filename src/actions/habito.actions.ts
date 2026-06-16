@@ -52,8 +52,8 @@ export async function createHabitoAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const rawData = {
     nombre:      formData.get("nombre"),
@@ -104,7 +104,7 @@ export async function createHabitoAction(
     descripcion: validation.data.descripcion ?? null,
     fechaFin:    validation.data.fechaFin    ?? null,
     estado:      "Activo",
-    idUsuario:   session.user.id,
+    idUsuario:   user.id,
     metaDiaria:  validation.data.metaDiaria,
     unidadMedida:validation.data.unidadMedida,
   });
@@ -124,8 +124,8 @@ export async function updateHabitoAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
@@ -151,7 +151,7 @@ export async function updateHabitoAction(
   const result = await service.update(id, {
     ...validation.data,
     fechaFin: validation.data.fechaFin ?? null,
-  });
+  }, session.user.id);
 
   if (!result.success) {
     return { success: false, message: result.error };
@@ -167,13 +167,13 @@ export async function deleteHabitoAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
 
-  const result = await service.delete(id);
+  const result = await service.delete(id, session.user.id);
   if (!result.success) {
     return { success: false, message: result.error };
   }
@@ -188,13 +188,13 @@ export async function completarHabitoAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
 
-  const result = await service.completar(id);
+  const result = await service.completar(id, session.user.id);
   if (!result.success) {
     return { success: false, message: result.error };
   }

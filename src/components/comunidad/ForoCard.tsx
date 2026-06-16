@@ -36,7 +36,7 @@ export function ForoCard({ foro }: ForoCardProps) {
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <Link
-          href={`/dashboard/comunidad/foros/${foro.idForo}`}
+          href={`/comunidad/foros/${foro.idForo}`}
           className="flex-1 min-w-0"
         >
           <h3 className="font-semibold text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate">

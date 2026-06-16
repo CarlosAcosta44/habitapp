@@ -4,8 +4,7 @@
  * Muestra sus rutinas con usuarios asignados.
  */
 
-import { createClient }      from "@/lib/supabase/server";
-import { redirect }          from "next/navigation";
+import { requireUser }       from "@/lib/supabase/server";
 import { EntrenadorService } from "@/services/entrenador.service";
 import { RutinaCard }        from "@/components/entrenador/RutinaCard";
 import { RutinaForm }        from "@/components/entrenador/RutinaForm";
@@ -15,12 +14,10 @@ export const metadata = { title: "Panel Entrenador | HabitApp" };
 const entrenadorService = new EntrenadorService();
 
 export default async function EntrenadorPage() {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect("/login");
+  const user = await requireUser();
 
   // Obtener perfil del entrenador
-  const perfilResult = await entrenadorService.getPerfilByUsuario(session.user.id);
+  const perfilResult = await entrenadorService.getPerfilByUsuario(user.id);
   if (!perfilResult.success) {
     return (
       <div className="max-w-2xl mx-auto">
