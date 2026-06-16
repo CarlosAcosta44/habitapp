@@ -5,8 +5,7 @@
  * y progreso individual por hábito.
  */
 
-import { createClient }       from "@/lib/supabase/server";
-import { redirect }           from "next/navigation";
+import { requireUser }        from "@/lib/supabase/server";
 import { ReportesService }    from "@/services/reportes.service";
 
 export const metadata = { title: "Reportes | HabitApp" };
@@ -14,14 +13,12 @@ export const metadata = { title: "Reportes | HabitApp" };
 const reportesService = new ReportesService();
 
 export default async function ReportesPage() {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect("/login");
+  const user = await requireUser();
 
   const [statsResult, habitosResult, comparativaResult] = await Promise.all([
-    reportesService.getEstadisticas(session.user.id),
-    reportesService.getHabitosReporte(session.user.id),
-    reportesService.getComparativaSemanal(session.user.id),
+    reportesService.getEstadisticas(user.id),
+    reportesService.getHabitosReporte(user.id),
+    reportesService.getComparativaSemanal(user.id),
   ]);
 
   const stats   = statsResult.success   ? statsResult.data   : null;
