@@ -151,7 +151,7 @@ export async function updateHabitoAction(
   const result = await service.update(id, {
     ...validation.data,
     fechaFin: validation.data.fechaFin ?? null,
-  }, session.user.id);
+  }, user.id);
 
   if (!result.success) {
     return { success: false, message: result.error };
@@ -173,7 +173,7 @@ export async function deleteHabitoAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
 
-  const result = await service.delete(id, session.user.id);
+  const result = await service.delete(id, user.id);
   if (!result.success) {
     return { success: false, message: result.error };
   }
@@ -194,7 +194,7 @@ export async function completarHabitoAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
 
-  const result = await service.completar(id, session.user.id);
+  const result = await service.completar(id, user.id);
   if (!result.success) {
     return { success: false, message: result.error };
   }
