@@ -68,7 +68,7 @@ export async function comentarAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath(`/dashboard/comunidad/foros/${validation.data.foroId}`);
+  revalidatePath(`/comunidad/foros/${validation.data.foroId}`);
   return { success: true, message: "Comentario publicado exitosamente" };
 }
 
@@ -103,7 +103,7 @@ export async function reaccionarAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/comunidad");
+  revalidatePath("/comunidad");
   return {
     success: true,
     message: result.data ? "Reacción agregada" : "Reacción eliminada",
@@ -136,7 +136,7 @@ export async function suscribirseAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/comunidad");
+  revalidatePath("/comunidad");
   return { success: true, message: "Suscrito al foro exitosamente" };
 }
 
@@ -166,6 +166,6 @@ export async function desuscribirseAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/comunidad");
+  revalidatePath("/comunidad");
   return { success: true, message: "Desuscrito del foro exitosamente" };
 }
