@@ -35,8 +35,8 @@ export async function marcarCompletadoAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const rawData = {
     idHabito:    formData.get("idHabito"),
@@ -55,7 +55,7 @@ export async function marcarCompletadoAction(
 
   const result = await service.marcarCompletado({
     idHabito:    validation.data.idHabito,
-    idUsuario:   session.user.id,
+    idUsuario:   user.id,
     fecha:       validation.data.fecha,
     observacion: validation.data.observacion,
   });
@@ -75,13 +75,13 @@ export async function desmarcarCompletadoAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const idHabito = formData.get("idHabito") as string;
   if (!idHabito) return { success: false, message: "ID del hábito requerido" };
 
-  const result = await service.desmarcarCompletado(idHabito, session.user.id);
+  const result = await service.desmarcarCompletado(idHabito, user.id);
   if (!result.success) {
     return { success: false, message: result.error };
   }
@@ -97,8 +97,8 @@ export async function avanzarProgresoAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const rawData = {
     idHabito:       formData.get("idHabito"),
@@ -119,7 +119,7 @@ export async function avanzarProgresoAction(
 
   const result = await service.avanzarProgreso({
     idHabito:       validation.data.idHabito,
-    idUsuario:      session.user.id,
+    idUsuario:      user.id,
     fecha:          validation.data.fecha,
     cantidadAsumar: validation.data.cantidadAsumar,
     metaDiaria:     validation.data.metaDiaria,

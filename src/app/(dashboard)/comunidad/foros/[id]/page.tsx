@@ -3,8 +3,7 @@
  * @description Detalle de un foro con comentarios anidados.
  */
 
-import { createClient }     from "@/lib/supabase/server";
-import { redirect }         from "next/navigation";
+import { requireUser }      from "@/lib/supabase/server";
 import { ComunidadService } from "@/services/comunidad.service";
 import { ComentarioItem }   from "@/components/comunidad/ComentarioItem";
 import { ComentarioForm }   from "@/components/comunidad/ComentarioForm";
@@ -19,9 +18,7 @@ interface PageProps {
 export default async function ForoDetallePage({ params }: PageProps) {
   const { id: foroId } = await params;
 
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect("/login");
+  await requireUser();
 
   const comentariosResult = await comunidadService.getComentarios(foroId);
   const comentarios = comentariosResult.success ? comentariosResult.data : [];
