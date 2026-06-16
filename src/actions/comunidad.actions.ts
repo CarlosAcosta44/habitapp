@@ -39,8 +39,8 @@ export async function comentarAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const rawData = {
     foroId:            formData.get("foroId"),
@@ -61,14 +61,14 @@ export async function comentarAction(
     contenido:         validation.data.contenido,
     idComentarioPadre: validation.data.idComentarioPadre ?? null,
     idForo:            validation.data.foroId,
-    idUsuario:         session.user.id,
+    idUsuario:         user.id,
   });
 
   if (!result.success) {
     return { success: false, message: result.error };
   }
 
-  revalidatePath(`/dashboard/comunidad/foros/${validation.data.foroId}`);
+  revalidatePath(`/comunidad/foros/${validation.data.foroId}`);
   return { success: true, message: "Comentario publicado exitosamente" };
 }
 
@@ -78,8 +78,8 @@ export async function reaccionarAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const rawData = {
     tipo:         formData.get("tipo"),
@@ -94,7 +94,7 @@ export async function reaccionarAction(
 
   const result = await service.reaccionar({
     tipo:         validation.data.tipo,
-    idUsuario:    session.user.id,
+    idUsuario:    user.id,
     idComentario: validation.data.idComentario,
     idArticulo:   validation.data.idArticulo,
   });
@@ -103,7 +103,7 @@ export async function reaccionarAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/comunidad");
+  revalidatePath("/comunidad");
   return {
     success: true,
     message: result.data ? "Reacción agregada" : "Reacción eliminada",
@@ -116,8 +116,8 @@ export async function suscribirseAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const validation = SuscripcionSchema.safeParse({
     foroId: formData.get("foroId"),
@@ -128,7 +128,7 @@ export async function suscribirseAction(
   }
 
   const result = await service.suscribirse(
-    session.user.id,
+    user.id,
     validation.data.foroId
   );
 
@@ -136,7 +136,7 @@ export async function suscribirseAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/comunidad");
+  revalidatePath("/comunidad");
   return { success: true, message: "Suscrito al foro exitosamente" };
 }
 
@@ -146,8 +146,8 @@ export async function desuscribirseAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const validation = SuscripcionSchema.safeParse({
     foroId: formData.get("foroId"),
@@ -158,7 +158,7 @@ export async function desuscribirseAction(
   }
 
   const result = await service.desuscribirse(
-    session.user.id,
+    user.id,
     validation.data.foroId
   );
 
@@ -166,6 +166,6 @@ export async function desuscribirseAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/comunidad");
+  revalidatePath("/comunidad");
   return { success: true, message: "Desuscrito del foro exitosamente" };
 }

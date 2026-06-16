@@ -5,8 +5,7 @@
  * y sidebar con rendimiento y próximo hito.
  */
 
-import { createClient }    from "@/lib/supabase/server";
-import { redirect }        from "next/navigation";
+import { createClient, requireUser } from "@/lib/supabase/server";
 import Link                from "next/link";
 import { PerfilTabs }      from "@/components/perfil/PerfilTabs";
 import { RegistroService } from "@/services/registro.service";
@@ -15,14 +14,13 @@ import { AddFriendForm }   from "@/components/perfil/AddFriendForm";
 export const metadata = { title: "Perfil | HabitApp" };
 
 export default async function PerfilPage() {
+  const user = await requireUser();
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect("/login");
 
   const { data: perfil } = await supabase
     .from("perfiles_usuarios_api")
     .select("nombre, apellido, fotoperfil, puntostotales, nombrerol")
-    .eq("idusuario", session.user.id)
+    .eq("idusuario", user.id)
     .single();
 
   const nombre  = perfil?.nombre ?? "Usuario";
@@ -31,7 +29,7 @@ export default async function PerfilPage() {
 
   // ── 0. Cargar los registros para calcular estadísticas (Racha / Eficiencia) ──
   const registroService = new RegistroService();
-  const historialResult = await registroService.getHistorialUsuario(session.user.id);
+  const historialResult = await registroService.getHistorialUsuario(user.id);
   const registrosReales = historialResult.success ? historialResult.data : [];
 
   // Calcular días activos del mes
@@ -67,7 +65,7 @@ export default async function PerfilPage() {
   const { data: historialPuntos } = await supabase
     .from("api_historial_puntos")
     .select("*")
-    .eq("idusuario", session.user.id)
+    .eq("idusuario", user.id)
     .order("fecha", { ascending: false })
     .limit(5);
 
@@ -92,9 +90,9 @@ export default async function PerfilPage() {
     .from("api_amigos")
     .select("*")
     .eq("estado", "Aceptado")
-    .or(`idusuario_solicitante.eq.${session.user.id},idusuario_receptor.eq.${session.user.id}`);
+    .or(`idusuario_solicitante.eq.${user.id},idusuario_receptor.eq.${user.id}`);
 
-  const amigosIds = misAmistades?.map(a => a.idusuario_solicitante === session.user.id ? a.idusuario_receptor : a.idusuario_solicitante) || [];
+  const amigosIds = misAmistades?.map(a => a.idusuario_solicitante === user.id ? a.idusuario_receptor : a.idusuario_solicitante) || [];
   
   let amigosReales: any[] = [];
   if (amigosIds.length > 0) {
@@ -117,24 +115,24 @@ export default async function PerfilPage() {
   const { data: sugerenciasRaw } = await supabase
     .from("perfiles_usuarios_api")
     .select("idusuario, nombre, apellido")
-    .neq("idusuario", session.user.id)
+    .neq("idusuario", user.id)
     .limit(40);
 
   const amigosExistentesSet = new Set(amigosIds);
   const sugerenciasAmigos = (sugerenciasRaw ?? [])
-    .filter((user) => !amigosExistentesSet.has(user.idusuario))
+    .filter((u) => !amigosExistentesSet.has(u.idusuario))
     .slice(0, 12)
-    .map((user) => ({
-      id: user.idusuario,
-      nombre: user.nombre,
-      apellido: user.apellido,
+    .map((u) => ({
+      id: u.idusuario,
+      nombre: u.nombre,
+      apellido: u.apellido,
     }));
 
   // ── 3. Logros Reales ──
   const { data: logrosGanados } = await supabase
     .from("api_usuario_logro")
     .select("*")
-    .eq("idusuario", session.user.id);
+    .eq("idusuario", user.id);
     
   const idsGanados = logrosGanados?.map(l => l.idlogro) || [];
 
