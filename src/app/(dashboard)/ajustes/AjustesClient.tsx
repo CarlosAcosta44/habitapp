@@ -72,37 +72,25 @@ const masOpciones = [
 ];
 
 export function AjustesClient() {
-  const [toggles, setToggles] = useState<Record<string, boolean>>({
-    dark_mode: true,
-    sound: true,
+  const [toggles, setToggles] = useState<Record<string, boolean>>(() => {
+    const savedTheme = typeof localStorage !== 'undefined' ? localStorage.getItem('theme') : null;
+    const savedSound = typeof localStorage !== 'undefined' ? localStorage.getItem('sound') : null;
+    const darkMode = savedTheme ? savedTheme === 'dark' : (typeof document !== 'undefined' && document.documentElement.classList.contains('dark'));
+    const sound = savedSound ? savedSound === 'true' : true;
+    return { dark_mode: darkMode, sound };
   });
 
-  // Inicialización y sincronización
+  // Listen for external theme changes
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const savedSound = localStorage.getItem("sound");
-
-    if (savedTheme) {
-      setToggles((prev) => ({ ...prev, dark_mode: savedTheme === "dark" }));
-    } else {
-      setToggles((prev) => ({ ...prev, dark_mode: document.documentElement.classList.contains("dark") }));
-    }
-
-    if (savedSound) {
-      setToggles((prev) => ({ ...prev, sound: savedSound === "true" }));
-    }
-
     const handleThemeChange = () => {
       setToggles((prev) => ({
         ...prev,
-        dark_mode: document.documentElement.classList.contains("dark")
+        dark_mode: document.documentElement.classList.contains('dark')
       }));
     };
-
-    window.addEventListener("theme-change", handleThemeChange);
-    return () => window.removeEventListener("theme-change", handleThemeChange);
+    window.addEventListener('theme-change', handleThemeChange);
+    return () => window.removeEventListener('theme-change', handleThemeChange);
   }, []);
-
   // Efecto para aplicar modo oscuro al elemento HTML cada vez que cambie
   useEffect(() => {
     const root = document.documentElement;

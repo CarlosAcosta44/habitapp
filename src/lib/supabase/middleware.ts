@@ -1,5 +1,7 @@
-import { createServerClient } from '@supabase/ssr'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { NextResponse, type NextRequest } from 'next/server'
+import type { User } from '@/types/domain/user.types';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -12,7 +14,8 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
+        setAll(cookiesToSet: { name: string; value: string; // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          options: any }[]) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           )
