@@ -32,7 +32,7 @@ export default async function ForoDetallePage({ params }: PageProps) {
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link
-          href="/dashboard/comunidad"
+          href="/comunidad"
           aria-label="Volver a comunidad"
           className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
         >

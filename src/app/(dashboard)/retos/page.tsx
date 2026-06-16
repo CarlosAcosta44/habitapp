@@ -26,7 +26,7 @@ export default function DetalleRetoPage() {
       {/* Header */}
       <header className="flex items-center justify-between mb-8 max-w-6xl mx-auto">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="text-slate-400 hover:text-white transition">
+          <Link href="/habitos" className="text-slate-400 hover:text-white transition">
             <ArrowLeft size={20} />
           </Link>
           <h1 className="text-xl font-bold font-serif text-indigo-600 dark:text-[#9DA8FF]">Detalle del Reto</h1>

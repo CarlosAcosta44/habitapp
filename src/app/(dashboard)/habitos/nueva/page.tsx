@@ -29,7 +29,7 @@ export default async function NuevoHabitoPage() {
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <Link
-          href="/dashboard/habitos"
+          href="/habitos"
           aria-label="Volver a hábitos"
           className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
         >
