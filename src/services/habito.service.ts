@@ -91,13 +91,15 @@ export class HabitoService {
   }
 
   // ─── update ────────────────────────────────────────────────────────────────
-  async update(
-    id: string,
-    updates: UpdateHabitoDTO
-  ): Promise<Result<Habito>> {
+    async update(id: string, updates: UpdateHabitoDTO, ownerId: string): Promise<Result<Habito>> {
     const existe = await this.repo.findById(id);
     if (!existe.success) return err(existe.error);
     if (!existe.data)    return err(`Hábito con ID ${id} no encontrado`);
+
+    // Ownership validation
+    if (existe.data.idUsuario !== ownerId) {
+      return err('Ownership no válido');
+    }
 
     if (existe.data.estado === "Completado" && updates.estado === "Activo") {
       return err("No se puede reactivar un hábito ya completado");
@@ -113,12 +115,25 @@ export class HabitoService {
   }
 
   // ─── delete ────────────────────────────────────────────────────────────────
-  async delete(id: string): Promise<Result<boolean>> {
+    async delete(id: string, ownerId: string): Promise<Result<boolean>> {
+    const habito = await this.repo.findById(id);
+    if (!habito.success) return err(habito.error);
+    if (!habito.data) return err(`Hábito con ID ${id} no encontrado`);
+    if (habito.data.idUsuario !== ownerId) {
+      return err('Ownership no válido');
+    }
     return this.repo.delete(id);
+
   }
 
   // ─── completar ─────────────────────────────────────────────────────────────
-  async completar(id: string): Promise<Result<Habito>> {
-    return this.update(id, { estado: "Completado" });
-  }
+    async completar(id: string, ownerId: string): Promise<Result<Habito>> {
+      const habito = await this.repo.findById(id);
+      if (!habito.success) return err(habito.error);
+      if (!habito.data) return err(`Hábito con ID ${id} no encontrado`);
+      if (habito.data.idUsuario !== ownerId) {
+        return err('Ownership no válido');
+      }
+      return this.update(id, { estado: "Completado" }, ownerId);
+    }
 }
