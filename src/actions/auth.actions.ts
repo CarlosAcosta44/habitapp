@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
@@ -292,9 +292,14 @@ export async function resetPasswordAction(formData: FormData) {
   const supabase = await createClient()
   const email = formData.get('email') as string
 
+  const headersList = await headers()
+  const host = headersList.get('host')
+  const protocol = host?.startsWith('localhost') ? 'http' : 'https'
+  const origin = `${protocol}://${host}`
+
   // Dirigimos al callback primero para capturar e intercambiar el código por la sesión.
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `http://localhost:3000/auth/callback?next=/update-password`,
+    redirectTo: `${origin}/auth/callback?next=/update-password`,
   })
 
   if (error) {
