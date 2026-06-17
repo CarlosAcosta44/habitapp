@@ -450,7 +450,7 @@ gantt
 | `feature/be-notifications` | List + mark read + email | Breiner | TL | P1 | L | — |
 | `feature/be-reports-ranking` | Ranking con Redis cache | Nicolas | TL | P1 | M | — |
 | `feature/be-reports-user` | Reporte resumen usuario | Nicolas | TL | P2 | M | — |
-| `chore/be-docker` | Dockerfile + compose | Breiner | TL | P1 | M | — |
+| `chore/be-docker` | Dockerfile + compose [COMPLETADO] | Breiner | TL | P1 | M | — |
 | `chore/be-services-coverage` | Tests >70% services | Juan + Nicolas | TL | P1 | L | módulos |
 
 ---
