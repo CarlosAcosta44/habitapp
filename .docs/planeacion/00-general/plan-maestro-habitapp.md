@@ -419,7 +419,7 @@ gantt
 | `feature/fe-perfil-service` | Extraer PerfilService | Nicolas | Breiner | P1 | M | — |
 | `feature/fe-cleanup-dead-code` | Eliminar temp_hash, SidebarNav | Juan | Breiner | P2 | S | — |
 | `chore/fe-setup-ci` | GitHub Actions habitapp | Breiner | TL | P0 | M | — |
-| `chore/be-setup-ci` | GitHub Actions habitapp-api | Breiner | TL | P0 | S | V0.1 |
+| `chore/be-setup-ci` | GitHub Actions habitapp-api [COMPLETADO] | Breiner | TL | P0 | S | V0.1 |
 | `bugfix/fe-foro-navigation` | ForoComunidadCard → detalle | Juan | Nicolas | P2 | XS | — |
 
 ---
