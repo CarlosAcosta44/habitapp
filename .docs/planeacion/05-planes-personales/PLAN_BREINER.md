@@ -35,14 +35,14 @@
 
 | Rama | Prioridad | Objetivo |
 |------|-----------|----------|
-| `feature/be-nest-bootstrap` | P0 | Bootstrap inicial NestJS ya presentado |
-| `feature/be-health-module` | P0 | Health endpoint |
-| `feature/fe-fix-dashboard-routes` | P0 | Eliminar rutas `/dashboard/*` |
-| `feature/fe-auth-hardening` | P0 | Endurecer auth frontend |
-| `feature/fe-env-example` | P0 | `.env.example` y gitignore |
-| `feature/fe-mobile-nav` | P1 | Navegación móvil |
-| `chore/fe-setup-ci` | P0 | CI frontend |
-| `chore/fe-deploy-vercel` | P1 | Despliegue en Vercel (Configurado nativamente vía GitHub-Vercel) |
+| `feature/be-nest-bootstrap` | P0 | Bootstrap inicial NestJS ya presentado (Completado) |
+| `feature/be-health-module` | P0 | Health endpoint (Completado) |
+| `feature/fe-fix-dashboard-routes` | P0 | Eliminar rutas `/dashboard/*` (Completado) |
+| `feature/fe-auth-hardening` | P0 | Endurecer auth frontend (Completado) |
+| `feature/fe-env-example` | P0 | `.env.example` y gitignore (Completado) |
+| `feature/fe-mobile-nav` | P1 | Navegación móvil (Completado) |
+| `chore/fe-setup-ci` | P0 | CI frontend (Completado) |
+| `chore/fe-deploy-vercel` | P1 | Despliegue en Vercel (Configurado nativamente vía GitHub-Vercel) (Completado) |
 | `chore/be-setup-ci` | P0 | CI backend (Completado) |
 | `feature/be-notifications` | P1 | Módulo notificaciones (Completado) |
 | `chore/be-docker` | P1 | Dockerfile y docker-compose (Completado) |
@@ -53,22 +53,22 @@
 
 ## Checklist inicial
 
-- [ ] Leer plan maestro.
-- [ ] Leer documentación frontend.
-- [ ] Revisar rutas actuales del frontend.
-- [ ] Confirmar variables `.env.local`.
-- [ ] Confirmar scripts `lint`, `build` y `test` disponibles.
-- [ ] Crear ramas desde `develop`.
+- [x] Leer plan maestro.
+- [x] Leer documentación frontend.
+- [x] Revisar rutas actuales del frontend.
+- [x] Confirmar variables `.env.local`.
+- [x] Confirmar scripts `lint`, `build` y `test` disponibles.
+- [x] Crear ramas desde `develop`.
 
 ## Checklist por tarea
 
-- [ ] No romper flujo de login.
-- [ ] No exponer secretos en `NEXT_PUBLIC_*`.
-- [ ] Validar responsive en móvil.
-- [ ] Mantener componentes consistentes con Tailwind.
-- [ ] Actualizar documentación si cambia flujo.
-- [ ] Ejecutar `npm run lint` si aplica.
-- [ ] Ejecutar `npm run build` si aplica.
+- [x] No romper flujo de login.
+- [x] No exponer secretos en `NEXT_PUBLIC_*`.
+- [x] Validar responsive en móvil.
+- [x] Mantener componentes consistentes con Tailwind.
+- [x] Actualizar documentación si cambia flujo.
+- [x] Ejecutar `npm run lint` si aplica.
+- [x] Ejecutar `npm run build` si aplica.
 
 ## Checklist por rama
 
