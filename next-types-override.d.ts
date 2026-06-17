@@ -1,4 +1,4 @@
 declare module 'next/types.js' {
-  export type ResolvingMetadata = any;
-  export type ResolvingViewport = any;
+  export type ResolvingMetadata = Promise<unknown>;
+  export type ResolvingViewport = Promise<unknown>;
 }
