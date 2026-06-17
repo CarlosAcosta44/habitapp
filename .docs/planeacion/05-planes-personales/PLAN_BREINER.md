@@ -49,7 +49,7 @@
 | `feature/fe-admin-layout` | P0 | Layout admin |
 | `feature/prod-sentry` | P0 | Sentry FE + BE |
 | `feature/prod-monitoring` | P1 | Health + uptime |
-| `chore/docs-privacy-terms` | P0 | Docs legales |
+| `chore/docs-privacy-terms` | P0 | Docs legales (Completado) |
 
 ## Checklist inicial
 
