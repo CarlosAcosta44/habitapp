@@ -5,26 +5,26 @@ import Link from "next/link";
 import { ArrowLeft, Bell, BellOff, MessageSquare, Shield, CheckCircle2 } from "lucide-react";
 
 export default function NotificacionesPage() {
-  const [prefs, setPrefs] = useState({
-    habits: true,
-    community: true,
-    challenges: true,
-    marketing: false
+  const [prefs, setPrefs] = useState(() => {
+    const defaultPrefs = { habits: true, community: true, challenges: true, marketing: false };
+    if (typeof window === 'undefined') return defaultPrefs;
+    try {
+      const savedPrefs = localStorage.getItem("notification_prefs");
+      if (savedPrefs) return JSON.parse(savedPrefs) as typeof defaultPrefs;
+    } catch (e) {
+      console.error("Error loading prefs", e);
+    }
+    return defaultPrefs;
   });
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
 
-  // Cargar preferencias iniciales
+  // Marcar como cargado en el cliente
   useEffect(() => {
-    const savedPrefs = localStorage.getItem("notification_prefs");
-    if (savedPrefs) {
-      try {
-        setPrefs(JSON.parse(savedPrefs));
-      } catch (e) {
-        console.error("Error loading prefs", e);
-      }
-    }
-    setLoading(false);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const toggle = (key: keyof typeof prefs) => {

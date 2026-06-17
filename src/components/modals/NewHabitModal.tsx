@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
-import { X, Sparkles, Plus, Ban, Smile, ArrowLeft } from 'lucide-react';
+import { X, Sparkles, Plus, Ban, Smile } from 'lucide-react';
 import { createHabitoAction } from '@/actions/habito.actions';
 
 interface NewHabitModalProps {
@@ -12,12 +12,8 @@ interface NewHabitModalProps {
 }
 
 export function NewHabitModal({ isOpen, onClose }: NewHabitModalProps) {
-  const [isMounted, setIsMounted] = useState(false);
+  const [isMounted] = useState(true);
   const [view, setView] = useState<'buen_habito' | 'mal_habito' | 'animo'>('buen_habito');
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   if (!isOpen || !isMounted) return null;
 
@@ -145,11 +141,19 @@ export function NewHabitModal({ isOpen, onClose }: NewHabitModalProps) {
   );
 }
 
+interface HabitListItem {
+  nombre: string;
+  icono: string;
+  cat: string;
+  pts: number;
+  u: number;
+}
+
 // Sub-componente interactivo para crear en 1 click
-function HabitList({ items, onClose, isBad }: { items: any[], onClose: ()=>void, isBad?: boolean }) {
+function HabitList({ items, onClose, isBad }: { items: HabitListItem[], onClose: () => void, isBad?: boolean }) {
    const [loadingIdx, setLoadingIdx] = useState<number | null>(null);
 
-   const handleAdd = async (habito: any, idx: number) => {
+   const handleAdd = async (habito: HabitListItem, idx: number) => {
       setLoadingIdx(idx);
       const fd = new FormData();
       fd.append('nombre', isBad ? `Dejar de ${habito.nombre.toLowerCase()}` : habito.nombre);

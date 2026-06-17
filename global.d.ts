@@ -1,2 +1,2 @@
-type ResolvingMetadata = any;
-type ResolvingViewport = any;
+type ResolvingMetadata = Promise<unknown>;
+type ResolvingViewport = Promise<unknown>;
