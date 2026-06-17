@@ -1,105 +1,171 @@
-'use server'
+/**
+ * @file src/actions/seguridad.actions.ts
+ * @description Server Actions para el módulo de Seguridad y Ajustes de cuenta.
+ * @layer Presentation (Capa 1 — Server-side)
+ *
+ * - updateNameAction  → Proxy hacia PATCH /users/me del backend NestJS
+ * - updateEmailAction → Llama directamente a Supabase Auth (cambio de email
+ *                       requiere confirmación por correo, no pasa por NestJS)
+ * - updatePasswordAction → Llama directamente a Supabase Auth
+ *
+ * @directive "use server" — OBLIGATORIO en Server Actions
+ */
 
-import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
+"use server";
 
-// Mock types
+import { z }              from "zod";
+import { revalidatePath } from "next/cache";
+import { headers }        from "next/headers";
+import { createClient }   from "@/lib/supabase/server";
+import { UsuarioService } from "@/services/usuario.service";
+
+// ─── Tipo de retorno estándar ─────────────────────────────────────────────────
 export type ActionState = {
   success?: string;
   error?: string;
   formErrors?: Record<string, string[]>;
 };
 
-// Zod schemas
+// ─── Schemas de validación ────────────────────────────────────────────────────
 const UpdateNameSchema = z.object({
-  nombre: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres").max(45),
+  nombre:   z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres").max(45),
   apellido: z.string().trim().min(2, "El apellido debe tener al menos 2 caracteres").max(45),
-  password: z.string().min(1, "Ingresa tu contraseña actual para verificar"),
 });
 
 const UpdateEmailSchema = z.object({
   email: z.string().email("Formato de correo inválido"),
-  password: z.string().min(1, "Ingresa tu contraseña actual para verificar"),
 });
 
 const UpdatePasswordSchema = z.object({
-  oldPassword: z.string().min(1, "Ingresa tu contraseña actual"),
-  newPassword: z.string().min(6, "La nueva contraseña debe tener al menos 6 caracteres"),
+  newPassword:     z.string().min(6, "La nueva contraseña debe tener al menos 6 caracteres"),
   confirmPassword: z.string().min(1, "Confirma la nueva contraseña"),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Las contraseñas nuevas no coinciden",
   path: ["confirmPassword"],
 });
 
-// Artifical delay for UX simulation
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const service = new UsuarioService();
 
-export async function updateNameAction(_prev: ActionState | null, formData: FormData): Promise<ActionState> {
-  await delay(1200);
-
+// ─── updateNameAction ─────────────────────────────────────────────────────────
+/**
+ * Actualiza el nombre y apellido del usuario.
+ * Proxy hacia PATCH /users/me en el backend NestJS.
+ */
+export async function updateNameAction(
+  _prev: ActionState | null,
+  formData: FormData
+): Promise<ActionState> {
   const parsed = UpdateNameSchema.safeParse({
-    nombre: formData.get('nombre'),
-    apellido: formData.get('apellido'),
-    password: formData.get('password'),
+    nombre:   formData.get("nombre"),
+    apellido: formData.get("apellido"),
   });
 
   if (!parsed.success) {
     return { formErrors: parsed.error.flatten().fieldErrors };
   }
 
-  // Visual simulation logic (Mock successful logic without writing to DB)
-  if (parsed.data.password !== "123456" && parsed.data.password !== "mockpassword") {
-    // We send a generic password error to simulate validation failure if they don't know the trick,
-    // actually, let's just accept any string over length 5 for the demo to feel satisfying to the user,
-    // but give an error if it's "123"
-    if (parsed.data.password.length < 6) {
-      return { error: "Contraseña incorrecta. Verificación fallida." };
+  const result = await service.updatePerfilMe({
+    nombre:   parsed.data.nombre,
+    apellido: parsed.data.apellido,
+  });
+
+  if (!result.success) {
+    if (result.error.includes("401") || result.error.toLowerCase().includes("no autorizado")) {
+      return { error: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente." };
     }
+    return { error: result.error };
   }
 
-  revalidatePath('/ajustes/seguridad');
-  return { success: "¡Nombre actualizado con éxito!" };
+  revalidatePath("/perfil");
+  revalidatePath("/habitos");
+  revalidatePath("/", "layout");
+
+  return { success: "¡Nombre y apellido actualizados correctamente!" };
 }
 
-export async function updateEmailAction(_prev: ActionState | null, formData: FormData): Promise<ActionState> {
-  await delay(1200);
-
+// ─── updateEmailAction ────────────────────────────────────────────────────────
+/**
+ * Actualiza el correo electrónico del usuario directamente vía Supabase Auth.
+ * El cambio de email requiere confirmación por correo y no pasa por NestJS.
+ */
+export async function updateEmailAction(
+  _prev: ActionState | null,
+  formData: FormData
+): Promise<ActionState> {
   const parsed = UpdateEmailSchema.safeParse({
-    email: formData.get('email'),
-    password: formData.get('password'),
+    email: formData.get("email"),
   });
 
   if (!parsed.success) {
     return { formErrors: parsed.error.flatten().fieldErrors };
   }
 
-  if (parsed.data.password.length < 6) {
-    return { error: "Contraseña incorrecta. Verificación fallida." };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente." };
   }
 
-  return { success: "Se ha enviado un enlace de confirmación a tu nuevo correo." };
+  // Construir la URL de confirmación de forma dinámica
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const protocol = host?.startsWith("localhost") ? "http" : "https";
+  const origin = `${protocol}://${host}`;
+
+  const { error } = await supabase.auth.updateUser(
+    { email: parsed.data.email },
+    { emailRedirectTo: `${origin}/auth/callback?next=/ajustes/seguridad` }
+  );
+
+  if (error) {
+    if (error.message.toLowerCase().includes("rate limit")) {
+      return { error: "Se alcanzó el límite de solicitudes. Intenta nuevamente en unos minutos." };
+    }
+    return { error: "No fue posible actualizar el correo. Intenta nuevamente." };
+  }
+
+  return {
+    success: "Se ha enviado un enlace de confirmación a tu nuevo correo. Revisa tu bandeja de entrada.",
+  };
 }
 
-export async function updatePasswordAction(_prev: ActionState | null, formData: FormData): Promise<ActionState> {
-  await delay(1200);
-
+// ─── updatePasswordAction ─────────────────────────────────────────────────────
+/**
+ * Actualiza la contraseña del usuario directamente vía Supabase Auth.
+ * No pasa por NestJS — la gestión de credenciales es responsabilidad de Supabase.
+ */
+export async function updatePasswordAction(
+  _prev: ActionState | null,
+  formData: FormData
+): Promise<ActionState> {
   const parsed = UpdatePasswordSchema.safeParse({
-    oldPassword: formData.get('oldPassword'),
-    newPassword: formData.get('newPassword'),
-    confirmPassword: formData.get('confirmPassword'),
+    newPassword:     formData.get("newPassword"),
+    confirmPassword: formData.get("confirmPassword"),
   });
 
   if (!parsed.success) {
     return { formErrors: parsed.error.flatten().fieldErrors };
   }
 
-  if (parsed.data.oldPassword.length < 6) {
-    return { error: "Contraseña actual incorrecta." };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente." };
   }
 
-  if (parsed.data.oldPassword === parsed.data.newPassword) {
-    return { error: "La nueva contraseña debe ser distinta a la anterior." };
+  const { error } = await supabase.auth.updateUser({
+    password: parsed.data.newPassword,
+  });
+
+  if (error) {
+    if (error.message.toLowerCase().includes("password")) {
+      return { error: "La nueva contraseña no cumple los requisitos mínimos de seguridad." };
+    }
+    return { error: "No fue posible actualizar la contraseña. Intenta nuevamente." };
   }
 
+  revalidatePath("/ajustes/seguridad");
   return { success: "¡Tu contraseña ha sido actualizada exitosamente!" };
 }
