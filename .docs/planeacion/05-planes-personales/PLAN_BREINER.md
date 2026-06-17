@@ -43,7 +43,7 @@
 | `feature/fe-mobile-nav` | P1 | Navegación móvil |
 | `chore/fe-setup-ci` | P0 | CI frontend |
 | `chore/fe-deploy-vercel` | P1 | Despliegue en Vercel (Configurado nativamente vía GitHub-Vercel) |
-| `chore/be-setup-ci` | P0 | CI backend |
+| `chore/be-setup-ci` | P0 | CI backend (Completado) |
 | `feature/be-notifications` | P1 | Módulo notificaciones |
 | `feature/fe-admin-layout` | P0 | Layout admin |
 | `feature/prod-sentry` | P0 | Sentry FE + BE |
