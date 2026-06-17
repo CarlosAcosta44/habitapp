@@ -42,7 +42,8 @@
 | `feature/fe-env-example` | P0 | `.env.example` y gitignore |
 | `feature/fe-mobile-nav` | P1 | Navegación móvil |
 | `chore/fe-setup-ci` | P0 | CI frontend |
-| `chore/be-setup-ci` | P0 | CI backend |
+| `chore/fe-deploy-vercel` | P1 | Despliegue en Vercel (Configurado nativamente vía GitHub-Vercel) |
+| `chore/be-setup-ci` | P0 | CI backend (Completado) |
 | `feature/be-notifications` | P1 | Módulo notificaciones |
 | `feature/fe-admin-layout` | P0 | Layout admin |
 | `feature/prod-sentry` | P0 | Sentry FE + BE |
@@ -91,7 +92,7 @@ Antes de abrir PR:
 | Periodo | Actividad |
 |---------|-----------|
 | Fase 1 | Rutas, auth hardening, `.env.example`, CI frontend |
-| Fase 2 | Deploy preview, apoyo API client y revisión de integración |
+| Fase 2 | Deploy preview (Nativo Vercel), apoyo API client y revisión de integración |
 | Fase 3 | Notifications, Docker/CI backend con apoyo de Carlos |
 | Fase 4 | Admin layout y validación UI con backend |
 | Fase 5 | Sentry, monitoring, despliegue y legal docs |
