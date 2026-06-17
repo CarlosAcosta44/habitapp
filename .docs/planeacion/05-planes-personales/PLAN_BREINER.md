@@ -46,7 +46,7 @@
 | `chore/be-setup-ci` | P0 | CI backend (Completado) |
 | `feature/be-notifications` | P1 | Módulo notificaciones (Completado) |
 | `chore/be-docker` | P1 | Dockerfile y docker-compose (Completado) |
-| `feature/fe-admin-layout` | P0 | Layout admin |
+| `feature/fe-admin-layout` | P0 | Layout admin (Completado) |
 | `feature/prod-sentry` | P0 | Sentry FE + BE |
 | `feature/prod-monitoring` | P1 | Health + uptime |
 | `chore/docs-privacy-terms` | P0 | Docs legales (Completado) |
