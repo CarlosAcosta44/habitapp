@@ -16,6 +16,7 @@ import Link                from "next/link";
 import { createClient, requireUser } from "@/lib/supabase/server";
 import { HabitoService }   from "@/services/habito.service";
 import { RegistroService } from "@/services/registro.service";
+import { UsuarioService }  from "@/services/usuario.service";
 import { HabitCard }       from "@/components/habitos/HabitCard";
 import { DailyProgress }   from "@/components/registros/DailyProgress";
 import { CalendarDays, Target, Trophy, Zap } from "lucide-react";
@@ -51,12 +52,10 @@ export default async function HabitosPage() {
   const completados = habitos.filter((h) => h.registroHoy?.completado).length;
   const porcentaje = habitos.length === 0 ? 0 : Math.round((completados / habitos.length) * 100);
   const rachaMaxima = Math.max(0, ...Object.values(rachasMap));
-  // ── Obtener datos del perfil real ───────────────────────────────────────────
-  const { data: perfil } = await supabase
-    .from("perfiles_usuarios_api")
-    .select("nombre, apellido")
-    .eq("idusuario", user.id)
-    .single();
+  // ── Obtener datos del perfil real desde backend NestJS ──────────────────────
+  const usuarioService = new UsuarioService();
+  const perfilResult = await usuarioService.getPerfilMe();
+  const perfil = perfilResult.success ? perfilResult.data : null;
 
   const nombreReal = perfil?.nombre && perfil?.apellido 
     ? `${perfil.nombre} ${perfil.apellido}` 

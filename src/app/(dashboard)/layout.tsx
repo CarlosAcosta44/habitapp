@@ -3,16 +3,48 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { MobileNav } from '@/components/layout/MobileNav'
+import { UsuarioService } from '@/services/usuario.service'
 
-async function getCurrentUser() {
+/**
+ * Tipo enriquecido del usuario para el layout del dashboard.
+ * Combina las propiedades del User de Supabase con el perfil
+ * extendido obtenido desde el backend NestJS (cuando está disponible).
+ */
+interface DashboardUser {
+  id: string;
+  email?: string;
+  // Campos del perfil NestJS (UserProfileDto)
+  nombre?: string;
+  apellido?: string;
+  fotoperfil?: string | null;
+  puntostotales?: number;
+  idrol?: string;
+  nombrerol?: string;
+  // Fallbacks del user_metadata de Supabase
+  user_metadata?: {
+    full_name?: string;
+    avatar_url?: string;
+  };
+}
+
+async function getCurrentUser(): Promise<DashboardUser> {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) redirect('/login')
-  
-  // Try to fetch profile for extra metadata using the public API view
-  const { data: profile } = await supabase.from('perfiles_usuarios_api').select('*').eq('idusuario', user.id).single()
-  
-  return profile ? { ...user, ...profile } : user
+
+  // Obtener perfil detallado desde el backend NestJS usando UsuarioService
+  const usuarioService = new UsuarioService()
+  const profileResult = await usuarioService.getPerfilMe()
+  const profile = profileResult.success ? profileResult.data : null
+
+  const dashboardUser: DashboardUser = {
+    id: user.id,
+    email: user.email ?? undefined,
+    user_metadata: user.user_metadata as DashboardUser['user_metadata'],
+    ...(profile ?? {}),
+  }
+
+  return dashboardUser
 }
 
 export default async function DashboardLayout({
@@ -21,6 +53,10 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const user = await getCurrentUser()
+
+  const avatarUrl = user.fotoperfil ?? user.user_metadata?.avatar_url
+  const displayInitial =
+    user.nombre?.[0] ?? user.user_metadata?.full_name?.[0] ?? 'U'
 
   return (
     <div className="flex bg-slate-50 dark:bg-slate-900 transition-colors">
@@ -33,12 +69,12 @@ export default async function DashboardLayout({
         <header className="md:hidden sticky top-0 z-30 h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md flex items-center justify-between px-6">
           <span className="font-bold text-lg text-indigo-600 dark:text-indigo-400 tracking-wide">HabitApp</span>
           <Link href="/perfil" className="w-8 h-8 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
-            {user?.fotoperfil || user?.avatar_url ? (
+            {avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={user.fotoperfil || user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+              <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center font-bold text-sm text-indigo-700 dark:text-white bg-indigo-100 dark:bg-indigo-600">
-                {user?.nombre?.[0] || user?.full_name?.[0] || 'U'}
+                {displayInitial}
               </div>
             )}
           </Link>
@@ -53,4 +89,3 @@ export default async function DashboardLayout({
     </div>
   )
 }
-
