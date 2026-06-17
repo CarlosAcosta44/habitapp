@@ -144,23 +144,9 @@ export function SeguridadForm({ initialName, initialLastName, initialEmail }: Se
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
-                <label htmlFor="password-name" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                  <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-                  </svg>
-                  Contraseña Actual (Verificación)
-                </label>
-                <input
-                  type="password"
-                  id="password-name"
-                  name="password"
-                  placeholder="••••••••"
-                  className="w-full bg-slate-50 dark:bg-[#1a2332] text-sm text-slate-900 dark:text-white rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
-                />
-                {nameState?.formErrors?.password && <p className="text-xs text-red-500">{nameState.formErrors.password[0]}</p>}
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 italic">Requerimos tu contraseña por seguridad antes de guardar.</p>
-              </div>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 italic pt-2">
+                Tu identidad es verificada automáticamente mediante tu sesión activa.
+              </p>
 
               <button
                 type="submit"
@@ -214,22 +200,9 @@ export function SeguridadForm({ initialName, initialLastName, initialEmail }: Se
                 {emailState?.formErrors?.email && <p className="text-xs text-red-500">{emailState.formErrors.email[0]}</p>}
               </div>
 
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
-                <label htmlFor="password-email" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                  <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-                  </svg>
-                  Contraseña Actual (Verificación)
-                </label>
-                <input
-                  type="password"
-                  id="password-email"
-                  name="password"
-                  placeholder="••••••••"
-                  className="w-full bg-slate-50 dark:bg-[#1a2332] text-sm text-slate-900 dark:text-white rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors"
-                />
-                {emailState?.formErrors?.password && <p className="text-xs text-red-500">{emailState.formErrors.password[0]}</p>}
-              </div>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 italic pt-2">
+                Se enviará un enlace de confirmación al nuevo correo. Tu sesión activa valida la operación.
+              </p>
 
               <button
                 type="submit"
@@ -272,19 +245,6 @@ export function SeguridadForm({ initialName, initialLastName, initialEmail }: Se
               )}
 
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="oldPassword" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contraseña Actual</label>
-                  <input
-                    type="password"
-                    id="oldPassword"
-                    name="oldPassword"
-                    placeholder="••••••••"
-                    className="w-full bg-slate-50 dark:bg-[#1a2332] text-sm text-slate-900 dark:text-white rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
-                  />
-                  {passwordState?.formErrors?.oldPassword && <p className="text-xs text-red-500">{passwordState.formErrors.oldPassword[0]}</p>}
-                </div>
-                
-                <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80"></div>
 
                 <div className="space-y-2">
                   <label htmlFor="newPassword" className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Nueva Contraseña</label>

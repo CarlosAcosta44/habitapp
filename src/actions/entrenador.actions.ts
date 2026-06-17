@@ -42,8 +42,8 @@ export async function createRutinaAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const rawData = {
     tipo:        formData.get("tipo"),
@@ -63,7 +63,7 @@ export async function createRutinaAction(
   }
 
   // Obtener el perfil del entrenador
-  const perfilResult = await service.getPerfilByUsuario(session.user.id);
+  const perfilResult = await service.getPerfilByUsuario(user.id);
   if (!perfilResult.success) {
     return { success: false, message: perfilResult.error };
   }
@@ -80,7 +80,7 @@ export async function createRutinaAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/entrenador/rutinas");
+  revalidatePath("/entrenador");
   return { success: true, message: "Rutina creada exitosamente" };
 }
 
@@ -90,8 +90,8 @@ export async function asignarRutinaAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const rawData = {
     idUsuario:   formData.get("idUsuario"),
@@ -108,7 +108,7 @@ export async function asignarRutinaAction(
     };
   }
 
-  const perfilResult = await service.getPerfilByUsuario(session.user.id);
+  const perfilResult = await service.getPerfilByUsuario(user.id);
   if (!perfilResult.success) {
     return { success: false, message: perfilResult.error };
   }
@@ -122,7 +122,7 @@ export async function asignarRutinaAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/entrenador");
+  revalidatePath("/entrenador");
   return { success: true, message: "Rutina asignada exitosamente" };
 }
 
@@ -132,8 +132,8 @@ export async function registrarSeguimientoAction(
   formData:   FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { success: false, message: "No autorizado" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "No autorizado" };
 
   const rawData = {
     idUsuario:     formData.get("idUsuario"),
@@ -150,7 +150,7 @@ export async function registrarSeguimientoAction(
     };
   }
 
-  const perfilResult = await service.getPerfilByUsuario(session.user.id);
+  const perfilResult = await service.getPerfilByUsuario(user.id);
   if (!perfilResult.success) {
     return { success: false, message: perfilResult.error };
   }
@@ -167,6 +167,6 @@ export async function registrarSeguimientoAction(
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/dashboard/entrenador");
+  revalidatePath("/entrenador");
   return { success: true, message: "Seguimiento registrado exitosamente" };
 }

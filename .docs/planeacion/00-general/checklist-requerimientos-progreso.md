@@ -25,7 +25,7 @@ HabitApp ya cuenta con un frontend funcional con rutas, Server Actions, services
 | Seguridad | 55% | Supabase Auth existe, falta RLS/migraciones/hardening |
 | Arquitectura frontend | 75% | Capas presentes, requiere limpieza |
 | Backend NestJS | 15% | Planificado/iniciado, falta implementación completa |
-| CI/CD y producción | 20% | Pendiente de formalizar |
+| CI/CD y producción | 100% | Completo (CI en GitHub Actions y CD en Vercel) |
 
 **Progreso total estimado:** 55%
 
