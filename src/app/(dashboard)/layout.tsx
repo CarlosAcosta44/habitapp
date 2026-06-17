@@ -4,30 +4,9 @@ import Link from 'next/link'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { MobileNav } from '@/components/layout/MobileNav'
 import { UsuarioService } from '@/services/usuario.service'
+import type { User, Role } from '@/types/domain/user.types'
 
-/**
- * Tipo enriquecido del usuario para el layout del dashboard.
- * Combina las propiedades del User de Supabase con el perfil
- * extendido obtenido desde el backend NestJS (cuando está disponible).
- */
-interface DashboardUser {
-  id: string;
-  email?: string;
-  // Campos del perfil NestJS (UserProfileDto)
-  nombre?: string;
-  apellido?: string;
-  fotoperfil?: string | null;
-  puntostotales?: number;
-  idrol?: string;
-  nombrerol?: string;
-  // Fallbacks del user_metadata de Supabase
-  user_metadata?: {
-    full_name?: string;
-    avatar_url?: string;
-  };
-}
-
-async function getCurrentUser(): Promise<DashboardUser> {
+async function getCurrentUser(): Promise<User> {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) redirect('/login')
@@ -37,14 +16,21 @@ async function getCurrentUser(): Promise<DashboardUser> {
   const profileResult = await usuarioService.getPerfilMe()
   const profile = profileResult.success ? profileResult.data : null
 
-  const dashboardUser: DashboardUser = {
+  const domainUser: User = {
     id: user.id,
-    email: user.email ?? undefined,
-    user_metadata: user.user_metadata as DashboardUser['user_metadata'],
-    ...(profile ?? {}),
+    email: user.email || '',
+    role: (profile?.nombrerol as Role) || 'user',
+    created_at: user.created_at,
+    updated_at: user.updated_at || user.created_at,
+    nombre: profile?.nombre || undefined,
+    apellido: profile?.apellido || undefined,
+    nombrerol: profile?.nombrerol || undefined,
+    fotoperfil: profile?.fotoperfil || undefined,
+    full_name: user.user_metadata?.full_name || undefined,
+    avatar_url: user.user_metadata?.avatar_url || undefined,
   }
 
-  return dashboardUser
+  return domainUser
 }
 
 export default async function DashboardLayout({
@@ -54,9 +40,9 @@ export default async function DashboardLayout({
 }) {
   const user = await getCurrentUser()
 
-  const avatarUrl = user.fotoperfil ?? user.user_metadata?.avatar_url
+  const avatarUrl = user.fotoperfil ?? user.avatar_url
   const displayInitial =
-    user.nombre?.[0] ?? user.user_metadata?.full_name?.[0] ?? 'U'
+    user.nombre?.[0] ?? user.full_name?.[0] ?? 'U'
 
   return (
     <div className="flex bg-slate-50 dark:bg-slate-900 transition-colors">

@@ -17,6 +17,11 @@ type AuthErrorLike = {
   status?: number
 }
 
+type UserDataWithRole = {
+  idrol?: number | null
+  roles?: { nombrerol?: string | null } | null
+}
+
 function traducirErrorAuth(
   error: AuthErrorLike,
   contexto: 'login' | 'register' | 'reset' | 'updatePassword'
@@ -81,7 +86,7 @@ export async function loginAction(formData: FormData) {
       .eq('idusuario', userId)
       .single()
 
-    const rol = (userData as any)?.roles?.nombrerol
+    const rol = (userData as UserDataWithRole)?.roles?.nombrerol
     if (rol) {
       const cookieStore = await cookies()
       cookieStore.set('user_role', rol, { maxAge: 60 * 60 * 24 * 7, path: '/' })
@@ -261,7 +266,7 @@ export async function registerAction(
       .eq('idusuario', userId)
       .single()
 
-    const rol = (userData as any)?.roles?.nombrerol
+    const rol = (userData as UserDataWithRole)?.roles?.nombrerol
     if (rol) {
       const cookieStore = await cookies()
       cookieStore.set('user_role', rol, { maxAge: 60 * 60 * 24 * 7, path: '/' })

@@ -115,7 +115,7 @@ export default function SobreNosotrosClient() {
           <Zap className="w-3 h-3" /> HabitApp Editorial Group v1.0
         </div>
         <p className="text-sm text-slate-500 dark:text-slate-400 italic mb-8 max-w-lg mx-auto">
-          "El secreto de tu futuro está escondido en tu rutina diaria."
+          &ldquo;El secreto de tu futuro está escondido en tu rutina diaria.&rdquo;
         </p>
         <Link 
           href="/ajustes"
