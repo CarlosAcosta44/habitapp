@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/layout/Sidebar'
+import type { User, Role } from '@/types/domain/user.types'
 
-async function getCurrentUser() {
+async function getCurrentUser(): Promise<User> {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) redirect('/login')
@@ -10,7 +11,21 @@ async function getCurrentUser() {
   // Try to fetch profile for extra metadata using the public API view
   const { data: profile } = await supabase.from('perfiles_usuarios_api').select('*').eq('idusuario', user.id).single()
   
-  return profile ? { ...user, ...profile } : user
+  const mappedUser: User = {
+    id: user.id,
+    email: user.email || '',
+    role: (profile?.nombrerol as Role) || 'user',
+    created_at: user.created_at,
+    updated_at: user.updated_at || user.created_at,
+    nombre: profile?.nombre || undefined,
+    apellido: profile?.apellido || undefined,
+    nombrerol: profile?.nombrerol || undefined,
+    fotoperfil: profile?.fotoperfil || undefined,
+    full_name: user.user_metadata?.full_name || undefined,
+    avatar_url: user.user_metadata?.avatar_url || undefined,
+  }
+
+  return mappedUser
 }
 
 export default async function DashboardLayout({
