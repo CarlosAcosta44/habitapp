@@ -434,7 +434,7 @@ gantt
 | `feature/fe-unify-habit-create` | Un solo flujo crear hábito | Nicolas | Breiner | P1 | M | — |
 | `feature/fe-require-user-helper` | requireUser/requireRole | Nicolas | TL | P1 | S | fe-auth-hardening |
 | `chore/docs-adr-nestjs-modular-architecture` | ADR arquitectura modular NestJS | TL | Todos | P1 | XS | — |
-| `chore/fe-deploy-vercel` | Vercel preview deploys | Breiner | TL | P1 | S | fe-setup-ci |
+| `chore/fe-deploy-vercel` | Vercel preview deploys (Nativo Vercel) | Breiner | TL | P1 | S | fe-setup-ci |
 
 ---
 
@@ -935,10 +935,10 @@ jobs:
 
 ## EPIC 5 — Producción
 
-### ISSUE-050: Deploy Vercel (frontend)
+### ISSUE-050: Deploy Vercel (frontend) [COMPLETADO]
 - **Prioridad:** P0 · **Estimación:** 3 SP · **Responsable:** Breiner · **Dep.:** ISSUE-015
-- **Descripción:** Production + preview deploys; env vars configuradas.
-- **Criterios:** URL pública funcional.
+- **Descripción:** Configurado nativamente vía integración GitHub-Vercel (no requiere código adicional).
+- **Criterios:** URL pública funcional para Preview Deploys y Production.
 
 ### ISSUE-051: Deploy Railway/Fly (backend)
 - **Prioridad:** P0 · **Estimación:** 5 SP · **Responsable:** Breiner · **Dep.:** ISSUE-036
