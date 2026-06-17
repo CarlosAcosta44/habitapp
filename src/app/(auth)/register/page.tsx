@@ -31,6 +31,7 @@ export default function RegisterPage() {
   const [habitsSelected, setHabitsSelected] = useState<Set<OnboardingHabitPresetId>>(
     () => new Set()
   )
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
 
   const [state, formAction, isPending] = useActionState(
     registerAction,
@@ -247,10 +248,33 @@ export default function RegisterPage() {
             })}
           </div>
 
+          {/* Aceptación de Términos y Privacidad */}
+          <div className="flex items-start gap-3 mb-6 select-none">
+            <input
+              id="accept-terms"
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              required
+              className="mt-1 w-4 h-4 rounded border-slate-600 bg-[#1e2536] text-indigo-500 focus:ring-indigo-500 focus:ring-offset-[#0b0f19] cursor-pointer"
+            />
+            <label htmlFor="accept-terms" className="text-xs text-slate-400 leading-normal cursor-pointer">
+              Acepto la{' '}
+              <Link href="/legal/privacy" target="_blank" className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors">
+                Política de Privacidad
+              </Link>{' '}
+              y los{' '}
+              <Link href="/legal/terms" target="_blank" className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors">
+                Términos de Servicio
+              </Link>{' '}
+              de HabitApp.
+            </label>
+          </div>
+
           <div className="flex flex-col gap-3">
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isPending || !acceptedTerms}
               className="w-full py-3.5 bg-gradient-to-r from-sky-400 to-indigo-400 text-[#0b0f19] rounded-[1.125rem] font-bold text-[15px] transition-all hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isPending ? 'Creando cuenta…' : 'Finalizar registro'}
