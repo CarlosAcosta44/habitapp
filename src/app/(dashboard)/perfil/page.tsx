@@ -10,6 +10,7 @@ import Link                from "next/link";
 import { PerfilTabs }      from "@/components/perfil/PerfilTabs";
 import { RegistroService } from "@/services/registro.service";
 import { AddFriendForm }   from "@/components/perfil/AddFriendForm";
+import { UsuarioService }  from "@/services/usuario.service";
 
 export const metadata = { title: "Perfil | HabitApp" };
 
@@ -17,11 +18,9 @@ export default async function PerfilPage() {
   const user = await requireUser();
   const supabase = await createClient();
 
-  const { data: perfil } = await supabase
-    .from("perfiles_usuarios_api")
-    .select("nombre, apellido, fotoperfil, puntostotales, nombrerol")
-    .eq("idusuario", user.id)
-    .single();
+  const usuarioService = new UsuarioService();
+  const perfilResult = await usuarioService.getPerfilMe();
+  const perfil = perfilResult.success ? perfilResult.data : null;
 
   const nombre  = perfil?.nombre ?? "Usuario";
   const apellido = perfil?.apellido ?? "";
