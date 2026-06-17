@@ -16,7 +16,8 @@ import {
   BarChart3,
   Sparkles,
   HeartPulse,
-  Power
+  Power,
+  Shield
 } from 'lucide-react';
 import { NewHabitModal } from '../modals/NewHabitModal';
 import { logoutAction } from '@/actions/auth.actions';
@@ -63,6 +64,10 @@ export function Sidebar({ user }: SidebarProps) {
     { name: 'Reportes', href: '/reportes', icon: BarChart3 },
     { name: 'Ajustes', href: '/ajustes', icon: Settings },
   ];
+
+  if (user?.role === 'admin') {
+    navLinks.push({ name: 'Administración', href: '/admin', icon: Shield });
+  }
 
   return (
     <aside className="w-64 h-full bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-800 dark:text-slate-300 transition-colors border-r border-slate-200 dark:border-slate-800">
