@@ -147,6 +147,17 @@ export class ReportesRepository {
   async findComparativaSemanal(userId: string): Promise<Result<ComparativaGraphed>> {
     const supabase = await createClient();
 
+    interface RawRegistroComparativa {
+      fecha: string;
+      completado: boolean;
+      habitos: {
+        idcategoria: string;
+        categorias_habitos: {
+          nombre: string;
+        } | null;
+      } | null;
+    }
+
     // Obtener registros de los últimos 7 días con su categoría
     const { data: registros, error } = await supabase
       .schema("seguimiento")
@@ -163,7 +174,8 @@ export class ReportesRepository {
       `)
       .eq("idusuario", userId)
       .gte("fecha", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
-      .order("fecha", { ascending: true });
+      .order("fecha", { ascending: true })
+      .returns<RawRegistroComparativa[]>();
 
     if (error) return err(`Error al obtener comparativa: ${error.message}`);
 
@@ -186,7 +198,7 @@ export class ReportesRepository {
     const dataSalud = [0,0,0,0,0,0,0];
     const dataEnfoque = [0,0,0,0,0,0,0];
 
-    registros?.forEach((r: any) => {
+    registros?.forEach((r: RawRegistroComparativa) => {
       const dayIdx = ultimos7Dias.indexOf(r.fecha);
       if (dayIdx >= 0 && r.completado) {
         const catNombre = r.habitos?.categorias_habitos?.nombre?.toLowerCase() || "";

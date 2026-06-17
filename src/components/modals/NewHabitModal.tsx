@@ -141,11 +141,19 @@ export function NewHabitModal({ isOpen, onClose }: NewHabitModalProps) {
   );
 }
 
+interface HabitListItem {
+  nombre: string;
+  icono: string;
+  cat: string;
+  pts: number;
+  u: number;
+}
+
 // Sub-componente interactivo para crear en 1 click
-function HabitList({ items, onClose, isBad }: { items: any[], onClose: ()=>void, isBad?: boolean }) {
+function HabitList({ items, onClose, isBad }: { items: HabitListItem[], onClose: () => void, isBad?: boolean }) {
    const [loadingIdx, setLoadingIdx] = useState<number | null>(null);
 
-   const handleAdd = async (habito: any, idx: number) => {
+   const handleAdd = async (habito: HabitListItem, idx: number) => {
       setLoadingIdx(idx);
       const fd = new FormData();
       fd.append('nombre', isBad ? `Dejar de ${habito.nombre.toLowerCase()}` : habito.nombre);

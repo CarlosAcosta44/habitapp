@@ -96,7 +96,15 @@ export default async function PerfilPage() {
 
   const amigosIds = misAmistades?.map(a => a.idusuario_solicitante === session.user.id ? a.idusuario_receptor : a.idusuario_solicitante) || [];
   
-  let amigosReales: any[] = [];
+  interface AmigoReal {
+    id: string;
+    nombre: string | null;
+    apellido: string | null;
+    puntos: number | null;
+    top: boolean;
+  }
+
+  let amigosReales: AmigoReal[] = [];
   if (amigosIds.length > 0) {
     const { data: perfilesAmigos } = await supabase
       .from("perfiles_usuarios_api")
@@ -138,7 +146,15 @@ export default async function PerfilPage() {
     
   const idsGanados = logrosGanados?.map(l => l.idlogro) || [];
 
-  let logrosReales: any[] = [];
+  interface LogroReal {
+    id: number;
+    nombre: string;
+    desc: string | null;
+    fecha: string;
+    icono: string | null;
+  }
+
+  let logrosReales: LogroReal[] = [];
   if (idsGanados.length > 0) {
     const { data: catalogoLogros } = await supabase
       .from("api_logros")
@@ -271,14 +287,14 @@ export default async function PerfilPage() {
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center flex-shrink-0">
                         <span className="text-sm font-bold text-slate-300">
-                          {amigo.nombre.charAt(0)}{amigo.apellido.charAt(0)}
+                          {(amigo.nombre || '?').charAt(0)}{(amigo.apellido || '').charAt(0)}
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-white">{amigo.nombre}</p>
-                        <p className="text-sm text-slate-400">{amigo.apellido}</p>
+                        <p className="text-sm font-bold text-white">{amigo.nombre || 'Sin Nombre'}</p>
+                        <p className="text-sm text-slate-400">{amigo.apellido || ''}</p>
                         <p className="text-xs text-indigo-400 font-semibold">
-                          {amigo.puntos.toLocaleString()} Pts
+                          {(amigo.puntos ?? 0).toLocaleString()} Pts
                         </p>
                       </div>
                       {amigo.top && (
@@ -406,7 +422,7 @@ export default async function PerfilPage() {
               <div className="flex -space-x-2">
                 {amigos.slice(0, 3).map((a, i) => (
                   <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 border-2 border-[#111827] flex items-center justify-center">
-                    <span className="text-[10px] text-slate-300 font-medium">{a.nombre.charAt(0)}</span>
+                    <span className="text-[10px] text-slate-300 font-medium">{(a.nombre || '?').charAt(0)}</span>
                   </div>
                 ))}
                 {amigos.length === 0 && <span className="text-xs text-slate-500">Aún no tienes amigos</span>}
