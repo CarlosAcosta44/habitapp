@@ -126,7 +126,7 @@ export default function DetalleRetoPage() {
                    <div className="w-6 h-6 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Check size={14} />
                   </div>
-                  <span className="text-sm text-slate-300 leading-snug">Gana la insignia "Flash Comunitario".</span>
+                  <span className="text-sm text-slate-300 leading-snug">Gana la insignia &ldquo;Flash Comunitario&rdquo;.</span>
                 </li>
               </ul>
             </div>

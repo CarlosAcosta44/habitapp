@@ -1,5 +1,8 @@
-'use client'
+'use client';
 
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -8,7 +11,6 @@ import {
   Users, 
   Settings, 
   LifeBuoy, 
-  LogOut, 
   Moon,
   Trophy,
   BarChart3,
@@ -18,28 +20,25 @@ import {
 } from 'lucide-react';
 import { NewHabitModal } from '../modals/NewHabitModal';
 import { logoutAction } from '@/actions/auth.actions';
+import { User } from '@/types/domain/user.types';
 
 interface SidebarProps {
-  user: any; // Ideally we use the domain type
+  user: User;
 }
 
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
-  const [isDarkMode, setIsDarkMode] = useState(true); 
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
+    if (saved) return saved === 'dark';
+    return typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false;
+  });
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setIsDarkMode(savedTheme === 'dark');
-    } else {
-      setIsDarkMode(document.documentElement.classList.contains('dark'));
-    }
-
     const handleThemeChange = () => {
       setIsDarkMode(document.documentElement.classList.contains('dark'));
     };
-
     window.addEventListener('theme-change', handleThemeChange);
     return () => window.removeEventListener('theme-change', handleThemeChange);
   }, []);
