@@ -47,8 +47,8 @@
 | `feature/be-notifications` | P1 | Módulo notificaciones (Completado) |
 | `chore/be-docker` | P1 | Dockerfile y docker-compose (Completado) |
 | `feature/fe-admin-layout` | P0 | Layout admin (Completado) |
-| `feature/prod-sentry` | P0 | Sentry FE + BE |
-| `feature/prod-monitoring` | P1 | Health + uptime |
+| `feature/prod-sentry` | P0 | Sentry FE + BE (Completado) |
+| `feature/prod-monitoring` | P1 | Health + uptime (Completado) |
 | `chore/docs-privacy-terms` | P0 | Docs legales (Completado) |
 
 ## Checklist inicial
@@ -74,29 +74,30 @@
 
 Antes de iniciar:
 
-- [ ] Crear rama desde `develop`.
-- [ ] Usar prefijo correcto: `feature/*`, `bugfix/*` o `chore/*`.
-- [ ] Confirmar issue asociado.
-- [ ] Confirmar revisor.
+- [x] Crear rama desde `develop`.
+- [x] Usar prefijo correcto: `feature/*`, `bugfix/*` o `chore/*`.
+- [x] Confirmar issue asociado.
+- [x] Confirmar revisor.
 
 Antes de abrir PR:
 
-- [ ] El PR apunta a `develop`.
-- [ ] La descripción incluye qué cambió y cómo probarlo.
-- [ ] Se adjunta evidencia visual si el cambio afecta UI.
-- [ ] Se verificó que login/logout siguen funcionando.
-- [ ] Se verificó responsive en mobile si el cambio afecta layout.
-- [ ] Se actualizaron docs si cambió flujo o configuración.
+- [x] El PR apunta a `develop`.
+- [x] La descripción incluye qué cambió y cómo probarlo.
+- [x] Se adjunta evidencia visual si el cambio afecta UI.
+- [x] Se verificó que login/logout siguen funcionando.
+- [x] Se verificó responsive en mobile si el cambio afecta layout.
+- [x] Se actualizaron docs si cambió flujo o configuración.
 
 ## Cronograma personal
 
-| Periodo | Actividad |
-|---------|-----------|
-| Fase 1 | Rutas, auth hardening, `.env.example`, CI frontend |
-| Fase 2 | Deploy preview (Nativo Vercel), apoyo API client y revisión de integración |
-| Fase 3 | Notifications, Docker/CI backend con apoyo de Carlos |
-| Fase 4 | Admin layout y validación UI con backend |
-| Fase 5 | Sentry, monitoring, despliegue y legal docs |
+| Periodo | Actividad | Estado |
+|---------|-----------|--------|
+| Fase 1 | Rutas, auth hardening, `.env.example`, CI frontend | Completado |
+| Fase 2 | Deploy preview (Nativo Vercel), apoyo API client y revisión de integración | Completado |
+| Fase 3 | Notifications, Docker/CI backend con apoyo de Carlos | Completado |
+| Fase 4 | Admin layout y validación UI con backend | Completado |
+| Fase 5 | Sentry, monitoring, despliegue y legal docs | Completado (Localmente) |
+
 
 ## Trabajo con agentes
 
