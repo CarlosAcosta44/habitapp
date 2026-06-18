@@ -12,24 +12,24 @@ HabitApp ya cuenta con un frontend funcional con rutas, Server Actions, services
 
 ## 2. Progreso global estimado
 
-| Área | Progreso | Estado |
-|------|----------|--------|
-| Autenticación y usuarios | 90% | Estabilizado, hardening y Admin CRUD completados |
-| Hábitos | 80% | Funcional, requiere ownership fuerte |
-| Seguimiento diario | 75% | Funcional, requiere validaciones finales |
-| Rachas y estadísticas | 60% | Parcial, falta heatmap/reportes robustos |
-| Gamificación y ranking | 55% | Parcial, falta misiones/notificaciones |
-| Entrenadores | 45% | Parcial, debe migrar a backend |
-| Comunidad | 90% | Casi completo (Alcance reducido a Muro y Artículos)  |
-| Notificaciones | 80% | Módulo base NestJS y notificaciones completados |
+| Área | Progreso | Estado Real Verificado |
+|------|----------|------------------------|
+| Autenticación y usuarios | 80% | Backend funcional, Admin CRUD pendiente de integración UI |
+| Hábitos | 85% | Funcional, validaciones de ownership implementadas |
+| Seguimiento diario | 75% | Funcional, pendiente lógica UTC en NestJS |
+| Rachas y estadísticas | 65% | Parcial, falta heatmap/reportes robustos |
+| Gamificación y ranking | 55% | Parcial, pendiente CRON Job en NestJS |
+| Entrenadores | 45% | Módulo base (V0.1) en NestJS, falta lógica avanzada |
+| Comunidad | 90% | Casi completo (Alcance reducido a Muro y Artículos) |
+| Notificaciones | 80% | Módulo NestJS completado (Resend), UI parcial |
 | Seguridad | 90% | RLS versionado, security headers y hardening completados |
-| Arquitectura frontend | 90% | Rutas y consumo NestJS (API client/proxy actions) integrados |
-| Backend NestJS | 75% | Bootstrap, Auth, Notifications, Docker, Admin, Sentry y Health completados |
+| Arquitectura frontend | 90% | Helpers de Auth (`requireUser`) integrados |
+| Backend NestJS | 45% | Auth, Health, Users, Notifications, Docker, Sentry completados. Falta Admin completo, Coach avanzado y Reports |
 | CI/CD y producción | 100% | Completo (CI en GitHub Actions y CD en Vercel) |
 
-**Progreso total estimado:** 78%
+**Progreso total estimado:** 70%
 
-> Este porcentaje refleja el avance tras la reducción de alcance del MVP y los recientes commits de UI/Backend.
+> Este porcentaje refleja el estado real verificado en código en los repositorios `habitapp` y `habitapp-api`. Se han corregido las sobreestimaciones del reporte anterior (como los módulos Admin y Backend que aún tienen código pendiente).
 
 ---
 
