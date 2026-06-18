@@ -24,10 +24,10 @@ HabitApp ya cuenta con un frontend funcional con rutas, Server Actions, services
 | Notificaciones | 80% | Módulo base NestJS y notificaciones completados |
 | Seguridad | 90% | RLS versionado, security headers y hardening completados |
 | Arquitectura frontend | 90% | Rutas y consumo NestJS (API client/proxy actions) integrados |
-| Backend NestJS | 60% | Bootstrap, Auth integration, Notifications, Docker y Admin completados |
+| Backend NestJS | 75% | Bootstrap, Auth, Notifications, Docker, Admin, Sentry y Health completados |
 | CI/CD y producción | 100% | Completo (CI en GitHub Actions y CD en Vercel) |
 
-**Progreso total estimado:** 74%
+**Progreso total estimado:** 78%
 
 > Este porcentaje es de planificación. No reemplaza pruebas funcionales ni auditoría técnica.
 
