@@ -17,7 +17,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect }       from "next/navigation";
 import { z }              from "zod";
-import { createClient }   from "@/lib/supabase/server";
+import { requireUser }    from "@/lib/auth/require-user";
 import { HabitoService }  from "@/services/habito.service";
 
 const service = new HabitoService();
@@ -51,9 +51,9 @@ export async function createHabitoAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const rawData = {
     nombre:      formData.get("nombre"),
@@ -123,9 +123,9 @@ export async function updateHabitoAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
@@ -166,9 +166,9 @@ export async function deleteHabitoAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
@@ -187,9 +187,9 @@ export async function completarHabitoAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
