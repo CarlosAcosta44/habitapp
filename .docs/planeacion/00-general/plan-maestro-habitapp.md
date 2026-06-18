@@ -410,15 +410,15 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/be-supabase-migrations` | Migraciones CLI + RLS completo | TL | Breiner | P0 | L | V0.1 |
-| `feature/fe-fix-dashboard-routes` | Eliminar `/dashboard/*` | Breiner | Nicolas | P0 | S | — |
-| `feature/fe-auth-hardening` | getUser(), callback, reset password | Breiner | TL | P0 | M | — |
-| `feature/fe-env-example` | .env.example + gitignore fix | Breiner | TL | P0 | XS | — |
+| `feature/be-supabase-migrations` | Migraciones CLI + RLS completo [COMPLETADO] | TL | Breiner | P0 | L | V0.1 |
+| `feature/fe-fix-dashboard-routes` | Eliminar `/dashboard/*` [COMPLETADO] | Breiner | Nicolas | P0 | S | — |
+| `feature/fe-auth-hardening` | getUser(), callback, reset password [COMPLETADO] | Breiner | TL | P0 | M | — |
+| `feature/fe-env-example` | .env.example + gitignore fix [COMPLETADO] | Breiner | TL | P0 | XS | — |
 | `feature/fe-habito-ownership` | Validar ownership en services | Nicolas | TL | P0 | S | — |
-| `feature/fe-mobile-nav` | Drawer/bottom nav móvil | Breiner | Juan | P1 | M | — |
-| `feature/fe-perfil-service` | Extraer PerfilService | Nicolas | Breiner | P1 | M | — |
+| `feature/fe-mobile-nav` | Drawer/bottom nav móvil [COMPLETADO] | Breiner | Juan | P1 | M | — |
+| `feature/fe-perfil-service` | Extraer PerfilService [COMPLETADO] | Nicolas | Breiner | P1 | M | — |
 | `feature/fe-cleanup-dead-code` | Eliminar temp_hash, SidebarNav | Juan | Breiner | P2 | S | — |
-| `chore/fe-setup-ci` | GitHub Actions habitapp | Breiner | TL | P0 | M | — |
+| `chore/fe-setup-ci` | GitHub Actions habitapp [COMPLETADO] | Breiner | TL | P0 | M | — |
 | `chore/be-setup-ci` | GitHub Actions habitapp-api [COMPLETADO] | Breiner | TL | P0 | S | V0.1 |
 | `bugfix/fe-foro-navigation` | ForoComunidadCard → detalle | Juan | Nicolas | P2 | XS | — |
 
@@ -428,13 +428,13 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/fe-api-client` | lib/api/client.ts + JWT | TL | Breiner | P0 | M | V0.1 |
-| `feature/be-openapi-v1` | Congelar spec OpenAPI | TL | Juan | P0 | S | V0.1 |
+| `feature/fe-api-client` | lib/api/client.ts + JWT [COMPLETADO] | TL | Breiner | P0 | M | V0.1 |
+| `feature/be-openapi-v1` | Congelar spec OpenAPI [COMPLETADO] | TL | Juan | P0 | S | V0.1 |
 | `feature/fe-supabase-types` | database.types.ts generado | Nicolas | TL | P1 | S | be-supabase-migrations |
 | `feature/fe-unify-habit-create` | Un solo flujo crear hábito | Nicolas | Breiner | P1 | M | — |
 | `feature/fe-require-user-helper` | requireUser/requireRole | Nicolas | TL | P1 | S | fe-auth-hardening |
-| `chore/docs-adr-nestjs-modular-architecture` | ADR arquitectura modular NestJS | TL | Todos | P1 | XS | — |
-| `chore/fe-deploy-vercel` | Vercel preview deploys (Nativo Vercel) | Breiner | TL | P1 | S | fe-setup-ci |
+| `chore/docs-adr-nestjs-modular-architecture` | ADR arquitectura modular NestJS [COMPLETADO] | TL | Todos | P1 | XS | — |
+| `chore/fe-deploy-vercel` | Vercel preview deploys (Nativo Vercel) [COMPLETADO] | Breiner | TL | P1 | S | fe-setup-ci |
 
 ---
 
@@ -442,12 +442,12 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/be-admin-users` | Admin CRUD usuarios | Juan | TL | P0 | L | be-users-module |
+| `feature/be-admin-users` | Admin CRUD usuarios [COMPLETADO] | Juan | TL | P0 | L | be-users-module |
 | `feature/be-admin-moderation` | Moderar comentarios/foros | Juan | TL | P0 | M | be-admin-users |
 | `feature/be-coach-routines` | CRUD rutinas | Juan | TL | P0 | L | be-coach-module |
 | `feature/be-coach-assign` | Asignar rutina a pupilo | Juan | TL | P0 | M | be-coach-routines |
 | `feature/be-coach-progress` | Progreso detallado pupilo | Juan | Nicolas | P1 | M | be-coach-assign |
-| `feature/be-notifications` | List + mark read + email | Breiner | TL | P1 | L | — |
+| `feature/be-notifications` | List + mark read + email [COMPLETADO] | Breiner | TL | P1 | L | — |
 | `feature/be-reports-ranking` | Ranking con Redis cache | Nicolas | TL | P1 | M | — |
 | `feature/be-reports-user` | Reporte resumen usuario | Nicolas | TL | P2 | M | — |
 | `chore/be-docker` | Dockerfile + compose [COMPLETADO] | Breiner | TL | P1 | M | — |
@@ -459,10 +459,10 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/fe-admin-layout` | Layout + rutas /admin | Breiner | TL | P0 | M | admin BE |
+| `feature/fe-admin-layout` | Layout + rutas /admin [COMPLETADO] | Breiner | TL | P0 | M | admin BE |
 | `feature/fe-admin-users-ui` | UI gestión usuarios | Juan | Breiner | P0 | M | admin BE |
 | `feature/fe-coach-dashboard-api` | Entrenador via API | Juan | TL | P0 | L | coach BE |
-| `feature/fe-api-proxy-actions` | Server Actions → backend | TL | Nicolas | P0 | M | fe-api-client |
+| `feature/fe-api-proxy-actions` | Server Actions → backend [COMPLETADO] | TL | Nicolas | P0 | M | fe-api-client |
 | `chore/e2e-critical-flows` | Playwright 5 flujos | Nicolas + Juan | Breiner | P0 | L | integración |
 
 ---
@@ -471,11 +471,11 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/prod-sentry` | Sentry FE + BE | Breiner | TL | P0 | S | — |
-| `feature/prod-security-headers` | CSP, HSTS, rate limit | TL | Breiner | P0 | M | — |
-| `feature/prod-monitoring` | Health + uptime | Breiner | TL | P1 | S | — |
+| `feature/prod-sentry` | Sentry FE + BE [COMPLETADO] | Breiner | TL | P0 | S | — |
+| `feature/prod-security-headers` | CSP, HSTS, rate limit [COMPLETADO] | TL | Breiner | P0 | M | — |
+| `feature/prod-monitoring` | Health + uptime [COMPLETADO] | Breiner | TL | P1 | S | — |
 | `release/1.0.0` | Release branch | TL | Todos | P0 | M | all |
-| `chore/docs-privacy-terms` | Legal docs | Breiner | TL | P0 | S | — |
+| `chore/docs-privacy-terms` | Legal docs [COMPLETADO] | Breiner | TL | P0 | S | — |
 
 ---
 
