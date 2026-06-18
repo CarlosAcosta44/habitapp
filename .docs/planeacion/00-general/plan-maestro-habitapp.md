@@ -471,9 +471,9 @@ gantt
 
 | Rama | Descripción | Responsable | Revisor | P | Est. | Dep. |
 |------|-------------|-------------|---------|---|------|------|
-| `feature/prod-sentry` | Sentry FE + BE | Breiner | TL | P0 | S | — |
+| `feature/prod-sentry` | Sentry FE + BE [COMPLETADO] | Breiner | TL | P0 | S | — |
 | `feature/prod-security-headers` | CSP, HSTS, rate limit [COMPLETADO] | TL | Breiner | P0 | M | — |
-| `feature/prod-monitoring` | Health + uptime | Breiner | TL | P1 | S | — |
+| `feature/prod-monitoring` | Health + uptime [COMPLETADO] | Breiner | TL | P1 | S | — |
 | `release/1.0.0` | Release branch | TL | Todos | P0 | M | all |
 | `chore/docs-privacy-terms` | Legal docs [COMPLETADO] | Breiner | TL | P0 | S | — |
 
