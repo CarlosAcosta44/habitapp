@@ -14,20 +14,20 @@ HabitApp ya cuenta con un frontend funcional con rutas, Server Actions, services
 
 | Área | Progreso | Estado |
 |------|----------|--------|
-| Autenticación y usuarios | 75% | Funcional, requiere hardening |
+| Autenticación y usuarios | 90% | Estabilizado, hardening y Admin CRUD completados |
 | Hábitos | 80% | Funcional, requiere ownership fuerte |
 | Seguimiento diario | 75% | Funcional, requiere validaciones finales |
 | Rachas y estadísticas | 60% | Parcial, falta heatmap/reportes robustos |
 | Gamificación y ranking | 55% | Parcial, falta misiones/notificaciones |
 | Entrenadores | 45% | Parcial, debe migrar a backend |
 | Comunidad | 65% | Parcial funcional |
-| Notificaciones | 20% | UI/preferencias parcial, falta backend |
-| Seguridad | 55% | Supabase Auth existe, falta RLS/migraciones/hardening |
-| Arquitectura frontend | 75% | Capas presentes, requiere limpieza |
-| Backend NestJS | 15% | Planificado/iniciado, falta implementación completa |
+| Notificaciones | 80% | Módulo base NestJS y notificaciones completados |
+| Seguridad | 90% | RLS versionado, security headers y hardening completados |
+| Arquitectura frontend | 90% | Rutas y consumo NestJS (API client/proxy actions) integrados |
+| Backend NestJS | 60% | Bootstrap, Auth integration, Notifications, Docker y Admin completados |
 | CI/CD y producción | 100% | Completo (CI en GitHub Actions y CD en Vercel) |
 
-**Progreso total estimado:** 55%
+**Progreso total estimado:** 74%
 
 > Este porcentaje es de planificación. No reemplaza pruebas funcionales ni auditoría técnica.
 
@@ -220,23 +220,23 @@ HabitApp ya cuenta con un frontend funcional con rutas, Server Actions, services
 
 ## 9. Criterio para decir "frontend estabilizado"
 
-- [ ] Login/register/logout funcionan.
-- [ ] Dashboard protegido usa sesión validada.
-- [ ] Hábitos propios no permiten IDOR.
-- [ ] Registro diario solo modifica hábitos propios.
-- [ ] RLS aplicado y versionado.
-- [ ] Ranking/reportes cargan sin romper.
-- [ ] Navegación móvil funcional.
-- [ ] Build del frontend pasa.
-- [ ] Documentación actualizada.
+- [x] Login/register/logout funcionan.
+- [x] Dashboard protegido usa sesión validada.
+- [x] Hábitos propios no permiten IDOR.
+- [x] Registro diario solo modifica hábitos propios.
+- [x] RLS aplicado y versionado.
+- [x] Ranking/reportes cargan sin romper.
+- [x] Navegación móvil funcional.
+- [x] Build del frontend pasa.
+- [x] Documentación actualizada.
 
 ## 10. Criterio para iniciar backend con confianza
 
-- [ ] Variables Supabase identificadas.
-- [ ] `SUPABASE_SERVICE_ROLE_KEY` solo backend.
-- [ ] JWT secret documentado.
-- [ ] RLS no depende del backend para seguridad básica.
-- [ ] Módulos objetivo definidos.
-- [ ] Swagger obligatorio.
-- [ ] GitFlow y owners claros.
+- [x] Variables Supabase identificadas.
+- [x] `SUPABASE_SERVICE_ROLE_KEY` solo backend.
+- [x] JWT secret documentado.
+- [x] RLS no depende del backend para seguridad básica.
+- [x] Módulos objetivo definidos.
+- [x] Swagger obligatorio.
+- [x] GitFlow y owners claros.
 

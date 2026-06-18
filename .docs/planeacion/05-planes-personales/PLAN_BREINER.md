@@ -90,13 +90,14 @@ Antes de abrir PR:
 
 ## Cronograma personal
 
-| Periodo | Actividad |
-|---------|-----------|
-| Fase 1 | Rutas, auth hardening, `.env.example`, CI frontend |
-| Fase 2 | Deploy preview (Nativo Vercel), apoyo API client y revisión de integración |
-| Fase 3 | Notifications, Docker/CI backend con apoyo de Carlos |
-| Fase 4 | Admin layout y validación UI con backend |
-| Fase 5 | Sentry, monitoring, despliegue y legal docs |
+| Periodo | Actividad | Estado |
+|---------|-----------|--------|
+| Fase 1 | Rutas, auth hardening, `.env.example`, CI frontend | Completado |
+| Fase 2 | Deploy preview (Nativo Vercel), apoyo API client y revisión de integración | Completado |
+| Fase 3 | Notifications, Docker/CI backend con apoyo de Carlos | Completado |
+| Fase 4 | Admin layout y validación UI con backend | Completado |
+| Fase 5 | Sentry, monitoring, despliegue y legal docs | En progreso (Legal docs Completado) |
+
 
 ## Trabajo con agentes
 
