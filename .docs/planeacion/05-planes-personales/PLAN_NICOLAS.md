@@ -36,12 +36,12 @@
 
 | Rama | Prioridad | Objetivo |
 |------|-----------|----------|
-| `feature/be-users-module` | P0 | Users endpoints iniciales |
-| `feature/fe-habito-ownership` | P0 | Validar ownership en services |
+| `feature/be-users-module` | P0 | ✅ Users endpoints iniciales |
+| `feature/fe-habito-ownership` | P0 | ✅ Validar ownership en services |
 | `feature/fe-perfil-service` | P1 | Extraer PerfilService |
 | `feature/fe-supabase-types` | P1 | Generar `database.types.ts` |
-| `feature/fe-unify-habit-create` | P1 | Unificar flujo crear hábito |
-| `feature/fe-require-user-helper` | P1 | Helper `requireUser/requireRole` |
+| `feature/fe-unify-habit-create` | P1 | ✅ Unificar flujo crear hábito |
+| `feature/fe-require-user-helper` | P1 | ✅ Helper `requireUser/requireRole` |
 | `feature/be-reports-ranking` | P1 | Ranking con cache |
 | `feature/be-reports-user` | P2 | Reporte resumen usuario |
 | `chore/e2e-critical-flows` | P0 | Playwright flujos críticos |

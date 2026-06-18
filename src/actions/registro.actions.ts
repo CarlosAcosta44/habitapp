@@ -8,7 +8,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z }              from "zod";
-import { createClient }   from "@/lib/supabase/server";
+import { requireUser }    from "@/lib/auth/require-user";
 import { RegistroService } from "@/services/registro.service";
 import type { ActionState } from "@/actions/habito.actions";
 
@@ -34,9 +34,9 @@ export async function marcarCompletadoAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const rawData = {
     idHabito:    formData.get("idHabito"),
@@ -74,9 +74,9 @@ export async function desmarcarCompletadoAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const idHabito = formData.get("idHabito") as string;
   if (!idHabito) return { success: false, message: "ID del hábito requerido" };
@@ -96,9 +96,9 @@ export async function avanzarProgresoAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const rawData = {
     idHabito:       formData.get("idHabito"),
