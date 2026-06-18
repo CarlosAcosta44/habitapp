@@ -74,19 +74,19 @@
 
 Antes de iniciar:
 
-- [ ] Crear rama desde `develop`.
-- [ ] Usar prefijo correcto: `feature/*`, `bugfix/*` o `chore/*`.
-- [ ] Confirmar issue asociado.
-- [ ] Confirmar revisor.
+- [x] Crear rama desde `develop`.
+- [x] Usar prefijo correcto: `feature/*`, `bugfix/*` o `chore/*`.
+- [x] Confirmar issue asociado.
+- [x] Confirmar revisor.
 
 Antes de abrir PR:
 
-- [ ] El PR apunta a `develop`.
-- [ ] La descripción incluye qué cambió y cómo probarlo.
-- [ ] Se adjunta evidencia visual si el cambio afecta UI.
-- [ ] Se verificó que login/logout siguen funcionando.
-- [ ] Se verificó responsive en mobile si el cambio afecta layout.
-- [ ] Se actualizaron docs si cambió flujo o configuración.
+- [x] El PR apunta a `develop`.
+- [x] La descripción incluye qué cambió y cómo probarlo.
+- [x] Se adjunta evidencia visual si el cambio afecta UI.
+- [x] Se verificó que login/logout siguen funcionando.
+- [x] Se verificó responsive en mobile si el cambio afecta layout.
+- [x] Se actualizaron docs si cambió flujo o configuración.
 
 ## Cronograma personal
 
