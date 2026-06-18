@@ -47,8 +47,8 @@
 | `feature/be-notifications` | P1 | Módulo notificaciones (Completado) |
 | `chore/be-docker` | P1 | Dockerfile y docker-compose (Completado) |
 | `feature/fe-admin-layout` | P0 | Layout admin (Completado) |
-| `feature/prod-sentry` | P0 | Sentry FE + BE |
-| `feature/prod-monitoring` | P1 | Health + uptime |
+| `feature/prod-sentry` | P0 | Sentry FE + BE (Completado) |
+| `feature/prod-monitoring` | P1 | Health + uptime (Completado) |
 | `chore/docs-privacy-terms` | P0 | Docs legales (Completado) |
 
 ## Checklist inicial
@@ -96,7 +96,7 @@ Antes de abrir PR:
 | Fase 2 | Deploy preview (Nativo Vercel), apoyo API client y revisión de integración | Completado |
 | Fase 3 | Notifications, Docker/CI backend con apoyo de Carlos | Completado |
 | Fase 4 | Admin layout y validación UI con backend | Completado |
-| Fase 5 | Sentry, monitoring, despliegue y legal docs | En progreso (Legal docs Completado) |
+| Fase 5 | Sentry, monitoring, despliegue y legal docs | Completado (Localmente) |
 
 
 ## Trabajo con agentes
