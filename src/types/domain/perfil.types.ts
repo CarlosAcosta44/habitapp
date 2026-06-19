@@ -72,3 +72,15 @@ export interface PointsHistoryEntry {
   motivo: string;
   fecha: string;
 }
+
+export interface ProfileForEdit {
+  nombre: string;
+  apellido: string;
+  fotoperfil: string | null;
+}
+
+export interface UpdateProfileDTO {
+  nombre?: string;
+  apellido?: string;
+  fotoperfil?: string;
+}
