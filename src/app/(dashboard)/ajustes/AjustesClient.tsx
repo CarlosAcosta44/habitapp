@@ -15,7 +15,7 @@ const generalItemsDefault = [
     titulo: "Editar Perfil",
     descripcion: "Actualiza tu información personal",
     tipo: "link" as const,
-    href: "/perfil",
+    href: "/perfil/editar",
   },
   {
     icono: (
