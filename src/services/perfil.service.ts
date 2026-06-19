@@ -6,10 +6,13 @@
 
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
+import { apiClient } from "@/lib/api/client";
+import { createClient } from "@/lib/supabase/server";
 import { PerfilRepository } from "@/repositories/perfil.repository";
 import { AmigosRepository } from "@/repositories/amigos.repository";
 import { RegistroRepository } from "@/repositories/registro.repository";
-import type { PerfilDashboardData } from "@/types/domain/perfil.types";
+import type { PerfilDashboardData, ProfileForEdit, UpdateProfileDTO } from "@/types/domain/perfil.types";
+import type { UserProfileDto } from "@/types/domain/usuario.types";
 
 export class PerfilService {
   private readonly perfilRepo: PerfilRepository;
@@ -155,6 +158,76 @@ export class PerfilService {
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
       return err(`Error en PerfilService al recopilar datos: ${msg}`);
+    }
+  }
+  /**
+   * Obtiene los datos ligeros necesarios para el formulario de edición de perfil.
+   * Llama a: GET /users/me en el backend de NestJS.
+   */
+  async getProfileForEdit(): Promise<Result<ProfileForEdit>> {
+    const result = await apiClient.get<UserProfileDto>("users/me");
+    if (!result.success) {
+      return err(`Error al obtener perfil para edición: ${result.error}`);
+    }
+    const data = result.data;
+    return ok({
+      nombre: data.nombre,
+      apellido: data.apellido,
+      fotoperfil: data.fotoperfil,
+    });
+  }
+
+  /**
+   * Actualiza los datos básicos del perfil (nombre, apellido, fotoperfil).
+   * Canaliza la mutación a través de la API en NestJS.
+   */
+  async updateProfile(dto: UpdateProfileDTO): Promise<Result<ProfileForEdit>> {
+    const result = await apiClient.patch<UserProfileDto>("users/me", dto);
+    if (!result.success) {
+      return err(`Error al actualizar perfil: ${result.error}`);
+    }
+    const data = result.data;
+    return ok({
+      nombre: data.nombre,
+      apellido: data.apellido,
+      fotoperfil: data.fotoperfil,
+    });
+  }
+
+  /**
+   * Sube una nueva foto de perfil al bucket 'avatars' de Supabase
+   * y luego actualiza el registro llamando a updateProfile.
+   * @param userId El ID del usuario autenticado (para organizar las carpetas en el bucket).
+   * @param file El archivo a subir (File object).
+   */
+  async updateAvatar(userId: string, file: File): Promise<Result<string>> {
+    try {
+      const supabase = await createClient();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}_${Date.now()}.${fileExt}`;
+      const filePath = `profiles/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) {
+        return err(`Error al subir imagen al bucket: ${uploadError.message}`);
+      }
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      const publicUrl = data.publicUrl;
+
+      // Actualizar el perfil llamando a NestJS
+      const updateResult = await this.updateProfile({ fotoperfil: publicUrl });
+      if (!updateResult.success) {
+        return err(`Error al actualizar URL en perfil: ${updateResult.error}`);
+      }
+
+      return ok(publicUrl);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      return err(`Error inesperado en updateAvatar: ${msg}`);
     }
   }
 }
