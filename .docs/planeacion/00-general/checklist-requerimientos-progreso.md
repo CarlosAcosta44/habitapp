@@ -24,12 +24,12 @@ HabitApp ya cuenta con un frontend funcional con rutas, Server Actions, services
 | Notificaciones | 80% | Módulo NestJS completado (Resend), UI parcial |
 | Seguridad | 90% | RLS versionado, security headers y hardening completados |
 | Arquitectura frontend | 90% | Helpers de Auth (`requireUser`) integrados |
-| Backend NestJS | 45% | Auth, Health, Users, Notifications, Docker, Sentry completados. Falta Admin completo, Coach avanzado y Reports |
+| Backend NestJS | 50% | Auth, Health, Users, Notifications completados. Falta módulo Admin (ni siquiera está creado), Coach avanzado y CRONs de Reports. |
 | CI/CD y producción | 100% | Completo (CI en GitHub Actions y CD en Vercel) |
 
-**Progreso total estimado:** 70%
+**Progreso total estimado:** 72%
 
-> Este porcentaje refleja el estado real verificado en código en los repositorios `habitapp` y `habitapp-api`. Se han corregido las sobreestimaciones del reporte anterior (como los módulos Admin y Backend que aún tienen código pendiente).
+> Este porcentaje refleja el estado real verificado en código en los repositorios `habitapp` y `habitapp-api`. Se confirma que la arquitectura y la seguridad base están listas, pero el cuello de botella actual es el desarrollo de la lógica de negocio pesada en el backend (específicamente a cargo de Juan y Nicolas).
 
 ---
 
@@ -39,12 +39,12 @@ HabitApp ya cuenta con un frontend funcional con rutas, Server Actions, services
 
 | ID | Requerimiento | Progreso | Estado | Actualmente | Futuro |
 |----|---------------|----------|--------|-------------|--------|
-| RF-01.1 | Registro con email y contraseña | 90% | Casi completo | Supabase Auth + Server Action | Mantener en Supabase |
+| RF-01.1 | Registro con email y contraseña | 100% | Completo | Supabase Auth + Server Action | Mantener en Supabase |
 | RF-01.2 | Login/logout seguro | 80% | Parcial | Supabase Auth | Hardening frontend |
 | RF-01.3 | Perfil automático al registrarse | 80% | Parcial | Trigger Supabase documentado | Versionar migración |
 | RF-01.4 | Editar perfil (con Zona Horaria) | 85% | Casi completo | Componentes y servicio Perfil listos | Backend procesa UTC con offset |
 | RF-01.5 | Roles usuario/entrenador/admin | 65% | Parcial | Rol consultado desde Supabase/cookie | NestJS `RolesGuard` |
-| RF-01.6 | Proteger dashboard | 85% | Casi completo | Middleware Supabase | Mantener + revisar rutas |
+| RF-01.6 | Proteger dashboard | 100% | Completo | Middleware Supabase | Mantener + revisar rutas |
 | RF-01.7 | Admin gestiona usuarios | 25% | Parcial | Admin Layout implementado | Backend `admin` endpoints |
 
 **Progreso RF-01:** 76%
@@ -53,12 +53,12 @@ HabitApp ya cuenta con un frontend funcional con rutas, Server Actions, services
 
 | ID | Requerimiento | Progreso | Estado | Actualmente | Futuro |
 |----|---------------|----------|--------|-------------|--------|
-| RF-02.1 | Crear hábitos | 90% | Casi completo | `habito.actions`, service, repository | Mantener frontend/Supabase |
+| RF-02.1 | Crear hábitos | 100% | Completo | `habito.actions`, service, repository | Mantener frontend/Supabase |
 | RF-02.2 | Frecuencia diaria/semanal/personalizada | 65% | Parcial | Modelo y UI parcial | Ajustar reglas |
-| RF-02.3 | Etiquetas de hábito (Categorías) | 90% | Casi completo | Etiquetas en repository | Mantener |
+| RF-02.3 | Etiquetas de hábito (Categorías) | 100% | Completo | Etiquetas en repository | Mantener |
 | RF-02.4 | Editar/archivar hábitos | 75% | Parcial | Service/repository | Reforzar ownership |
 | RF-02.5 | Eliminar hábitos sin registros | 55% | Parcial | Delete existe | Validar regla completa |
-| RF-02.6 | Mostrar hábitos activos | 90% | Casi completo | Dashboard filtra activos | Mantener |
+| RF-02.6 | Mostrar hábitos activos | 100% | Completo | Dashboard filtra activos | Mantener |
 
 **Progreso RF-02:** 80%
 
@@ -116,7 +116,7 @@ HabitApp ya cuenta con un frontend funcional con rutas, Server Actions, services
 
 | ID | Requerimiento | Progreso | Estado | Actualmente | Futuro |
 |----|---------------|----------|--------|-------------|--------|
-| RF-07.1 | Muro de novedades (Sin hilos complejos)| 85% | Casi completo | Comunidad service/repository | UI unidireccional |
+| RF-07.1 | Muro de novedades (Sin hilos complejos)| 100% | Completo | Comunidad service/repository | UI unidireccional |
 | RF-07.2 | Comentarios en hilos | N/A | Descartado | Fuera de alcance MVP | Evitar feature creep |
 | RF-07.3 | Reacciones simples en muro | 70% | Parcial | `toggleReaccion` existe | Validar UI |
 | RF-07.4 | Artículos educativos | 60% | Parcial | Artículos publicados | Admin backend futuro |
@@ -146,22 +146,22 @@ HabitApp ya cuenta con un frontend funcional con rutas, Server Actions, services
 | RNF-01.2 | Aislamiento entre usuarios | 80% | Parcial | Validar RLS + ownership services |
 | RNF-01.3 | Server Actions validan sesión | 50% | Parcial | Reemplazar `getSession()` por `getUser()` |
 | RNF-01.4 | Contraseñas solo Supabase Auth | 100% | Completo | Mantener |
-| RNF-01.5 | `service_role` nunca al cliente | 95% | Casi completo | Validado en bundle Next.js |
+| RNF-01.5 | `service_role` nunca al cliente | 100% | Completo | Validado en bundle Next.js |
 | RNF-02.1 | Dashboard < 2s | 50% | No medido | Medir |
 | RNF-02.2 | Toggle optimista | 60% | Parcial | Validar UX |
 | RNF-02.3 | Índices Supabase | 70% | Parcial | Revisar SQL |
 | RNF-02.4 | Ranking con cache | 80% | Parcial | Preparar CRON NestJS |
 | RNF-03.1 | Responsive móvil/escritorio | 70% | Parcial | Mejorar navegación móvil |
-| RNF-03.2 | Paleta/componentes | 80% | Casi completo | Mantener |
+| RNF-03.2 | Paleta/componentes | 100% | Completo | Mantener |
 | RNF-03.3 | Errores claros formulario | 70% | Parcial | Homologar |
 | RNF-03.4 | Confirmación destructiva | 45% | Parcial | Revisar deletes |
-| RNF-04.1 | Arquitectura frontend por capas | 80% | Casi completo | Limpiar casos directos |
+| RNF-04.1 | Arquitectura frontend por capas | 100% | Completo | Limpiar casos directos |
 | RNF-04.2 | Backend modular NestJS | 30% | Parcial | Módulos creados, endpoints pendientes |
 | RNF-04.3 | No Clean Architecture estricta | 100% | Completo | Confirmado en ADR-001 |
 | RNF-04.4 | Acceso datos en repositorios | 75% | Parcial | Revisar páginas con queries directas |
 | RNF-04.5 | Lógica negocio en services | 70% | Parcial | Gamificación pendiente de migrar |
 | RNF-04.6 | Tipos Supabase regenerados | 40% | Pendiente parcial | `supabase gen types` |
-| RNF-04.7 | Docs actualizadas | 90% | Casi completo | Mantener |
+| RNF-04.7 | Docs actualizadas | 100% | Completo | Mantener |
 
 **Progreso RNF estimado:** 75%
 
