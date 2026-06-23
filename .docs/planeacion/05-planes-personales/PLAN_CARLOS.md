@@ -141,14 +141,14 @@ Regla clave: no crear `domain/`, `application/`, `infrastructure/` y `presentati
 
 Antes de iniciar desarrollo:
 
-- [ ] Leer `.docs/planeacion/00-general/plan-maestro-habitapp.md`.
-- [ ] Leer `.docs/planeacion/02-backend/arquitectura-backend-nestjs.md`.
-- [ ] Leer `.docs/planeacion/01-frontend/requerimientos-frontend.md`.
-- [ ] Confirmar ramas `main` y `develop`.
-- [ ] Confirmar que no se hará push directo a `main`.
-- [ ] Confirmar variables necesarias de Supabase.
-- [ ] Confirmar dónde vive el backend NestJS (`habitapp-api` o carpeta/repo acordado).
-- [ ] Confirmar que `SUPABASE_SERVICE_ROLE_KEY` nunca se use en frontend.
+- [x] Leer `.docs/planeacion/00-general/plan-maestro-habitapp.md`.
+- [x] Leer `.docs/planeacion/02-backend/arquitectura-backend-nestjs.md`.
+- [x] Leer `.docs/planeacion/01-frontend/requerimientos-frontend.md`.
+- [x] Confirmar ramas `main` y `develop`.
+- [x] Confirmar que no se hará push directo a `main`.
+- [x] Confirmar variables necesarias de Supabase.
+- [x] Confirmar dónde vive el backend NestJS (`habitapp-api` o carpeta/repo acordado).
+- [x] Confirmar que `SUPABASE_SERVICE_ROLE_KEY` nunca se use en frontend.
 
 ## 10. Checklist por rama
 
