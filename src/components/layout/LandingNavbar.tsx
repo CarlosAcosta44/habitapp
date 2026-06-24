@@ -4,13 +4,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 export function LandingNavbar() {
-  const scrollTo = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -24,18 +17,18 @@ export function LandingNavbar() {
       </div>
 
       <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-        <button
-          onClick={() => scrollTo("funcionalidades")}
+        <Link
+          href="#funcionalidades"
           className="hover:text-white transition-colors cursor-pointer"
         >
           FUNCIONALIDADES
-        </button>
-        <button
-          onClick={() => scrollTo("nosotros")}
+        </Link>
+        <Link
+          href="#nosotros"
           className="hover:text-white transition-colors cursor-pointer"
         >
           NOSOTROS
-        </button>
+        </Link>
       </div>
 
       <Link
