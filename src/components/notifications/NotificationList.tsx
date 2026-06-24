@@ -24,9 +24,9 @@ export function NotificationList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const notificationService = new NotificationService();
+  const notificationService = React.useMemo(() => new NotificationService(), []);
 
-  const loadNotifications = async () => {
+  const loadNotifications = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     const res = await notificationService.getNotifications();
@@ -36,11 +36,11 @@ export function NotificationList() {
       setError(res.error);
     }
     setLoading(false);
-  };
+  }, [notificationService]);
 
   useEffect(() => {
     loadNotifications();
-  }, []);
+  }, [loadNotifications]);
 
   const handleMarkAsRead = async (id: string) => {
     const res = await notificationService.markAsRead(id);

@@ -13,21 +13,22 @@ import { NotificationService } from '@/services/notification.service';
 
 export function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
-  const notificationService = new NotificationService();
-
-  const fetchUnreadCount = async () => {
-    try {
-      const res = await notificationService.getNotifications();
-      if (res.success) {
-        const count = res.data.filter(n => !n.isRead).length;
-        setUnreadCount(count);
-      }
-    } catch (err) {
-      console.error("Error al cargar notificaciones en campanita:", err);
-    }
-  };
 
   useEffect(() => {
+    const notificationService = new NotificationService();
+
+    const fetchUnreadCount = async () => {
+      try {
+        const res = await notificationService.getNotifications();
+        if (res.success) {
+          const count = res.data.filter(n => !n.isRead).length;
+          setUnreadCount(count);
+        }
+      } catch (err) {
+        console.error("Error al cargar notificaciones en campanita:", err);
+      }
+    };
+
     fetchUnreadCount();
 
     // Escuchar actualizaciones dinámicas
