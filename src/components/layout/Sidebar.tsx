@@ -22,6 +22,7 @@ import {
 import { NewHabitModal } from '../modals/NewHabitModal';
 import { logoutAction } from '@/actions/auth.actions';
 import { User } from '@/types/domain/user.types';
+import { NotificationBell } from '../notifications/NotificationBell';
 
 interface SidebarProps {
   user: User;
@@ -73,9 +74,12 @@ export function Sidebar({ user }: SidebarProps) {
     <aside className="w-64 h-full bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-800 dark:text-slate-300 transition-colors border-r border-slate-200 dark:border-slate-800">
       {/* Brand & User Profile Area */}
       <div className="p-6 flex flex-col space-y-6 mb-5 ">
-        <h2 className="text-2xl font-bold tracking-wide text-indigo-300">
-          HabitApp
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold tracking-wide text-indigo-300">
+            HabitApp
+          </h2>
+          <NotificationBell />
+        </div>
         
         <Link
           href="/perfil"
