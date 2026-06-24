@@ -4,9 +4,22 @@
  * @layer Business Logic (Capa 3)
  */
 
-import { apiClient } from "@/lib/api/client";
+import { apiClient, setTokenGetter } from "@/lib/api/client";
+import { createClient } from "@/lib/supabase/server";
 import type { Result } from "@/lib/result";
 import type { UserProfileDto, UpdateUserProfileDto } from "@/types/domain/usuario.types";
+
+// Registrar el getter del token para uso exclusivo en el servidor
+setTokenGetter(async () => {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token || null;
+  } catch (error) {
+    console.error("Error al obtener token en UsuarioService:", error);
+    return null;
+  }
+});
 
 export class UsuarioService {
   /**
