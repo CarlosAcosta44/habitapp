@@ -5,7 +5,6 @@
  * @layer Presentation & Integration (Capa 1/2 — Server-side)
  */
 
-import { createClient } from "@/lib/supabase/server";
 import { ok, err }       from "@/lib/result";
 import type { Result }   from "@/lib/result";
 
@@ -16,8 +15,21 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1
  */
 async function getAuthHeader(): Promise<Record<string, string>> {
   try {
-    const supabase = await createClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    let session;
+    if (typeof window === "undefined") {
+      // Entorno del Servidor
+      const { createClient } = await import("@/lib/supabase/server");
+      const supabase = await createClient();
+      const { data } = await supabase.auth.getSession();
+      session = data.session;
+    } else {
+      // Entorno del Cliente (Navegador)
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      const { data } = await supabase.auth.getSession();
+      session = data.session;
+    }
+
     if (session?.access_token) {
       return { Authorization: `Bearer ${session.access_token}` };
     }
