@@ -5,21 +5,38 @@
  * @layer Presentation & Integration (Capa 1/2 — Server-side)
  */
 
-import { createClient } from "@/lib/supabase/server";
 import { ok, err }       from "@/lib/result";
 import type { Result }   from "@/lib/result";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+
+let tokenGetter: (() => Promise<string | null>) | null = null;
+
+/**
+ * Permite registrar la función para obtener el token desde el servidor de forma dinámica.
+ */
+export function setTokenGetter(getter: () => Promise<string | null>) {
+  tokenGetter = getter;
+}
 
 /**
  * Obtiene las cabeceras de autorización con el Bearer JWT del usuario autenticado.
  */
 async function getAuthHeader(): Promise<Record<string, string>> {
   try {
-    const supabase = await createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.access_token) {
-      return { Authorization: `Bearer ${session.access_token}` };
+    let token = null;
+    if (tokenGetter) {
+      token = await tokenGetter();
+    } else if (typeof window !== "undefined") {
+      // Entorno del Cliente (Navegador)
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      const { data } = await supabase.auth.getSession();
+      token = data.session?.access_token || null;
+    }
+
+    if (token) {
+      return { Authorization: `Bearer ${token}` };
     }
   } catch (error) {
     console.error("Error al obtener token de sesión de Supabase:", error);

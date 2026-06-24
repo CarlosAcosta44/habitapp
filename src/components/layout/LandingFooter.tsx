@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export function LandingFooter() {
   return (
     <footer className="py-12 bg-black border-t border-white/5">
@@ -10,8 +12,8 @@ export function LandingFooter() {
           </div>
 
           <div className="flex flex-wrap justify-center gap-8 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-            <a href="#" className="hover:text-white transition-colors">Política de Privacidad</a>
-            <a href="#" className="hover:text-white transition-colors">Términos de Servicio</a>
+            <Link href="/legal/privacy" className="hover:text-white transition-colors">Política de Privacidad</Link>
+            <Link href="/legal/terms" className="hover:text-white transition-colors">Términos de Servicio</Link>
             <a href="#" className="hover:text-white transition-colors">Google Login</a>
             <a href="#" className="hover:text-white transition-colors">Apple Login</a>
             <a href="#" className="hover:text-white transition-colors">Facebook Login</a>

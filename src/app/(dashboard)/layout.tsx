@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { MobileNav } from '@/components/layout/MobileNav'
+import { NotificationBell } from '@/components/notifications/NotificationBell'
 import { UsuarioService } from '@/services/usuario.service'
 import type { User, Role } from '@/types/domain/user.types'
 
@@ -54,16 +55,19 @@ export default async function DashboardLayout({
         {/* Mobile Header */}
         <header className="md:hidden sticky top-0 z-30 h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md flex items-center justify-between px-6">
           <span className="font-bold text-lg text-indigo-600 dark:text-indigo-400 tracking-wide">HabitApp</span>
-          <Link href="/perfil" className="w-8 h-8 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
-            {avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center font-bold text-sm text-indigo-700 dark:text-white bg-indigo-100 dark:bg-indigo-600">
-                {displayInitial}
-              </div>
-            )}
-          </Link>
+          <div className="flex items-center gap-3">
+            <NotificationBell />
+            <Link href="/perfil" className="w-8 h-8 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center font-bold text-sm text-indigo-700 dark:text-white bg-indigo-100 dark:bg-indigo-600">
+                  {displayInitial}
+                </div>
+              )}
+            </Link>
+          </div>
         </header>
 
         <main className="flex-1 overflow-auto p-4 pb-24 md:p-8">
