@@ -6,13 +6,25 @@
 
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
-import { apiClient } from "@/lib/api/client";
+import { apiClient, setTokenGetter } from "@/lib/api/client";
 import { createClient } from "@/lib/supabase/server";
 import { PerfilRepository } from "@/repositories/perfil.repository";
 import { AmigosRepository } from "@/repositories/amigos.repository";
 import { RegistroRepository } from "@/repositories/registro.repository";
 import type { PerfilDashboardData, ProfileForEdit, UpdateProfileDTO } from "@/types/domain/perfil.types";
 import type { UserProfileDto } from "@/types/domain/usuario.types";
+
+// Registrar el getter del token para uso exclusivo en el servidor
+setTokenGetter(async () => {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token || null;
+  } catch (error) {
+    console.error("Error al obtener token en PerfilService:", error);
+    return null;
+  }
+});
 
 export class PerfilService {
   private readonly perfilRepo: PerfilRepository;
