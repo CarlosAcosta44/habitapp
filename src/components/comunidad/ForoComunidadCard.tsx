@@ -5,6 +5,7 @@
  */
 
 import type { ForoConMetricas } from "@/types/domain/comunidad.types";
+import Link from "next/link";
 
 // Íconos y colores por categoría
 const categoriaConfig: Record<string, { icono: string; color: string }> = {
@@ -25,7 +26,7 @@ export function ForoComunidadCard({ foro }: ForoComunidadCardProps) {
   const config = categoriaConfig[foro.categoria ?? ""] ?? categoriaConfig.default;
 
   return (
-    <div className="group p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800/50 hover:border-indigo-500/30 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-indigo-500/5 relative overflow-hidden">
+    <Link href={`/comunidad/foros/${foro.idForo}`} className="block group p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800/50 hover:border-indigo-500/30 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-indigo-500/5 relative overflow-hidden">
       {/* Badge activo */}
       {foro.estado === "Abierto" && foro.totalComentarios > 0 && (
         <div className="absolute top-4 right-4">
@@ -57,6 +58,6 @@ export function ForoComunidadCard({ foro }: ForoComunidadCardProps) {
         </svg>
         <span className="text-slate-500 dark:text-slate-400">{foro.totalSuscriptores.toLocaleString()} miembros</span>
       </div>
-    </div>
+    </Link>
   );
 }
