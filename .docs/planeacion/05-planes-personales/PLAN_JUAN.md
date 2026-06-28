@@ -51,40 +51,40 @@
 
 ## Checklist inicial
 
-- [ ] Leer plan maestro.
-- [ ] Leer arquitectura backend NestJS.
-- [ ] Revisar flujos actuales de comunidad.
-- [ ] Revisar requisitos de entrenador y admin.
-- [ ] Confirmar roles necesarios para coach/admin.
-- [ ] Confirmar endpoints objetivo en Swagger.
+- [x] Leer plan maestro.
+- [x] Leer arquitectura backend NestJS.
+- [x] Revisar flujos actuales de comunidad.
+- [x] Revisar requisitos de entrenador y admin.
+- [x] Confirmar roles necesarios para coach/admin.
+- [x] Confirmar endpoints objetivo en Swagger.
 
 ## Checklist por tarea
 
-- [ ] Endpoints coach protegidos con rol entrenador.
-- [ ] Endpoints admin protegidos con rol admin.
-- [ ] Repositories validan relación entrenador-pupilo cuando aplique.
-- [ ] DTOs documentados con Swagger.
-- [ ] Services contienen reglas de negocio.
-- [ ] Tests unitarios agregados si la lógica lo amerita.
-- [ ] UI consume API, no queries directas en flujos migrados.
+- [x] Endpoints coach protegidos con rol entrenador.
+- [x] Endpoints admin protegidos con rol admin.
+- [x] Repositories validan relación entrenador-pupilo cuando aplique.
+- [x] DTOs documentados con Swagger.
+- [x] Services contienen reglas de negocio.
+- [x] Tests unitarios agregados si la lógica lo amerita.
+- [x] UI consume API, no queries directas en flujos migrados.
 
 ## Checklist por rama
 
 Antes de iniciar:
 
-- [ ] Crear rama desde `develop`.
-- [ ] Confirmar si el cambio es frontend, backend o integración.
-- [ ] Confirmar roles necesarios: usuario, entrenador o admin.
-- [ ] Confirmar endpoints y DTOs esperados.
+- [x] Crear rama desde `develop`.
+- [x] Confirmar si el cambio es frontend, backend o integración.
+- [x] Confirmar roles necesarios: usuario, entrenador o admin.
+- [x] Confirmar endpoints y DTOs esperados.
 
 Antes de abrir PR:
 
-- [ ] PR apunta a `develop`.
-- [ ] Endpoints protegidos prueban 401 y 403 cuando aplique.
-- [ ] Swagger actualizado si hay cambio de API.
-- [ ] UI admin/coach consume API en flujos migrados.
-- [ ] No se exponen datos de usuarios no autorizados.
-- [ ] Se documentan pruebas manuales.
+- [x] PR apunta a `develop`.
+- [x] Endpoints protegidos prueban 401 y 403 cuando aplique.
+- [x] Swagger actualizado si hay cambio de API.
+- [x] UI admin/coach consume API en flujos migrados.
+- [x] No se exponen datos de usuarios no autorizados.
+- [x] Se documentan pruebas manuales.
 
 ## Cronograma personal
 

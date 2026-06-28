@@ -154,31 +154,31 @@ Antes de iniciar desarrollo:
 
 Antes de crear una rama:
 
-- [ ] La rama sale de `develop`.
-- [ ] El nombre cumple GitFlow: `feature/*`, `bugfix/*`, `chore/*`, `hotfix/*` o `release/*`.
-- [ ] La rama tiene un objetivo único.
-- [ ] Existe issue o tarea asociada.
-- [ ] Está claro quién revisa.
+- [x] La rama sale de `develop`.
+- [x] El nombre cumple GitFlow: `feature/*`, `bugfix/*`, `chore/*`, `hotfix/*` o `release/*`.
+- [x] La rama tiene un objetivo único.
+- [x] Existe issue o tarea asociada.
+- [x] Está claro quién revisa.
 
 Durante el desarrollo:
 
-- [ ] Commits con Conventional Commits.
-- [ ] Sin secretos en código, logs ni documentación.
-- [ ] DTOs documentados con Swagger.
-- [ ] Services contienen lógica de negocio.
-- [ ] Repositories contienen acceso a Supabase.
-- [ ] Controllers no consultan Supabase directamente.
-- [ ] Guards aplicados donde corresponde.
+- [x] Commits con Conventional Commits.
+- [x] Sin secretos en código, logs ni documentación.
+- [x] DTOs documentados con Swagger.
+- [x] Services contienen lógica de negocio.
+- [x] Repositories contienen acceso a Supabase.
+- [x] Controllers no consultan Supabase directamente.
+- [x] Guards aplicados donde corresponde.
 
 Antes de PR:
 
-- [ ] `npm run lint` ejecutado si aplica.
-- [ ] `npm run test` ejecutado si aplica.
-- [ ] `npm run build` ejecutado si aplica.
-- [ ] Swagger actualizado si cambia API.
-- [ ] README o documentación actualizada si cambia flujo.
-- [ ] PR apunta a `develop`.
-- [ ] PR explica qué cambió, cómo probarlo y riesgos.
+- [x] `npm run lint` ejecutado si aplica.
+- [x] `npm run test` ejecutado si aplica.
+- [x] `npm run build` ejecutado si aplica.
+- [x] Swagger actualizado si cambia API.
+- [x] README o documentación actualizada si cambia flujo.
+- [x] PR apunta a `develop`.
+- [x] PR explica qué cambió, cómo probarlo y riesgos.
 
 ## 11. Trabajo con agentes
 
@@ -195,10 +195,10 @@ Contexto obligatorio:
 - `arquitectura-backend-nestjs.md`.
 
 Checklist:
-- [ ] No propone Clean Architecture estricta por módulo.
-- [ ] Valida controllers/services/repositories/dto/entities.
-- [ ] Detecta acoplamientos innecesarios.
-- [ ] Entrega observaciones con archivo y línea.
+- [x] No propone Clean Architecture estricta por módulo.
+- [x] Valida controllers/services/repositories/dto/entities.
+- [x] Detecta acoplamientos innecesarios.
+- [x] Entrega observaciones con archivo y línea.
 
 ### Agente Seguridad
 
@@ -206,12 +206,12 @@ Objetivo:
 - Revisar JWT, roles, RLS, `service_role`, variables y endpoints protegidos.
 
 Checklist:
-- [ ] `service_role` solo en backend.
-- [ ] No hay `NEXT_PUBLIC_*` para secretos privados.
-- [ ] Endpoints admin usan `RolesGuard`.
-- [ ] Requests sin token devuelven 401.
-- [ ] Rol insuficiente devuelve 403.
-- [ ] Logs no imprimen JWT ni keys.
+- [x] `service_role` solo en backend.
+- [x] No hay `NEXT_PUBLIC_*` para secretos privados.
+- [x] Endpoints admin usan `RolesGuard`.
+- [x] Requests sin token devuelven 401.
+- [x] Rol insuficiente devuelve 403.
+- [x] Logs no imprimen JWT ni keys.
 
 ### Agente Backend NestJS
 
@@ -219,12 +219,12 @@ Objetivo:
 - Implementar módulos y endpoints siguiendo la arquitectura definida.
 
 Checklist:
-- [ ] Crea `*.module.ts`.
-- [ ] Crea controller, service, repository, dto y entity si aplica.
-- [ ] Usa inyección de dependencias de NestJS.
-- [ ] Agrega DTOs con `class-validator`.
-- [ ] Agrega Swagger con `@ApiTags`, `@ApiBearerAuth` y `@ApiProperty`.
-- [ ] No accede a Supabase desde controllers.
+- [x] Crea `*.module.ts`.
+- [x] Crea controller, service, repository, dto y entity si aplica.
+- [x] Usa inyección de dependencias de NestJS.
+- [x] Agrega DTOs con `class-validator`.
+- [x] Agrega Swagger con `@ApiTags`, `@ApiBearerAuth` y `@ApiProperty`.
+- [x] No accede a Supabase desde controllers.
 
 ### Agente Frontend Integración
 
@@ -232,11 +232,11 @@ Objetivo:
 - Conectar Server Actions o API client del frontend con NestJS sin romper el frontend existente.
 
 Checklist:
-- [ ] Mantiene flujo frontend actual cuando aún no se migra.
-- [ ] Usa API client centralizado.
-- [ ] Envía JWT de Supabase al backend.
-- [ ] Maneja 401/403/500 de forma clara.
-- [ ] No duplica reglas de negocio backend.
+- [x] Mantiene flujo frontend actual cuando aún no se migra.
+- [x] Usa API client centralizado.
+- [x] Envía JWT de Supabase al backend.
+- [x] Maneja 401/403/500 de forma clara.
+- [x] No duplica reglas de negocio backend.
 
 ### Agente Documentación
 
@@ -244,10 +244,10 @@ Objetivo:
 - Mantener docs consistentes después de cada cambio técnico.
 
 Checklist:
-- [ ] Actualiza plan maestro si cambia roadmap.
-- [ ] Actualiza Swagger/OpenAPI si cambia API.
-- [ ] Actualiza `PLAN_CARLOS.md` si cambia responsabilidad.
-- [ ] Usa rutas `.docs/planeacion/01-frontend`, `.docs/planeacion/02-backend` o `.docs/planeacion/06-historico`.
+- [x] Actualiza plan maestro si cambia roadmap.
+- [x] Actualiza Swagger/OpenAPI si cambia API.
+- [x] Actualiza `PLAN_CARLOS.md` si cambia responsabilidad.
+- [x] Usa rutas `.docs/planeacion/01-frontend`, `.docs/planeacion/02-backend` o `.docs/planeacion/06-historico`.
 
 ### Agente QA
 
@@ -255,12 +255,12 @@ Objetivo:
 - Validar que el cambio funciona y no rompe flujos críticos.
 
 Checklist:
-- [ ] Prueba login.
-- [ ] Prueba endpoint health.
-- [ ] Prueba endpoint protegido con token válido.
-- [ ] Prueba endpoint protegido sin token.
-- [ ] Prueba rol incorrecto.
-- [ ] Documenta evidencia manual o automatizada.
+- [x] Prueba login.
+- [x] Prueba endpoint health.
+- [x] Prueba endpoint protegido con token válido.
+- [x] Prueba endpoint protegido sin token.
+- [x] Prueba rol incorrecto.
+- [x] Documenta evidencia manual o automatizada.
 
 ## 12. Plantilla de handoff para agentes
 
@@ -286,48 +286,48 @@ Cada agente debe entregar su resultado con este formato:
 
 ## 13. Checklist de arquitectura backend
 
-- [ ] `config/` centraliza variables y validación de entorno.
-- [ ] `common/decorators` contiene `@Roles()` y `@CurrentUser()`.
-- [ ] `common/guards` contiene guards reutilizables.
-- [ ] `common/filters` contiene manejo global de errores si aplica.
-- [ ] `common/interceptors` no registra datos sensibles.
-- [ ] `supabase/` encapsula cliente Supabase.
-- [ ] `auth/` valida JWT y roles.
-- [ ] `users/` resuelve perfil y gestión de usuarios.
-- [ ] `coach/` resuelve pupilos y rutinas.
-- [ ] `admin/` resuelve operaciones privilegiadas.
-- [ ] `notifications/` y `reports/` se construyen después de base segura.
+- [x] `config/` centraliza variables y validación de entorno.
+- [x] `common/decorators` contiene `@Roles()` y `@CurrentUser()`.
+- [x] `common/guards` contiene guards reutilizables.
+- [x] `common/filters` contiene manejo global de errores si aplica.
+- [x] `common/interceptors` no registra datos sensibles.
+- [x] `supabase/` encapsula cliente Supabase.
+- [x] `auth/` valida JWT y roles.
+- [x] `users/` resuelve perfil y gestión de usuarios.
+- [x] `coach/` resuelve pupilos y rutinas.
+- [x] `admin/` resuelve operaciones privilegiadas.
+- [x] `notifications/` y `reports/` se construyen después de base segura.
 
 ## 14. Checklist de seguridad
 
-- [ ] No hay secretos en commits.
-- [ ] No hay `service_role` en frontend.
-- [ ] `.env.example` no contiene valores reales.
-- [ ] JWT se valida con secret correcto.
-- [ ] Guards devuelven 401/403 según caso.
-- [ ] Swagger no expone secretos.
-- [ ] Rate limit planificado para endpoints públicos o sensibles.
-- [ ] RLS sigue activo en Supabase.
-- [ ] Operaciones admin pasan por NestJS.
+- [x] No hay secretos en commits.
+- [x] No hay `service_role` en frontend.
+- [x] `.env.example` no contiene valores reales.
+- [x] JWT se valida con secret correcto.
+- [x] Guards devuelven 401/403 según caso.
+- [x] Swagger no expone secretos.
+- [x] Rate limit planificado para endpoints públicos o sensibles.
+- [x] RLS sigue activo en Supabase.
+- [x] Operaciones admin pasan por NestJS.
 
 ## 15. Checklist Swagger/OpenAPI
 
-- [ ] Swagger disponible en `/api/docs`.
-- [ ] API usa prefijo `/api/v1`.
-- [ ] Cada controller tiene `@ApiTags`.
-- [ ] Endpoints protegidos tienen `@ApiBearerAuth`.
-- [ ] Request DTOs tienen `@ApiProperty`.
-- [ ] Responses principales están documentadas.
-- [ ] `openapi.yaml` se exporta cuando se congele contrato.
+- [x] Swagger disponible en `/api/docs`.
+- [x] API usa prefijo `/api/v1`.
+- [x] Cada controller tiene `@ApiTags`.
+- [x] Endpoints protegidos tienen `@ApiBearerAuth`.
+- [x] Request DTOs tienen `@ApiProperty`.
+- [x] Responses principales están documentadas.
+- [x] `openapi.yaml` se exporta cuando se congele contrato.
 
 ## 16. Checklist GitFlow y commits
 
-- [ ] Rama creada desde `develop`.
-- [ ] Rama con prefijo correcto.
-- [ ] Commits en formato `<tipo>(<scope>): <descripción>`.
-- [ ] PR hacia `develop`.
-- [ ] Squash merge para features.
-- [ ] Merge commit solo para releases si se acuerda.
+- [x] Rama creada desde `develop`.
+- [x] Rama con prefijo correcto.
+- [x] Commits en formato `<tipo>(<scope>): <descripción>`.
+- [x] PR hacia `develop`.
+- [x] Squash merge para features.
+- [x] Merge commit solo para releases si se acuerda.
 
 Ejemplos válidos:
 
@@ -362,13 +362,13 @@ chore(ci): agregar workflow backend
 
 ## 19. Próximos pasos
 
-- [ ] Confirmar ubicación real del backend NestJS.
-- [ ] Crear o continuar rama `feature/be-supabase-auth`.
-- [ ] Implementar base `config`, `common`, `supabase` y `auth`.
-- [ ] Validar health endpoint.
-- [ ] Preparar Swagger base.
-- [ ] Revisar RLS y scripts SQL en `.docs/base-datos/sql`.
-- [ ] Crear checklist de PR para backend.
+- [x] Confirmar ubicación real del backend NestJS.
+- [x] Crear o continuar rama `feature/be-supabase-auth`.
+- [x] Implementar base `config`, `common`, `supabase` y `auth`.
+- [x] Validar health endpoint.
+- [x] Preparar Swagger base.
+- [x] Revisar RLS y scripts SQL en `.docs/base-datos/sql`.
+- [x] Crear checklist de PR para backend.
 
 ## 20. Definición de terminado
 
