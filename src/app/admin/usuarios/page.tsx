@@ -29,8 +29,8 @@ export default function AdminUsersPage() {
     setError(null);
     const result = await adminService.getUsers();
     
-    if (result.ok) {
-      setUsers(result.value);
+    if (result.success) {
+      setUsers(result.data);
     } else {
       setError(result.error || "No se pudieron cargar los usuarios.");
     }
@@ -52,7 +52,7 @@ export default function AdminUsersPage() {
     setIsUpdating(userId);
     const result = await adminService.updateUserRole(userId, newRole);
     
-    if (result.ok) {
+    if (result.success) {
       setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
       showToast('success', `Rol actualizado a ${newRole} correctamente`);
     } else {
