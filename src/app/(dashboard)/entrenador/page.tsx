@@ -34,12 +34,17 @@ export default function CoachDashboardPage() {
         coachService.getRoutines()
       ]);
 
-      if (!clientsRes.success || !routinesRes.success) {
-        setError(clientsRes.error || routinesRes.error || "Error al cargar el panel de entrenador.");
-      } else {
-        setClients(clientsRes.data);
-        setRoutines(routinesRes.data);
+      if (!clientsRes.success) {
+        setError(clientsRes.error || "Error al cargar pupilos.");
+        return;
       }
+      if (!routinesRes.success) {
+        setError(routinesRes.error || "Error al cargar rutinas.");
+        return;
+      }
+      
+      setClients(clientsRes.data);
+      setRoutines(routinesRes.data);
     } catch (e: any) {
       setError(e.message || "Error inesperado de red.");
     } finally {
