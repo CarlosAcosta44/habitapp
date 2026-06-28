@@ -48,39 +48,39 @@
 
 ## Checklist inicial
 
-- [ ] Leer plan maestro.
-- [ ] Leer requerimientos frontend.
-- [ ] Revisar services y repositories actuales de hábitos.
-- [ ] Revisar perfil actual y responsabilidades mezcladas.
-- [ ] Confirmar schema Supabase y scripts SQL.
-- [ ] Confirmar criterios de ownership por `idusuario`.
+- [x] Leer plan maestro.
+- [x] Leer requerimientos frontend.
+- [x] Revisar services y repositories actuales de hábitos.
+- [x] Revisar perfil actual y responsabilidades mezcladas.
+- [x] Confirmar schema Supabase y scripts SQL.
+- [x] Confirmar criterios de ownership por `idusuario`.
 
 ## Checklist por tarea
 
-- [ ] Validar usuario autenticado con `getUser()` o helper acordado.
-- [ ] Evitar queries Supabase directas desde UI.
-- [ ] Mantener patrón service/repository en frontend.
-- [ ] Regenerar tipos si cambia schema.
-- [ ] Agregar prueba manual de IDOR cuando aplique.
-- [ ] Documentar cambios de contratos.
+- [x] Validar usuario autenticado con `getUser()` o helper acordado.
+- [x] Evitar queries Supabase directas desde UI.
+- [x] Mantener patrón service/repository en frontend.
+- [x] Regenerar tipos si cambia schema.
+- [x] Agregar prueba manual de IDOR cuando aplique.
+- [x] Documentar cambios de contratos.
 
 ## Checklist por rama
 
 Antes de iniciar:
 
-- [ ] Crear rama desde `develop`.
-- [ ] Confirmar issue o feature del plan maestro.
-- [ ] Identificar si el cambio afecta frontend, backend o ambos.
-- [ ] Confirmar datos necesarios de Supabase.
+- [x] Crear rama desde `develop`.
+- [x] Confirmar issue o feature del plan maestro.
+- [x] Identificar si el cambio afecta frontend, backend o ambos.
+- [x] Confirmar datos necesarios de Supabase.
 
 Antes de abrir PR:
 
-- [ ] PR apunta a `develop`.
-- [ ] Validación de ownership documentada si aplica.
-- [ ] No hay queries directas desde UI si existe service/repository.
-- [ ] Tipos actualizados si cambió schema.
-- [ ] Se probó usuario autenticado y usuario no autorizado cuando aplique.
-- [ ] Se actualizó documentación si cambia contrato o flujo.
+- [x] PR apunta a `develop`.
+- [x] Validación de ownership documentada si aplica.
+- [x] No hay queries directas desde UI si existe service/repository.
+- [x] Tipos actualizados si cambió schema.
+- [x] Se probó usuario autenticado y usuario no autorizado cuando aplique.
+- [x] Se actualizó documentación si cambia contrato o flujo.
 
 ## Cronograma personal
 
