@@ -25,6 +25,25 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Protección por Roles
+  if (user) {
+    const userRole = user.user_metadata?.role || 'USER'
+    
+    // Solo ADMIN puede entrar a /admin
+    if (pathname.startsWith('/admin') && userRole !== 'ADMIN') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/habitos'
+      return NextResponse.redirect(url)
+    }
+
+    // Solo TRAINER o ADMIN pueden entrar a /entrenador (ajusta según tus reglas)
+    if (pathname.startsWith('/entrenador') && !['TRAINER', 'ADMIN'].includes(userRole)) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/habitos'
+      return NextResponse.redirect(url)
+    }
+  }
+
   return supabaseResponse
 }
 
