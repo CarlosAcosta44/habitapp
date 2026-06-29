@@ -5,7 +5,7 @@
  */
 
 import { requireUser } from "@/lib/supabase/server";
-import { PerfilService } from "@/services/perfil.service";
+import { UsuarioService } from "@/services/usuario.service";
 import { PerfilHeader } from "@/components/perfil/PerfilHeader";
 import { PerfilSidebar } from "@/components/perfil/PerfilSidebar";
 import { PerfilTabs } from "@/components/perfil/PerfilTabs";
@@ -17,7 +17,7 @@ export const metadata = { title: "Perfil | HabitApp" };
 
 export default async function PerfilPage() {
   const user = await requireUser();
-  const perfilService = new PerfilService();
+  const perfilService = new UsuarioService();
 
   const result = await perfilService.getPerfilDashboardData(user.id);
 
