@@ -5,9 +5,8 @@
  * artículos destacados y CTA de newsletter.
  */
 
-import { createClient }       from "@/lib/supabase/server";
-import { redirect }           from "next/navigation";
-import { ComunidadService }   from "@/modules/comunidad/comunidad.service";
+import { requireUser }        from "@/lib/supabase/server";
+import { ComunidadService }   from "@/services/comunidad.service";
 import { ExplorarHabitos }    from "@/components/comunidad/ExplorarHabitos";
 import { ForoComunidadCard }  from "@/components/comunidad/ForoComunidadCard";
 import { DirectorioProfesionales } from "@/components/comunidad/DirectorioProfesionales";
@@ -18,13 +17,11 @@ export const metadata = { title: "Comunidad | HabitApp" };
 const comunidadService = new ComunidadService();
 
 export default async function ComunidadPage() {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect("/login");
+  const user = await requireUser();
 
   // ── Obtener datos en paralelo ────────────────────────────────────────────
   const [forosResult, articulosResult, entrenadoresResult] = await Promise.all([
-    comunidadService.getForos(session.user.id),
+    comunidadService.getForos(user.id),
     comunidadService.getArticulos(4),
     comunidadService.getEntrenadores(),
   ]);

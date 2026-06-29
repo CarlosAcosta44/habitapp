@@ -1,14 +1,15 @@
-'use client';
+/* eslint-disable react-hooks/set-state-in-effect */
 
-import React, { useEffect, useState, useTransition } from 'react';
+
+import React, { useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Flame, Trash2, Ban, CheckCircle2 } from 'lucide-react';
-import type { HabitoConProgreso } from '@/modules/habitos/types';
+import type { HabitoConProgreso } from '@/types/domain/habito.types';
 import { 
   marcarCompletadoAction, 
   avanzarProgresoAction 
-} from '@/modules/registros/registro.actions';
-import { deleteHabitoAction } from '@/modules/habitos/habito.actions';
+} from '@/actions/registro.actions';
+import { deleteHabitoAction } from '@/actions/habito.actions';
 
 interface HabitDetailModalProps {
   isOpen: boolean;
@@ -18,14 +19,7 @@ interface HabitDetailModalProps {
 }
 
 export function HabitDetailModal({ isOpen, onClose, habito, rachaActual }: HabitDetailModalProps) {
-  const [isMounted, setIsMounted] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isOpen || !isMounted) return null;
 
   const completado = habito.registroHoy?.completado ?? false;
   const progresoActual = habito.registroHoy?.progresoActual ?? 0;
@@ -38,6 +32,11 @@ export function HabitDetailModal({ isOpen, onClose, habito, rachaActual }: Habit
   const radius = 60;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+  const [isMounted] = useState(true);
+  const [isPending, startTransition] = useTransition();
+
+  if (!isOpen) return null;
 
   const handleCompletarTodo = () => {
     startTransition(async () => {

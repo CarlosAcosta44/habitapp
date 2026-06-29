@@ -7,8 +7,8 @@
 
 import Link              from "next/link";
 import { useTransition } from "react";
-import { suscribirseAction, desuscribirseAction } from "@/modules/comunidad/comunidad.actions";
-import type { ForoConMetricas } from "@/modules/comunidad/types";
+import { suscribirseAction, desuscribirseAction } from "@/actions/comunidad.actions";
+import type { ForoConMetricas } from "@/types/domain/comunidad.types";
 
 interface ForoCardProps {
   foro: ForoConMetricas;
@@ -36,7 +36,7 @@ export function ForoCard({ foro }: ForoCardProps) {
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <Link
-          href={`/dashboard/comunidad/foros/${foro.idForo}`}
+          href={`/comunidad/foros/${foro.idForo}`}
           className="flex-1 min-w-0"
         >
           <h3 className="font-semibold text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate">

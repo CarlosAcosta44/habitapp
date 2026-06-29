@@ -13,7 +13,7 @@ import {
   marcarCompletadoAction, 
   desmarcarCompletadoAction,
   avanzarProgresoAction
-} from "@/modules/registros/registro.actions";
+} from "@/actions/registro.actions";
 
 interface MarcarCompletadoBtnProps {
   idHabito:    string;

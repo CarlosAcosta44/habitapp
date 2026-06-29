@@ -7,9 +7,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { reaccionarAction }        from "@/modules/comunidad/comunidad.actions";
+import { reaccionarAction }        from "@/actions/comunidad.actions";
 import { ComentarioForm }          from "./ComentarioForm";
-import type { ComentarioConAutor } from "@/modules/comunidad/types";
+import type { ComentarioConAutor } from "@/types/domain/comunidad.types";
 
 interface ComentarioItemProps {
   comentario: ComentarioConAutor;

@@ -10,7 +10,7 @@ import { useState } from "react";
 import { StreakBadge }         from "@/components/habitos/StreakBadge";
 import { MarcarCompletadoBtn } from "@/components/registros/MarcarCompletadoBtn";
 import { HabitDetailModal }    from "@/components/modals/HabitDetailModal";
-import type { HabitoConProgreso } from "@/modules/habitos/types";
+import type { HabitoConProgreso } from "@/types/domain/habito.types";
 import { Droplets, Dumbbell, Flame, Leaf, MoonStar, Sparkles } from "lucide-react";
 
 interface HabitCardProps {

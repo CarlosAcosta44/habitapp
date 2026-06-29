@@ -4,20 +4,17 @@
  * Podio visual del top 3 y tabla del 4to en adelante.
  */
 
-import { createClient }      from "@/lib/supabase/server";
-import { redirect }          from "next/navigation";
-import { ReportesService }   from "@/modules/reportes/reportes.service";
+import { requireUser }       from "@/lib/supabase/server";
+import { ReportesService }   from "@/services/reportes.service";
 
 export const metadata = { title: "Ranking | HabitApp" };
 
 const reportesService = new ReportesService();
 
 export default async function RankingPage() {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect("/login");
+  const user = await requireUser();
 
-  const rankingResult = await reportesService.getRanking(session.user.id);
+  const rankingResult = await reportesService.getRanking();
   const ranking = rankingResult.success ? rankingResult.data : [];
 
   const top3   = ranking.slice(0, 3);

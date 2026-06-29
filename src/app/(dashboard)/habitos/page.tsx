@@ -13,10 +13,10 @@
  */
 
 import Link                from "next/link";
-import { createClient }    from "@/lib/supabase/server";
-import { redirect }        from "next/navigation";
-import { HabitoService }   from "@/modules/habitos/habito.service";
-import { RegistroService } from "@/modules/registros/registro.service";
+import { createClient, requireUser } from "@/lib/supabase/server";
+import { HabitoService }   from "@/services/habito.service";
+import { RegistroService } from "@/services/registro.service";
+import { UsuarioService }  from "@/services/usuario.service";
 import { HabitCard }       from "@/components/habitos/HabitCard";
 import { DailyProgress }   from "@/components/registros/DailyProgress";
 import { CalendarDays, Target, Trophy, Zap } from "lucide-react";
@@ -28,11 +28,10 @@ const registroService = new RegistroService();
 
 export default async function HabitosPage() {
   // ── Verificar sesión ────────────────────────────────────────────────────────
+  const user = await requireUser();
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect("/login");
 
-  const usuarioId = session.user.id;
+  const usuarioId = user.id;
 
   // ── Obtener hábitos con progreso del día ────────────────────────────────────
   const habitosResult = await habitoService.getDashboard(usuarioId);
@@ -53,16 +52,14 @@ export default async function HabitosPage() {
   const completados = habitos.filter((h) => h.registroHoy?.completado).length;
   const porcentaje = habitos.length === 0 ? 0 : Math.round((completados / habitos.length) * 100);
   const rachaMaxima = Math.max(0, ...Object.values(rachasMap));
-  // ── Obtener datos del perfil real ───────────────────────────────────────────
-  const { data: perfil } = await supabase
-    .from("perfiles_usuarios_api")
-    .select("nombre, apellido")
-    .eq("idusuario", session.user.id)
-    .single();
+  // ── Obtener datos del perfil real desde backend NestJS ──────────────────────
+  const usuarioService = new UsuarioService();
+  const perfilResult = await usuarioService.getPerfilMe();
+  const perfil = perfilResult.success ? perfilResult.data : null;
 
   const nombreReal = perfil?.nombre && perfil?.apellido 
     ? `${perfil.nombre} ${perfil.apellido}` 
-    : (session.user.user_metadata?.full_name?.split(" ")?.[0] || session.user.email?.split("@")[0] || "Campeón");
+    : (user.user_metadata?.full_name?.split(" ")?.[0] || user.email?.split("@")[0] || "Campeón");
 
   // ── Obtener últimos 7 días para el panel semanal ──────────────────────────
   const historialResult = await registroService.getHistorialUsuario(usuarioId);

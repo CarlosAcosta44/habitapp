@@ -1,11 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { HabitoService } from '@/modules/habitos/habito.service'
+import { HabitoService } from '@/services/habito.service'
 import {
   ONBOARDING_HABIT_PRESETS,
   ONBOARDING_PRESET_IDS,
@@ -15,6 +15,11 @@ type AuthErrorLike = {
   message?: string
   code?: string
   status?: number
+}
+
+type UserDataWithRole = {
+  idrol?: number | null
+  roles?: { nombrerol?: string | null } | null
 }
 
 function traducirErrorAuth(
@@ -81,7 +86,7 @@ export async function loginAction(formData: FormData) {
       .eq('idusuario', userId)
       .single()
 
-    const rol = (userData as any)?.roles?.nombrerol
+    const rol = (userData as UserDataWithRole)?.roles?.nombrerol
     if (rol) {
       const cookieStore = await cookies()
       cookieStore.set('user_role', rol, { maxAge: 60 * 60 * 24 * 7, path: '/' })
@@ -261,7 +266,7 @@ export async function registerAction(
       .eq('idusuario', userId)
       .single()
 
-    const rol = (userData as any)?.roles?.nombrerol
+    const rol = (userData as UserDataWithRole)?.roles?.nombrerol
     if (rol) {
       const cookieStore = await cookies()
       cookieStore.set('user_role', rol, { maxAge: 60 * 60 * 24 * 7, path: '/' })
@@ -292,9 +297,14 @@ export async function resetPasswordAction(formData: FormData) {
   const supabase = await createClient()
   const email = formData.get('email') as string
 
+  const headersList = await headers()
+  const host = headersList.get('host')
+  const protocol = host?.startsWith('localhost') ? 'http' : 'https'
+  const origin = `${protocol}://${host}`
+
   // Dirigimos al callback primero para capturar e intercambiar el código por la sesión.
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `http://localhost:3000/auth/callback?next=/update-password`,
+    redirectTo: `${origin}/auth/callback?next=/update-password`,
   })
 
   if (error) {

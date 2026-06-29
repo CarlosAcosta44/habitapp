@@ -5,23 +5,20 @@
  * y progreso individual por hábito.
  */
 
-import { createClient }       from "@/lib/supabase/server";
-import { redirect }           from "next/navigation";
-import { ReportesService }    from "@/modules/reportes/reportes.service";
+import { requireUser }        from "@/lib/supabase/server";
+import { ReportesService }    from "@/services/reportes.service";
 
 export const metadata = { title: "Reportes | HabitApp" };
 
 const reportesService = new ReportesService();
 
 export default async function ReportesPage() {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect("/login");
+  const user = await requireUser();
 
   const [statsResult, habitosResult, comparativaResult] = await Promise.all([
-    reportesService.getEstadisticas(session.user.id),
-    reportesService.getHabitosReporte(session.user.id),
-    reportesService.getComparativaSemanal(session.user.id),
+    reportesService.getEstadisticas(user.id),
+    reportesService.getHabitosReporte(user.id),
+    reportesService.getComparativaSemanal(user.id),
   ]);
 
   const stats   = statsResult.success   ? statsResult.data   : null;
@@ -85,26 +82,26 @@ export default async function ReportesPage() {
             <div>
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Éxito %</p>
               <p className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                {stats?.exitoPorcentaje ?? 0}
+                {stats?.tasa_diaria ?? 0}
                 <span className="text-base text-slate-400 font-normal"> %</span>
               </p>
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Completados</p>
               <p className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                {stats?.completados ?? 0}
+                {stats?.completados_hoy ?? 0}
               </p>
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Puntos</p>
               <p className="text-3xl font-extrabold text-pink-500">
-                {(stats?.puntosTotales ?? 0).toLocaleString()}
+                {(stats?.puntos_totales ?? 0).toLocaleString()}
               </p>
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Racha</p>
               <p className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                {stats?.rachaActual ?? 0}
+                {0}
                 <span className="ml-1 text-base">🔥</span>
               </p>
             </div>
@@ -122,8 +119,8 @@ export default async function ReportesPage() {
               </span>
             </div>
             <div className="flex gap-4 text-xs">
-              <span className="text-slate-500">SALTADOS: <span className="font-semibold text-slate-400">{stats?.saltados ?? 0}</span></span>
-              <span className="text-red-400">FALLADOS: <span className="font-semibold">{stats?.fallados ?? 0}</span></span>
+              <span className="text-slate-500">SALTADOS: <span className="font-semibold text-slate-400">{0}</span></span>
+              <span className="text-red-400">FALLADOS: <span className="font-semibold">{Math.max(0, (stats?.habitos_activos ?? 0) - (stats?.completados_hoy ?? 0))}</span></span>
             </div>
           </div>
         </div>
