@@ -14,7 +14,7 @@ const reportesService = new ReportesService();
 export default async function RankingPage() {
   const user = await requireUser();
 
-  const rankingResult = await reportesService.getRanking(user.id);
+  const rankingResult = await reportesService.getRanking();
   const ranking = rankingResult.success ? rankingResult.data : [];
 
   const top3   = ranking.slice(0, 3);

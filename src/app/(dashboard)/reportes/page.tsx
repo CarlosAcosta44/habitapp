@@ -82,26 +82,26 @@ export default async function ReportesPage() {
             <div>
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Éxito %</p>
               <p className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                {stats?.exitoPorcentaje ?? 0}
+                {stats?.tasa_diaria ?? 0}
                 <span className="text-base text-slate-400 font-normal"> %</span>
               </p>
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Completados</p>
               <p className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                {stats?.completados ?? 0}
+                {stats?.completados_hoy ?? 0}
               </p>
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Puntos</p>
               <p className="text-3xl font-extrabold text-pink-500">
-                {(stats?.puntosTotales ?? 0).toLocaleString()}
+                {(stats?.puntos_totales ?? 0).toLocaleString()}
               </p>
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Racha</p>
               <p className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                {stats?.rachaActual ?? 0}
+                {0}
                 <span className="ml-1 text-base">🔥</span>
               </p>
             </div>
@@ -119,8 +119,8 @@ export default async function ReportesPage() {
               </span>
             </div>
             <div className="flex gap-4 text-xs">
-              <span className="text-slate-500">SALTADOS: <span className="font-semibold text-slate-400">{stats?.saltados ?? 0}</span></span>
-              <span className="text-red-400">FALLADOS: <span className="font-semibold">{stats?.fallados ?? 0}</span></span>
+              <span className="text-slate-500">SALTADOS: <span className="font-semibold text-slate-400">{0}</span></span>
+              <span className="text-red-400">FALLADOS: <span className="font-semibold">{Math.max(0, (stats?.habitos_activos ?? 0) - (stats?.completados_hoy ?? 0))}</span></span>
             </div>
           </div>
         </div>

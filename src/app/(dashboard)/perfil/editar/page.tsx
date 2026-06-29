@@ -1,5 +1,5 @@
 import { requireUser } from "@/lib/supabase/server";
-import { PerfilService } from "@/services/perfil.service";
+import { UsuarioService } from "@/services/usuario.service";
 import { EditProfileForm } from "@/components/perfil/EditProfileForm";
 import Link from "next/link";
 
@@ -7,7 +7,7 @@ export const metadata = { title: "Editar Perfil | HabitApp" };
 
 export default async function EditarPerfilPage() {
   const user = await requireUser();
-  const perfilService = new PerfilService();
+  const perfilService = new UsuarioService();
   
   const result = await perfilService.getProfileForEdit();
   

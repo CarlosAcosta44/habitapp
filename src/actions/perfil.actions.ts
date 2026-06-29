@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { PerfilService } from "@/services/perfil.service";
+import { UsuarioService } from "@/services/usuario.service";
 import { requireUser } from "@/lib/supabase/server";
 
 export type PerfilActionState = {
@@ -17,7 +17,7 @@ const UpdatePerfilSchema = z.object({
   apellido: z.string().trim().min(2, "El apellido debe tener al menos 2 caracteres").max(45),
 });
 
-const perfilService = new PerfilService();
+const perfilService = new UsuarioService();
 
 export async function updatePerfilBasicoAction(
   _prevState: PerfilActionState | null,

@@ -38,6 +38,16 @@ export interface CreateRoutineDto {
   }[];
 }
 
+export interface UpdateRoutineDto {
+  name?: string;
+  description?: string;
+  habits?: {
+    habit_name: string;
+    habit_icon?: string;
+    frequency?: string;
+  }[];
+}
+
 export interface ClientProgress {
   currentStreak: number;
   longestStreak: number;
@@ -56,6 +66,18 @@ export const coachService = {
 
   async createRoutine(dto: CreateRoutineDto): Promise<Result<CoachRoutine>> {
     return apiClient.post<CoachRoutine>('/coach/routines', dto);
+  },
+
+  async getRoutineById(id: string): Promise<Result<CoachRoutine>> {
+    return apiClient.get<CoachRoutine>(`/coach/routines/${id}`);
+  },
+
+  async updateRoutine(id: string, dto: UpdateRoutineDto): Promise<Result<CoachRoutine>> {
+    return apiClient.patch<CoachRoutine>(`/coach/routines/${id}`, dto);
+  },
+
+  async deleteRoutine(id: string): Promise<Result<any>> {
+    return apiClient.delete(`/coach/routines/${id}`);
   },
 
   async assignRoutine(clientId: string, routineId: string): Promise<Result<any>> {
