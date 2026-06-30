@@ -43,15 +43,26 @@ export function EditProfileForm({ profile, userId }: Props) {
     const formData = new FormData();
     formData.append("avatar", file);
 
-    const result = await updateAvatarAction(formData);
-    
-    setIsUploadingAvatar(false);
-    
-    if (result.success) {
-      setAvatarMessage({ type: 'success', text: result.message });
-      setAvatarPreview(result.data); // URL pública real
-    } else {
-      setAvatarMessage({ type: 'error', text: result.message });
+    try {
+      const result = await updateAvatarAction(formData);
+      
+      setIsUploadingAvatar(false);
+      
+      if (result.success) {
+        setAvatarMessage({ type: 'success', text: result.message });
+        setAvatarPreview(result.data); // URL pública real
+      } else {
+        // Manejo específico del bucket
+        if (result.message?.includes('Bucket not found') || result.error?.includes('Bucket not found') || result.message?.includes('Storage')) {
+          setAvatarMessage({ type: 'error', text: "La subida de imágenes está en mantenimiento." });
+        } else {
+          setAvatarMessage({ type: 'error', text: result.message || "Error al subir la imagen" });
+        }
+        setAvatarPreview(profile.fotoperfil); // Revertir si falla
+      }
+    } catch (error) {
+      setIsUploadingAvatar(false);
+      setAvatarMessage({ type: 'error', text: "La subida de imágenes está en mantenimiento." });
       setAvatarPreview(profile.fotoperfil); // Revertir si falla
     }
   };

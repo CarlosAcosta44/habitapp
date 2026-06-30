@@ -1,4 +1,6 @@
 import React from 'react';
+import Link from 'next/link';
+import { Edit2 } from 'lucide-react';
 
 interface PerfilHeaderProps {
   perfil: {
@@ -34,10 +36,15 @@ export function PerfilHeader({ perfil, rachaGlobal }: PerfilHeaderProps) {
       </div>
 
       {/* Info */}
-      <div className="flex-1">
-        <h1 className="text-4xl font-extrabold text-white">
-          {nombre} {apellido}
-        </h1>
+      <div className="flex-1 relative">
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-extrabold text-white">
+            {nombre} {apellido}
+          </h1>
+          <Link href="/ajustes" className="p-2 bg-[#111827] hover:bg-slate-800 rounded-full border border-slate-700/50 text-slate-400 hover:text-indigo-400 transition-colors" title="Editar Perfil">
+            <Edit2 className="w-5 h-5" />
+          </Link>
+        </div>
         <p className="text-sm text-slate-400 italic mt-1">
           &ldquo;Construyendo el futuro, un hábito a la vez.&rdquo;
         </p>

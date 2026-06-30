@@ -18,6 +18,7 @@ const comunidadService = new ComunidadService();
 
 export default async function ComunidadPage() {
   const user = await requireUser();
+  const isAdmin = user.rol === "ADMIN";
 
   // ── Obtener datos en paralelo ────────────────────────────────────────────
   const [forosResult, articulosResult, entrenadoresResult] = await Promise.all([
@@ -78,7 +79,7 @@ export default async function ComunidadPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {foros.slice(0, 6).map((foro) => (
-              <ForoComunidadCard key={foro.idForo} foro={foro} />
+              <ForoComunidadCard key={foro.idForo} foro={foro} isAdmin={isAdmin} />
             ))}
           </div>
         )}

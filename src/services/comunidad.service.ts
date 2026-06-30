@@ -1,12 +1,6 @@
-/**
- * @file src/services/comunidad.service.ts
- * @description Service Layer para el módulo de Comunidad.
- * @layer Business Logic (Capa 3)
- */
-
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
-import { ComunidadRepository } from "@/repositories/comunidad.repository";
+import { apiClient } from "@/lib/api/client";
 import type {
   Foro,
   ForoConMetricas,
@@ -20,81 +14,87 @@ import type {
 } from "@/types/domain/comunidad.types";
 
 export class ComunidadService {
-  private readonly repo: ComunidadRepository;
+  constructor() {}
 
-  constructor(repo?: ComunidadRepository) {
-    this.repo = repo ?? new ComunidadRepository();
-  }
-
-  // ─── getForos ──────────────────────────────────────────────────────────────
   async getForos(usuarioId: string): Promise<Result<ForoConMetricas[]>> {
     if (!usuarioId) return err("ID del usuario requerido");
-    return this.repo.findForos(usuarioId);
+    try {
+      const data = await apiClient.get<ForoConMetricas[]>('/community/forums');
+      return ok(data);
+    } catch (e: any) {
+      return err(`Error al obtener foros: ${e.message}`);
+    }
   }
 
-  // ─── getComentarios ────────────────────────────────────────────────────────
-  async getComentarios(
-    foroId: string
-  ): Promise<Result<ComentarioConAutor[]>> {
+  async getComentarios(foroId: string): Promise<Result<ComentarioConAutor[]>> {
     if (!foroId) return err("ID del foro requerido");
-    return this.repo.findComentariosByForo(foroId);
+    try {
+      const data = await apiClient.get<ComentarioConAutor[]>(`/community/forums/${foroId}/comments`);
+      return ok(data);
+    } catch (e: any) {
+      return err(`Error al obtener comentarios: ${e.message}`);
+    }
   }
 
-  // ─── comentar ──────────────────────────────────────────────────────────────
   async comentar(dto: CreateComentarioDTO): Promise<Result<Comentario>> {
-    if (!dto.contenido.trim()) {
-      return err("El comentario no puede estar vacío");
-    }
-    if (dto.contenido.length > 500) {
-      return err("El comentario no puede superar 500 caracteres");
-    }
+    if (!dto.contenido.trim()) return err("El comentario no puede estar vacío");
+    if (dto.contenido.length > 500) return err("El comentario no puede superar 500 caracteres");
 
-    if (dto.idComentarioPadre) {
-      const comentarios = await this.repo.findComentariosByForo(dto.idForo);
-      if (comentarios.success) {
-        const padre = comentarios.data.find(
-          (c) => c.idComentario === dto.idComentarioPadre
-        );
-        if (padre?.idComentarioPadre) {
-          return err("No se pueden anidar respuestas más de un nivel");
-        }
-      }
+    try {
+      const data = await apiClient.post<Comentario>('/community/comments', dto);
+      return ok(data);
+    } catch (e: any) {
+      return err(`Error al crear comentario: ${e.message}`);
     }
-
-    return this.repo.createComentario(dto);
   }
 
-  // ─── reaccionar ────────────────────────────────────────────────────────────
   async reaccionar(dto: CreateReaccionDTO): Promise<Result<boolean>> {
     if (!dto.idComentario && !dto.idArticulo) {
       return err("Debes especificar un comentario o artículo");
     }
-    return this.repo.toggleReaccion(dto);
+    try {
+      const data = await apiClient.post<boolean>('/community/react', dto);
+      return ok(data);
+    } catch (e: any) {
+      return err(`Error al reaccionar: ${e.message}`);
+    }
   }
 
-  // ─── suscribirse ───────────────────────────────────────────────────────────
-  async suscribirse(
-    usuarioId: string,
-    foroId:    string
-  ): Promise<Result<boolean>> {
-    return this.repo.suscribirseAForo(usuarioId, foroId);
+  async suscribirse(usuarioId: string, foroId: string): Promise<Result<boolean>> {
+    try {
+      const data = await apiClient.post<boolean>(`/community/forums/${foroId}/subscribe`);
+      return ok(data);
+    } catch (e: any) {
+      return err(`Error al suscribirse al foro: ${e.message}`);
+    }
   }
 
-  // ─── desuscribirse ─────────────────────────────────────────────────────────
-  async desuscribirse(
-    usuarioId: string,
-    foroId:    string
-  ): Promise<Result<boolean>> {
-    return this.repo.desuscribirseAForo(usuarioId, foroId);
+  async desuscribirse(usuarioId: string, foroId: string): Promise<Result<boolean>> {
+    try {
+      await apiClient.delete(`/community/forums/${foroId}/subscribe`);
+      return ok(true);
+    } catch (e: any) {
+      return err(`Error al desuscribirse del foro: ${e.message}`);
+    }
   }
 
-  // ─── getArticulos ──────────────────────────────────────────────────────────
   async getArticulos(limit?: number): Promise<Result<Articulo[]>> {
-    return this.repo.findArticulosPublicados(limit);
+    try {
+      let url = '/community/articles';
+      if (limit) url += `?limit=${limit}`;
+      const data = await apiClient.get<Articulo[]>(url);
+      return ok(data);
+    } catch (e: any) {
+      return err(`Error al obtener artículos: ${e.message}`);
+    }
   }
 
-  // ─── getEntrenadores ─────────────────────────────────────────────────────
   async getEntrenadores(): Promise<Result<EntrenadorPublico[]>> {
-    return this.repo.findEntrenadoresActivos();
+    try {
+      const data = await apiClient.get<EntrenadorPublico[]>('/community/trainers');
+      return ok(data);
+    } catch (e: any) {
+      return err(`Error al obtener entrenadores: ${e.message}`);
+    }
   }
 }

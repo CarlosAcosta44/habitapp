@@ -6,6 +6,7 @@
 
 import type { ForoConMetricas } from "@/types/domain/comunidad.types";
 import Link from "next/link";
+import { DeleteForumButton } from "./DeleteForumButton";
 
 // Íconos y colores por categoría
 const categoriaConfig: Record<string, { icono: string; color: string }> = {
@@ -20,13 +21,18 @@ const categoriaConfig: Record<string, { icono: string; color: string }> = {
 
 interface ForoComunidadCardProps {
   foro: ForoConMetricas;
+  isAdmin?: boolean;
 }
 
-export function ForoComunidadCard({ foro }: ForoComunidadCardProps) {
+export function ForoComunidadCard({ foro, isAdmin = false }: ForoComunidadCardProps) {
   const config = categoriaConfig[foro.categoria ?? ""] ?? categoriaConfig.default;
 
   return (
-    <Link href={`/comunidad/foros/${foro.idForo}`} className="block group p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800/50 hover:border-indigo-500/30 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-indigo-500/5 relative overflow-hidden">
+    <div className="relative group block rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800/50 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/5 overflow-hidden">
+      
+      {isAdmin && <DeleteForumButton forumId={foro.idForo} />}
+
+      <Link href={`/comunidad/foros/${foro.idForo}`} className="block p-5 w-full h-full cursor-pointer">
       {/* Badge activo */}
       {foro.estado === "Abierto" && foro.totalComentarios > 0 && (
         <div className="absolute top-4 right-4">
@@ -58,6 +64,7 @@ export function ForoComunidadCard({ foro }: ForoComunidadCardProps) {
         </svg>
         <span className="text-slate-500 dark:text-slate-400">{foro.totalSuscriptores.toLocaleString()} miembros</span>
       </div>
-    </Link>
+      </Link>
+    </div>
   );
 }
