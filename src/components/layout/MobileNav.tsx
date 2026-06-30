@@ -221,14 +221,25 @@ export function MobileNav({ user }: MobileNavProps) {
                     <span className="text-sm">Ajustes</span>
                   </Link>
 
-                  {user?.role === 'admin' && (
+                  {(user?.role === 'admin' || user?.rol === 'ADMIN' || user?.nombrerol === 'ADMIN') && (
                     <Link 
-                      href="/admin"
+                      href="/admin/usuarios"
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-medium transition-colors border-t border-slate-200/50 dark:border-slate-800/50 mt-1 pt-3"
                     >
                       <Shield className="w-5 h-5 text-indigo-500" />
-                      <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">Administración</span>
+                      <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">Opciones de Administrador</span>
+                    </Link>
+                  )}
+
+                  {(user?.role === 'trainer' || user?.rol === 'TRAINER' || user?.nombrerol === 'TRAINER' || user?.nombrerol === 'ENTRENADOR') && (
+                    <Link 
+                      href="/entrenador"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-medium transition-colors border-t border-slate-200/50 dark:border-slate-800/50 mt-1 pt-3"
+                    >
+                      <Shield className="w-5 h-5 text-indigo-500" />
+                      <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">Dashboard del Entrenador</span>
                     </Link>
                   )}
                 </div>
