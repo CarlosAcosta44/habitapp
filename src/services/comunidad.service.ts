@@ -19,8 +19,7 @@ export class ComunidadService {
   async getForos(usuarioId: string): Promise<Result<ForoConMetricas[]>> {
     if (!usuarioId) return err("ID del usuario requerido");
     try {
-      const data = await apiClient.get<ForoConMetricas[]>('/community/forums');
-      return ok(data);
+      return await apiClient.get<ForoConMetricas[]>('/community/forums');
     } catch (e: any) {
       return err(`Error al obtener foros: ${e.message}`);
     }
@@ -29,8 +28,7 @@ export class ComunidadService {
   async getComentarios(foroId: string): Promise<Result<ComentarioConAutor[]>> {
     if (!foroId) return err("ID del foro requerido");
     try {
-      const data = await apiClient.get<ComentarioConAutor[]>(`/community/forums/${foroId}/comments`);
-      return ok(data);
+      return await apiClient.get<ComentarioConAutor[]>(`/community/forums/${foroId}/comments`);
     } catch (e: any) {
       return err(`Error al obtener comentarios: ${e.message}`);
     }
@@ -41,8 +39,7 @@ export class ComunidadService {
     if (dto.contenido.length > 500) return err("El comentario no puede superar 500 caracteres");
 
     try {
-      const data = await apiClient.post<Comentario>('/community/comments', dto);
-      return ok(data);
+      return await apiClient.post<Comentario>('/community/comments', dto);
     } catch (e: any) {
       return err(`Error al crear comentario: ${e.message}`);
     }
@@ -53,8 +50,7 @@ export class ComunidadService {
       return err("Debes especificar un comentario o artículo");
     }
     try {
-      const data = await apiClient.post<boolean>('/community/react', dto);
-      return ok(data);
+      return await apiClient.post<boolean>('/community/react', dto);
     } catch (e: any) {
       return err(`Error al reaccionar: ${e.message}`);
     }
@@ -62,8 +58,7 @@ export class ComunidadService {
 
   async suscribirse(usuarioId: string, foroId: string): Promise<Result<boolean>> {
     try {
-      const data = await apiClient.post<boolean>(`/community/forums/${foroId}/subscribe`);
-      return ok(data);
+      return await apiClient.post<boolean>(`/community/forums/${foroId}/subscribe`);
     } catch (e: any) {
       return err(`Error al suscribirse al foro: ${e.message}`);
     }
@@ -82,8 +77,7 @@ export class ComunidadService {
     try {
       let url = '/community/articles';
       if (limit) url += `?limit=${limit}`;
-      const data = await apiClient.get<Articulo[]>(url);
-      return ok(data);
+      return await apiClient.get<Articulo[]>(url);
     } catch (e: any) {
       return err(`Error al obtener artículos: ${e.message}`);
     }
@@ -91,8 +85,7 @@ export class ComunidadService {
 
   async getEntrenadores(): Promise<Result<EntrenadorPublico[]>> {
     try {
-      const data = await apiClient.get<EntrenadorPublico[]>('/community/trainers');
-      return ok(data);
+      return await apiClient.get<EntrenadorPublico[]>('/community/trainers');
     } catch (e: any) {
       return err(`Error al obtener entrenadores: ${e.message}`);
     }

@@ -53,7 +53,7 @@ export function EditProfileForm({ profile, userId }: Props) {
         setAvatarPreview(result.data); // URL pública real
       } else {
         // Manejo específico del bucket
-        if (result.message?.includes('Bucket not found') || result.error?.includes('Bucket not found') || result.message?.includes('Storage')) {
+        if (result.message?.includes('Bucket not found') || (result as any).error?.includes('Bucket not found') || result.message?.includes('Storage')) {
           setAvatarMessage({ type: 'error', text: "La subida de imágenes está en mantenimiento." });
         } else {
           setAvatarMessage({ type: 'error', text: result.message || "Error al subir la imagen" });

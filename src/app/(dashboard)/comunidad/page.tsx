@@ -18,7 +18,7 @@ const comunidadService = new ComunidadService();
 
 export default async function ComunidadPage() {
   const user = await requireUser();
-  const isAdmin = user.rol === "ADMIN";
+  const isAdmin = user.role === 'admin' || user.role?.toUpperCase() === 'ADMIN' || (user as any).nombrerol === 'ADMIN';
 
   // ── Obtener datos en paralelo ────────────────────────────────────────────
   const [forosResult, articulosResult, entrenadoresResult] = await Promise.all([
