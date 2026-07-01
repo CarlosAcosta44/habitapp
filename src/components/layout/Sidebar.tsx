@@ -66,12 +66,12 @@ export function Sidebar({ user }: SidebarProps) {
     { name: 'Ajustes', href: '/ajustes', icon: Settings },
   ];
 
-  if (user?.role === 'admin' || user?.role?.toUpperCase() === 'ADMIN' || user?.nombrerol === 'ADMIN') {
-    navLinks.push({ name: 'Opciones de Administrador', href: '/admin/usuarios', icon: Shield });
+  if (user?.role === 'admin' || user?.role?.toUpperCase() === 'ADMIN' || user?.nombrerol?.toUpperCase() === 'ADMIN' || user?.nombrerol?.toUpperCase() === 'ADMINISTRADOR') {
+    navLinks.push({ name: 'Panel de Administrador', href: '/admin', icon: Shield });
   }
 
-  if (user?.role === 'trainer' || user?.role?.toUpperCase() === 'TRAINER' || user?.nombrerol === 'TRAINER' || user?.nombrerol === 'ENTRENADOR') {
-    navLinks.push({ name: 'Dashboard del Entrenador', href: '/entrenador', icon: Shield });
+  if (user?.role === 'trainer' || user?.role?.toUpperCase() === 'TRAINER' || user?.nombrerol?.toUpperCase() === 'TRAINER' || user?.nombrerol?.toUpperCase() === 'ENTRENADOR') {
+    navLinks.push({ name: 'Panel de Entrenador', href: '/entrenador', icon: Shield });
   }
 
   return (

@@ -6,25 +6,13 @@
 
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
-import { apiClient, setTokenGetter } from "@/lib/api/client";
+import { apiClient } from "@/lib/api/client";
 import { createClient } from "@/lib/supabase/server";
 import { PerfilRepository } from "@/repositories/perfil.repository";
 import { AmigosRepository } from "@/repositories/amigos.repository";
 import { RegistroRepository } from "@/repositories/registro.repository";
 import type { PerfilDashboardData, ProfileForEdit, UpdateProfileDTO } from "@/types/domain/perfil.types";
 import type { UserProfileDto, UpdateUserProfileDto } from "@/types/domain/usuario.types";
-
-// Registrar el getter del token para uso exclusivo en el servidor
-setTokenGetter(async () => {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getSession();
-    return data.session?.access_token || null;
-  } catch (error) {
-    console.error("Error al obtener token en UsuarioService:", error);
-    return null;
-  }
-});
 
 export class UsuarioService {
   private readonly perfilRepo: PerfilRepository;
@@ -203,6 +191,9 @@ export class UsuarioService {
       nombre: data.nombre,
       apellido: data.apellido,
       fotoperfil: data.fotoperfil,
+      telefono: data.telefono,
+      genero: data.genero,
+      fechanacimiento: data.fechanacimiento,
     });
   }
 
@@ -216,6 +207,9 @@ export class UsuarioService {
       nombre: dto.nombre,
       apellido: dto.apellido,
       fotoperfil: dto.fotoperfil,
+      telefono: dto.telefono,
+      genero: dto.genero,
+      fechanacimiento: dto.fechanacimiento,
     };
     
     const result = await this.updatePerfilMe(updateDto);
@@ -227,6 +221,9 @@ export class UsuarioService {
       nombre: data.nombre,
       apellido: data.apellido,
       fotoperfil: data.fotoperfil,
+      telefono: data.telefono,
+      genero: data.genero,
+      fechanacimiento: data.fechanacimiento,
     });
   }
 
@@ -238,29 +235,33 @@ export class UsuarioService {
    */
   async updateAvatar(userId: string, file: File): Promise<Result<string>> {
     try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Using raw fetch instead of apiClient.post because apiClient stringifies bodies.
+      // This assumes we fetch the token in a similar way as apiClient.
       const supabase = await createClient();
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${userId}_${Date.now()}.${fileExt}`;
-      const filePath = `profiles/${fileName}`;
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token || null;
+      
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+      const response = await fetch(`${API_URL}/users/me/avatar`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
 
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) {
-        return err(`Error al subir imagen al bucket: ${uploadError.message}`);
+      if (!response.ok) {
+        let errorMessage = "Error al subir imagen";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {}
+        return err(errorMessage);
       }
 
-      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
-      const publicUrl = data.publicUrl;
-
-      // Actualizar el perfil llamando a NestJS
-      const updateResult = await this.updateProfile({ fotoperfil: publicUrl });
-      if (!updateResult.success) {
-        return err(`Error al actualizar URL en perfil: ${updateResult.error}`);
-      }
-
-      return ok(publicUrl);
+      const responseData = await response.json();
+      return ok(responseData.url);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
       return err(`Error inesperado en updateAvatar: ${msg}`);

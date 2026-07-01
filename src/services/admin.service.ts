@@ -1,31 +1,22 @@
 import { apiClient } from '@/lib/api/client';
 import type { Result } from '@/lib/result';
-
-export interface UserProfile {
-  id: string;
-  email: string;
-  full_name: string;
-  role: 'USER' | 'TRAINER' | 'ADMIN';
-  avatar_url?: string;
-  total_points: number;
-  created_at: string;
-}
+import type { UserProfileDto, UserRole } from '@/types/domain/usuario.types';
 
 export const adminService = {
   /**
    * Obtiene la lista completa de usuarios para el panel de administración.
    * Llama a GET /admin/users
    */
-  async getUsers(): Promise<Result<UserProfile[]>> {
-    return apiClient.get<UserProfile[]>('/admin/users');
+  async getUsers(): Promise<Result<UserProfileDto[]>> {
+    return apiClient.get<UserProfileDto[]>('admin/users');
   },
 
   /**
    * Actualiza el rol de un usuario.
    * Llama a PATCH /admin/users/:id/role
    */
-  async updateUserRole(userId: string, newRole: 'USER' | 'TRAINER' | 'ADMIN'): Promise<Result<any>> {
-    return apiClient.patch(`/admin/users/${userId}/role`, { role: newRole });
+  async updateUserRole(userId: string, newRole: UserRole | string): Promise<Result<any>> {
+    return apiClient.patch(`admin/users/${userId}/role`, { role: newRole });
   },
 
   /**
@@ -33,7 +24,7 @@ export const adminService = {
    * Llama a DELETE /admin/forum/:id
    */
   async deleteForum(forumId: string): Promise<Result<any>> {
-    return apiClient.delete(`/admin/forum/${forumId}`);
+    return apiClient.delete(`admin/forum/${forumId}`);
   },
 
   /**
@@ -41,6 +32,6 @@ export const adminService = {
    * Llama a DELETE /admin/forum/comments/:id
    */
   async deleteForumComment(commentId: string): Promise<Result<any>> {
-    return apiClient.delete(`/admin/forum/comments/${commentId}`);
+    return apiClient.delete(`admin/forum/comments/${commentId}`);
   },
 };

@@ -6,7 +6,7 @@ export const metadata = { title: "Dashboard de Entrenador | HabitApp" };
 
 export default async function EntrenadorDashboard() {
   const user = await requireUser();
-  if ((user as any).rol !== "TRAINER" && (user as any).nombrerol !== "ENTRENADOR" && user.role !== "trainer" && user.role !== "admin") {
+  if (user?.role?.toUpperCase() !== "TRAINER" && (user as any)?.nombrerol?.toUpperCase() !== "TRAINER" && (user as any)?.nombrerol?.toUpperCase() !== "ENTRENADOR" && user.role?.toUpperCase() !== "ADMIN") {
     redirect("/habitos");
   }
 

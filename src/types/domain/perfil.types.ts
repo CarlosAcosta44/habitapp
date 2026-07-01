@@ -77,10 +77,16 @@ export interface ProfileForEdit {
   nombre: string;
   apellido: string;
   fotoperfil: string | null;
+  telefono?: string | null;
+  genero?: string | null;
+  fechanacimiento?: string | null;
 }
 
 export interface UpdateProfileDTO {
   nombre?: string;
   apellido?: string;
   fotoperfil?: string;
+  telefono?: string;
+  genero?: string;
+  fechanacimiento?: string;
 }

@@ -15,6 +15,9 @@ export type PerfilActionState = {
 const UpdatePerfilSchema = z.object({
   nombre: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres").max(45),
   apellido: z.string().trim().min(2, "El apellido debe tener al menos 2 caracteres").max(45),
+  telefono: z.string().max(20).optional().nullable(),
+  genero: z.string().max(30).optional().nullable(),
+  fechanacimiento: z.string().optional().nullable(),
 });
 
 const perfilService = new UsuarioService();
@@ -26,6 +29,9 @@ export async function updatePerfilBasicoAction(
   const raw = {
     nombre: formData.get("nombre"),
     apellido: formData.get("apellido"),
+    telefono: formData.get("telefono") || null,
+    genero: formData.get("genero") || null,
+    fechanacimiento: formData.get("fechanacimiento") || null,
   };
 
   const validation = UpdatePerfilSchema.safeParse(raw);
@@ -40,6 +46,9 @@ export async function updatePerfilBasicoAction(
   const result = await perfilService.updateProfile({
     nombre: validation.data.nombre,
     apellido: validation.data.apellido,
+    telefono: validation.data.telefono ?? undefined,
+    genero: validation.data.genero ?? undefined,
+    fechanacimiento: validation.data.fechanacimiento ?? undefined,
   });
 
   if (!result.success) {
