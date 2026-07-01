@@ -157,6 +157,51 @@ export function EditProfileForm({ profile, userId }: Props) {
               <p className="text-xs text-red-500 font-medium pl-1">{state.errors.apellido[0]}</p>
             )}
           </div>
+          <div className="space-y-2">
+            <label htmlFor="telefono" className="text-sm font-bold text-slate-700 dark:text-slate-300">Teléfono</label>
+            <input 
+              id="telefono"
+              name="telefono"
+              type="text"
+              defaultValue={profile.telefono || ""}
+              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+            {state?.errors?.telefono && (
+              <p className="text-xs text-red-500 font-medium pl-1">{state.errors.telefono[0]}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="genero" className="text-sm font-bold text-slate-700 dark:text-slate-300">Género</label>
+            <select
+              id="genero"
+              name="genero"
+              defaultValue={profile.genero || ""}
+              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition appearance-none"
+            >
+              <option value="">Prefiero no decirlo</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+              <option value="Otro">Otro</option>
+            </select>
+            {state?.errors?.genero && (
+              <p className="text-xs text-red-500 font-medium pl-1">{state.errors.genero[0]}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="fechanacimiento" className="text-sm font-bold text-slate-700 dark:text-slate-300">Fecha de Nacimiento</label>
+            <input 
+              id="fechanacimiento"
+              name="fechanacimiento"
+              type="date"
+              defaultValue={profile.fechanacimiento || ""}
+              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+            {state?.errors?.fechanacimiento && (
+              <p className="text-xs text-red-500 font-medium pl-1">{state.errors.fechanacimiento[0]}</p>
+            )}
+          </div>
         </div>
 
         {/* Mensaje Global */}

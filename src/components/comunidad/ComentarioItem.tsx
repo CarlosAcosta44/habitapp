@@ -9,18 +9,21 @@
 import { useState, useTransition } from "react";
 import { reaccionarAction }        from "@/actions/comunidad.actions";
 import { ComentarioForm }          from "./ComentarioForm";
+import { DeleteCommentButton }     from "./DeleteCommentButton";
 import type { ComentarioConAutor } from "@/types/domain/comunidad.types";
 
 interface ComentarioItemProps {
   comentario: ComentarioConAutor;
   foroId:     string;
   esRespuesta?: boolean;
+  isAdmin?:   boolean;
 }
 
 export function ComentarioItem({
   comentario,
   foroId,
   esRespuesta = false,
+  isAdmin = false,
 }: ComentarioItemProps) {
   const [mostrarRespuesta, setMostrarRespuesta] = useState(false);
   const [isPending, startTransition]            = useTransition();
@@ -54,6 +57,9 @@ export function ComentarioItem({
               {new Date(comentario.fechaPublicacion).toLocaleDateString("es-CO")}
             </p>
           </div>
+          {isAdmin && (
+            <DeleteCommentButton commentId={comentario.idComentario} />
+          )}
         </div>
 
         {/* Contenido */}
@@ -119,6 +125,7 @@ export function ComentarioItem({
               comentario={respuesta}
               foroId={foroId}
               esRespuesta
+              isAdmin={isAdmin}
             />
           ))}
         </div>

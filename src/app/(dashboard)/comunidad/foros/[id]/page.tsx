@@ -18,7 +18,8 @@ interface PageProps {
 export default async function ForoDetallePage({ params }: PageProps) {
   const { id: foroId } = await params;
 
-  await requireUser();
+  const user = await requireUser();
+  const isAdmin = user?.role?.toUpperCase() === "ADMIN" || (user as any)?.nombrerol?.toUpperCase() === "ADMIN" || (user as any)?.nombrerol?.toUpperCase() === "ADMINISTRADOR";
 
   const comentariosResult = await comunidadService.getComentarios(foroId);
   const comentarios = comentariosResult.success ? comentariosResult.data : [];
@@ -67,6 +68,7 @@ export default async function ForoDetallePage({ params }: PageProps) {
               key={comentario.idComentario}
               comentario={comentario}
               foroId={foroId}
+              isAdmin={isAdmin}
             />
           ))
         )}

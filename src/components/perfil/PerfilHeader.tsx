@@ -41,7 +41,7 @@ export function PerfilHeader({ perfil, rachaGlobal }: PerfilHeaderProps) {
           <h1 className="text-4xl font-extrabold text-white">
             {nombre} {apellido}
           </h1>
-          <Link href="/ajustes" className="p-2 bg-[#111827] hover:bg-slate-800 rounded-full border border-slate-700/50 text-slate-400 hover:text-indigo-400 transition-colors" title="Editar Perfil">
+          <Link href="/perfil/editar" className="p-2 bg-[#111827] hover:bg-slate-800 rounded-full border border-slate-700/50 text-slate-400 hover:text-indigo-400 transition-colors" title="Editar Perfil">
             <Edit2 className="w-5 h-5" />
           </Link>
         </div>
