@@ -19,7 +19,11 @@ export default async function ForoDetallePage({ params }: PageProps) {
   const { id: foroId } = await params;
 
   const user = await requireUser();
-  const isAdmin = user?.role?.toUpperCase() === "ADMIN" || (user as any)?.nombrerol?.toUpperCase() === "ADMIN" || (user as any)?.nombrerol?.toUpperCase() === "ADMINISTRADOR";
+  const { UsuarioService } = await import('@/services/usuario.service');
+  const usuarioService = new UsuarioService();
+  const profileResult = await usuarioService.getPerfilMe();
+  const profile = profileResult.success ? profileResult.data : null;
+  const isAdmin = profile?.nombrerol?.toUpperCase() === 'ADMINISTRADOR';
 
   const comentariosResult = await comunidadService.getComentarios(foroId);
   const comentarios = comentariosResult.success ? comentariosResult.data : [];
