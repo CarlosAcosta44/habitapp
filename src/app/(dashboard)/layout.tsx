@@ -17,15 +17,21 @@ async function getCurrentUser(): Promise<User> {
   const profileResult = await usuarioService.getPerfilMe()
   const profile = profileResult.success ? profileResult.data : null
 
+  // Fallback for Admin role if the profile in gestion.usuarios is missing
+  const metaRole = user.user_metadata?.role?.toUpperCase();
+  const isFallbackAdmin = metaRole === 'ADMIN' || metaRole === 'ADMINISTRADOR';
+
+  const finalRole = profile?.nombrerol || (isFallbackAdmin ? 'ADMINISTRADOR' : 'Usuario');
+
   const domainUser: User = {
     id: user.id,
     email: user.email || '',
-    role: (profile?.nombrerol as Role) || 'user',
+    role: (finalRole as Role) || 'user',
     created_at: user.created_at,
     updated_at: user.updated_at || user.created_at,
-    nombre: profile?.nombre || undefined,
-    apellido: profile?.apellido || undefined,
-    nombrerol: profile?.nombrerol || undefined,
+    nombre: profile?.nombre || (isFallbackAdmin ? 'Admin' : undefined),
+    apellido: profile?.apellido || (isFallbackAdmin ? 'HabitApp' : undefined),
+    nombrerol: finalRole,
     fotoperfil: profile?.fotoperfil || undefined,
     full_name: user.user_metadata?.full_name || undefined,
     avatar_url: user.user_metadata?.avatar_url || undefined,

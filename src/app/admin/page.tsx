@@ -10,23 +10,30 @@ import {
   TrendingUp,
   UserCheck
 } from 'lucide-react';
+import { getUsersAction } from '@/actions/admin.actions';
 
-export default function AdminDashboardPage() {
-  // Datos mock para poblar el panel administrativo en el MVP
+export default async function AdminDashboardPage() {
+  const usersResult = await getUsersAction();
+  const allUsers = usersResult.success ? (usersResult.data || []) : [];
+  
+  const totalUsers = allUsers.length;
+  const totalCoaches = allUsers.filter((u: any) => u.nombrerol === 'Entrenador' || u.nombrerol === 'ENTRENADOR' || u.idrol?.toUpperCase() === 'ENTRENADOR').length;
+
   const stats = [
-    { name: 'Usuarios Registrados', value: '148', change: '+12% este mes', icon: Users, color: 'from-blue-500 to-indigo-500' },
-    { name: 'Entrenadores Activos', value: '16', change: '+2 este mes', icon: UserCheck, color: 'from-emerald-500 to-teal-500' },
-    { name: 'Hábitos Registrados', value: '1,984', change: '+234 esta semana', icon: Activity, color: 'from-purple-500 to-pink-500' },
-    { name: 'Alertas de Moderación', value: '3', change: 'Pendientes de revisión', icon: ShieldAlert, color: 'from-rose-500 to-orange-500' },
+    { name: 'Usuarios Registrados', value: totalUsers.toString(), change: 'Total histórico', icon: Users, color: 'from-blue-500 to-indigo-500' },
+    { name: 'Entrenadores Activos', value: totalCoaches.toString(), change: 'Verificados', icon: UserCheck, color: 'from-emerald-500 to-teal-500' },
+    { name: 'Hábitos Registrados', value: 'N/A', change: 'En desarrollo', icon: Activity, color: 'from-purple-500 to-pink-500' },
+    { name: 'Alertas de Moderación', value: 'N/A', change: 'En desarrollo', icon: ShieldAlert, color: 'from-rose-500 to-orange-500' },
   ];
 
-  const recentActivities = [
-    { id: 1, user: 'Elena García', action: 'se registró como nuevo usuario', time: 'hace 10 minutos', type: 'user' },
-    { id: 2, user: 'Carlos Acosta', action: 'creó un nuevo hábito: Meditación Diaria', time: 'hace 45 minutos', type: 'habit' },
-    { id: 3, user: 'Administrador', action: 'actualizó el rol de Nicolas a Entrenador', time: 'hace 2 horas', type: 'role' },
-    { id: 4, user: 'Juan Pérez', action: 'reportó un comentario en el foro "Salud Mental"', time: 'hace 4 horas', type: 'alert' },
-    { id: 5, user: 'Sofía Rodríguez', action: 'completó el reto "Semana sin Azúcar"', time: 'hace 6 horas', type: 'challenge' },
-  ];
+  // Map the 5 most recently registered users (using created_at or similar if available, otherwise just first 5)
+  const recentActivities = allUsers.slice(0, 5).map((user: any, index: number) => ({
+    id: user.idusuario || index,
+    user: `${user.nombre} ${user.apellido}`,
+    action: `registrado con rol de ${user.nombrerol || 'Usuario'}`,
+    time: 'Recientemente',
+    type: user.nombrerol?.toUpperCase() === 'ENTRENADOR' ? 'role' : 'user'
+  }));
 
   return (
     <div className="space-y-8">
