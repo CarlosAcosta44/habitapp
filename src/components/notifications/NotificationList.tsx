@@ -16,7 +16,7 @@ import {
   Clock,
   Sparkles
 } from 'lucide-react';
-import { NotificationService } from '@/services/notification.service';
+import { getNotificationsAction, marcarComoLeidaAction, marcarTodasComoLeidasAction } from '@/actions/notification.actions';
 import type { Notification, NotificationType } from '@/types/domain/notification.types';
 
 export function NotificationList() {
@@ -24,26 +24,24 @@ export function NotificationList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const notificationService = React.useMemo(() => new NotificationService(), []);
-
   const loadNotifications = React.useCallback(async () => {
     setLoading(true);
     setError(null);
-    const res = await notificationService.getNotifications();
+    const res = await getNotificationsAction();
     if (res.success) {
       setNotifications(res.data);
     } else {
       setError(res.error);
     }
     setLoading(false);
-  }, [notificationService]);
+  }, []);
 
   useEffect(() => {
     loadNotifications();
   }, [loadNotifications]);
 
   const handleMarkAsRead = async (id: string) => {
-    const res = await notificationService.markAsRead(id);
+    const res = await marcarComoLeidaAction(id);
     if (res.success) {
       setNotifications(prev => 
         prev.map(n => n.id === id ? { ...n, isRead: true } : n)
@@ -54,7 +52,7 @@ export function NotificationList() {
   };
 
   const handleMarkAllAsRead = async () => {
-    const res = await notificationService.markAllAsRead();
+    const res = await marcarTodasComoLeidasAction();
     if (res.success) {
       setNotifications(prev => 
         prev.map(n => ({ ...n, isRead: true }))

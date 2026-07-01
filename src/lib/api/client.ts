@@ -7,6 +7,7 @@
 
 import { ok, err }       from "@/lib/result";
 import type { Result }   from "@/lib/result";
+import { createClient } from "@/lib/supabase/server";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
 
@@ -18,21 +19,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1
 async function getAuthHeader(): Promise<Record<string, string>> {
   try {
     let token = null;
-    if (typeof window === "undefined") {
-      // Server environment
-      // Use eval/Function to bypass Webpack static analysis for next/headers
-      const getSupabaseServer = new Function('return import("@/lib/supabase/server")');
-      const { createClient } = await getSupabaseServer();
-      const supabase = await createClient();
-      const { data } = await supabase.auth.getSession();
-      token = data.session?.access_token || null;
-    } else {
-      // Client environment
-      const { createClient } = await import("@/lib/supabase/client");
-      const supabase = createClient();
-      const { data } = await supabase.auth.getSession();
-      token = data.session?.access_token || null;
-    }
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getSession();
+    token = data.session?.access_token || null;
 
     if (token) {
       return { Authorization: `Bearer ${token}` };
