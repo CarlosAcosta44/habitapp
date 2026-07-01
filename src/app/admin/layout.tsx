@@ -18,7 +18,7 @@ async function getCurrentAdminUser(): Promise<User | null> {
   const profile = profileResult.success ? profileResult.data : null;
 
   // Si no es admin, devolvemos null para gatillar la pantalla de Acceso Denegado 403
-  if (profile?.nombrerol !== 'admin') {
+  if (profile?.nombrerol?.toUpperCase() !== 'ADMINISTRADOR') {
     return null;
   }
 
