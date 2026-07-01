@@ -213,7 +213,7 @@ export function NotificationList() {
                     handleMarkAsRead(n.id);
                   }}
                   title="Marcar como leída"
-                  className="self-center p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                  className="self-center p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all focus:opacity-100"
                 >
                   <Check className="w-4 h-4" />
                 </button>
