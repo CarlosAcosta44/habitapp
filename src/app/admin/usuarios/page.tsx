@@ -11,11 +11,12 @@ import {
   XCircle,
   RefreshCw
 } from 'lucide-react';
-import { adminService, UserProfile } from '@/services/admin.service';
+import { adminService } from '@/services/admin.service';
+import type { UserProfileDto } from '@/types/domain/usuario.types';
 import Link from 'next/link';
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [users, setUsers] = useState<UserProfileDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,7 +42,7 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, []);
 
-  const handleRoleChange = async (userId: string, currentRole: string, newRole: 'USER' | 'TRAINER' | 'ADMIN') => {
+  const handleRoleChange = async (userId: string, currentRole: string, newRole: string) => {
     if (currentRole === newRole) return;
     
     const confirmMessage = `¿Estás seguro de cambiar el rol a ${newRole}? Esta acción modificará los permisos del usuario de forma inmediata.`;
@@ -50,10 +51,10 @@ export default function AdminUsersPage() {
     }
 
     setIsUpdating(userId);
-    const result = await adminService.updateUserRole(userId, newRole);
+    const result = await adminService.updateUserRole(userId, newRole.toLowerCase());
     
     if (result.success) {
-      setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
+      setUsers(users.map(u => u.idusuario === userId ? { ...u, nombrerol: newRole } : u));
       showToast('success', `Rol actualizado a ${newRole} correctamente`);
     } else {
       showToast('error', result.error || 'Error al actualizar el rol');
@@ -67,8 +68,8 @@ export default function AdminUsersPage() {
   };
 
   const filteredUsers = users.filter(user => 
-    user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    `${user.nombre} ${user.apellido}`.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    user.idusuario?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -161,49 +162,53 @@ export default function AdminUsersPage() {
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
+                    <tr key={user.idusuario} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shrink-0">
-                            {user.full_name?.charAt(0).toUpperCase() || 'U'}
+                            {user.fotoperfil ? (
+                              <img src={user.fotoperfil} alt={user.nombre} className="w-full h-full object-cover rounded-full" />
+                            ) : (
+                              user.nombre?.charAt(0).toUpperCase() || 'U'
+                            )}
                           </div>
                           <div>
-                            <p className="font-bold text-slate-900 dark:text-white">{user.full_name}</p>
-                            <p className="text-xs text-slate-500">{user.email}</p>
+                            <p className="font-bold text-slate-900 dark:text-white">{user.nombre} {user.apellido}</p>
+                            <p className="text-xs text-slate-500">{user.idusuario}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-semibold text-indigo-500">{user.total_points}</span>
+                        <span className="font-semibold text-indigo-500">{user.puntostotales}</span>
                       </td>
                       <td className="px-6 py-4 text-xs">
-                        {new Date(user.created_at).toLocaleDateString()}
+                        -
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${
-                          user.role === 'ADMIN' 
+                          user.nombrerol === 'Administrador'
                             ? 'bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20'
-                            : user.role === 'TRAINER'
+                            : user.nombrerol === 'Entrenador'
                             ? 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
                             : 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20'
                         }`}>
-                          {user.role}
+                          {user.nombrerol}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <select 
-                            value={user.role}
-                            disabled={isUpdating === user.id}
-                            onChange={(e) => handleRoleChange(user.id, user.role, e.target.value as any)}
+                            value={user.nombrerol}
+                            disabled={isUpdating === user.idusuario}
+                            onChange={(e) => handleRoleChange(user.idusuario, user.nombrerol, e.target.value as any)}
                             className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block px-3 py-1.5 outline-none cursor-pointer disabled:opacity-50 transition-all hover:border-indigo-400"
                           >
-                            <option value="USER">Usuario</option>
-                            <option value="TRAINER">Entrenador</option>
-                            <option value="ADMIN">Admin</option>
+                            <option value="Usuario">Usuario</option>
+                            <option value="Entrenador">Entrenador</option>
+                            <option value="Administrador">Administrador</option>
                           </select>
                           
-                          {isUpdating === user.id && (
+                          {isUpdating === user.idusuario && (
                             <RefreshCw className="w-4 h-4 animate-spin text-indigo-500" />
                           )}
                         </div>

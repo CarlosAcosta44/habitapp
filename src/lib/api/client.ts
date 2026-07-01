@@ -10,14 +10,7 @@ import type { Result }   from "@/lib/result";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
 
-let tokenGetter: (() => Promise<string | null>) | null = null;
 
-/**
- * Permite registrar la función para obtener el token desde el servidor de forma dinámica.
- */
-export function setTokenGetter(getter: () => Promise<string | null>) {
-  tokenGetter = getter;
-}
 
 /**
  * Obtiene las cabeceras de autorización con el Bearer JWT del usuario autenticado.
@@ -25,10 +18,16 @@ export function setTokenGetter(getter: () => Promise<string | null>) {
 async function getAuthHeader(): Promise<Record<string, string>> {
   try {
     let token = null;
-    if (tokenGetter) {
-      token = await tokenGetter();
-    } else if (typeof window !== "undefined") {
-      // Entorno del Cliente (Navegador)
+    if (typeof window === "undefined") {
+      // Server environment
+      // Use eval/Function to bypass Webpack static analysis for next/headers
+      const getSupabaseServer = new Function('return import("@/lib/supabase/server")');
+      const { createClient } = await getSupabaseServer();
+      const supabase = await createClient();
+      const { data } = await supabase.auth.getSession();
+      token = data.session?.access_token || null;
+    } else {
+      // Client environment
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
       const { data } = await supabase.auth.getSession();
