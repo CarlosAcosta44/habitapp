@@ -11,7 +11,7 @@ import {
   XCircle,
   RefreshCw
 } from 'lucide-react';
-import { adminService } from '@/services/admin.service';
+import { getUsersAction, updateUserRoleAction } from '@/actions/admin.actions';
 import type { UserProfileDto } from '@/types/domain/usuario.types';
 import Link from 'next/link';
 
@@ -28,7 +28,7 @@ export default function AdminUsersPage() {
   const fetchUsers = async () => {
     setIsLoading(true);
     setError(null);
-    const result = await adminService.getUsers();
+    const result = await getUsersAction();
     
     if (result.success) {
       setUsers(result.data);
@@ -51,7 +51,7 @@ export default function AdminUsersPage() {
     }
 
     setIsUpdating(userId);
-    const result = await adminService.updateUserRole(userId, newRole.toLowerCase());
+    const result = await updateUserRoleAction(userId, newRole.toLowerCase());
     
     if (result.success) {
       setUsers(users.map(u => u.idusuario === userId ? { ...u, nombrerol: newRole } : u));

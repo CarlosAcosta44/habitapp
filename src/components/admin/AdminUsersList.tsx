@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { adminService } from '@/services/admin.service';
+import { getUsersAction, updateUserRoleAction } from '@/actions/admin.actions';
 import type { UserProfileDto } from '@/types/domain/usuario.types';
 import { Shield, ShieldAlert, User, Star } from 'lucide-react';
 
@@ -14,7 +14,7 @@ export function AdminUsersList() {
   const loadUsers = async () => {
     setLoading(true);
     setError(null);
-    const result = await adminService.getUsers();
+    const result = await getUsersAction();
     if (result.success) {
       setUsers(result.data);
     } else {
@@ -38,7 +38,7 @@ export function AdminUsersList() {
     if (!confirm(`¿Estás seguro de que quieres cambiar el rol a ${newRoleName}?`)) return;
 
     setChangingRole(userId);
-    const result = await adminService.updateUserRole(userId, roleEnum);
+    const result = await updateUserRoleAction(userId, roleEnum);
     
     if (result.success) {
       setUsers(prev => prev.map(u => 

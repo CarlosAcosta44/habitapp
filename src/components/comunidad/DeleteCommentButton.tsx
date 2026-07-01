@@ -1,6 +1,6 @@
 "use client";
 
-import { adminService } from "@/services/admin.service";
+import { deleteComentarioAction } from "@/actions/comunidad.actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
@@ -16,7 +16,7 @@ export function DeleteCommentButton({ commentId }: { commentId: string }) {
     if (!confirm("¿Estás seguro de que deseas eliminar este comentario? Esta acción no se puede deshacer.")) return;
 
     setIsDeleting(true);
-    const result = await adminService.deleteForumComment(commentId);
+    const result = await deleteComentarioAction(commentId);
     setIsDeleting(false);
 
     if (result.success) {
