@@ -183,7 +183,7 @@ export function MobileNav({ user }: MobileNavProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-indigo-950 dark:text-indigo-200 truncate uppercase tracking-wide">
-                      {user?.nombre && user?.apellido ? `${user.nombre} ${user.apellido}` : (user?.full_name || 'JOHN DOE')}
+                      {user?.nombre ? (user.apellido ? `${user.nombre} ${user.apellido}` : user.nombre) : (user?.full_name || 'Usuario')}
                     </p>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate uppercase tracking-widest">
                       {user?.nombrerol || 'USUARIO'}
