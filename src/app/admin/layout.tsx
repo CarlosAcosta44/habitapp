@@ -21,7 +21,7 @@ async function getCurrentAdminUser(): Promise<User | null> {
   const metaRole = user.user_metadata?.role?.toUpperCase();
   const isFallbackAdmin = metaRole === 'ADMIN' || metaRole === 'ADMINISTRADOR';
 
-  const finalRole = profile?.nombrerol || (isFallbackAdmin ? 'ADMINISTRADOR' : 'Usuario');
+  const finalRole = profile?.nombrerol || (isFallbackAdmin ? 'Administrador' : 'Usuario');
 
   // Si no es admin, devolvemos null para gatillar la pantalla de Acceso Denegado 403
   if (finalRole?.toUpperCase() !== 'ADMINISTRADOR') {
@@ -34,10 +34,10 @@ async function getCurrentAdminUser(): Promise<User | null> {
     role: (finalRole as Role) || 'user',
     created_at: user.created_at,
     updated_at: user.updated_at || user.created_at,
-    nombre: profile?.nombre || (isFallbackAdmin ? 'Admin' : undefined),
-    apellido: profile?.apellido || (isFallbackAdmin ? 'HabitApp' : undefined),
+    nombre: profile?.nombre || user.user_metadata?.name || user.user_metadata?.full_name?.split(' ')[0] || undefined,
+    apellido: profile?.apellido || user.user_metadata?.last_name || user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || undefined,
     nombrerol: finalRole,
-    fotoperfil: profile?.fotoperfil || undefined,
+    fotoperfil: profile?.fotoperfil || user.user_metadata?.avatar_url || undefined,
     full_name: user.user_metadata?.full_name || undefined,
     avatar_url: user.user_metadata?.avatar_url || undefined,
   };
