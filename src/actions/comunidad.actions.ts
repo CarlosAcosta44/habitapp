@@ -169,3 +169,13 @@ export async function desuscribirseAction(
   revalidatePath("/comunidad");
   return { success: true, message: "Desuscrito del foro exitosamente" };
 }
+
+export async function deleteForoAction(foroId: string) {
+  const { adminService } = await import("@/services/admin.service");
+  return await adminService.deleteForum(foroId);
+}
+
+export async function deleteComentarioAction(comentarioId: string) {
+  const { adminService } = await import("@/services/admin.service");
+  return await adminService.deleteForumComment(comentarioId);
+}

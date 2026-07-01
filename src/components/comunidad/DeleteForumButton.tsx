@@ -1,6 +1,6 @@
 "use client";
 
-import { adminService } from "@/services/admin.service";
+import { deleteForoAction } from "@/actions/comunidad.actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
@@ -16,7 +16,7 @@ export function DeleteForumButton({ forumId }: { forumId: string }) {
     if (!confirm("¿Estás seguro de que deseas eliminar este foro? Esta acción no se puede deshacer.")) return;
 
     setIsDeleting(true);
-    const result = await adminService.deleteForum(forumId);
+    const result = await deleteForoAction(forumId);
     setIsDeleting(false);
 
     if (result.success) {

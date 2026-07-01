@@ -9,17 +9,15 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Bell } from 'lucide-react';
-import { NotificationService } from '@/services/notification.service';
+import { getNotificationsAction } from '@/actions/notification.actions';
 
 export function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    const notificationService = new NotificationService();
-
     const fetchUnreadCount = async () => {
       try {
-        const res = await notificationService.getNotifications();
+        const res = await getNotificationsAction();
         if (res.success) {
           const count = res.data.filter(n => !n.isRead).length;
           setUnreadCount(count);
