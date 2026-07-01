@@ -6,7 +6,14 @@ export const metadata = { title: "Dashboard de Entrenador | HabitApp" };
 
 export default async function EntrenadorDashboard() {
   const user = await requireUser();
-  if (user?.role?.toUpperCase() !== "TRAINER" && (user as any)?.nombrerol?.toUpperCase() !== "TRAINER" && (user as any)?.nombrerol?.toUpperCase() !== "ENTRENADOR" && user.role?.toUpperCase() !== "ADMIN") {
+  const { UsuarioService } = await import('@/services/usuario.service');
+  const usuarioService = new UsuarioService();
+  const profileResult = await usuarioService.getPerfilMe();
+  const profile = profileResult.success ? profileResult.data : null;
+  
+  const isTrainerOrAdmin = profile?.nombrerol?.toUpperCase() === "ENTRENADOR" || profile?.nombrerol?.toUpperCase() === "ADMINISTRADOR";
+  
+  if (!isTrainerOrAdmin) {
     redirect("/habitos");
   }
 
