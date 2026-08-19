@@ -115,11 +115,11 @@ CREATE TABLE gestion.verificacion_tokens (
 - Limpiar cuentas de prueba existentes.
 
 **Tareas:**
-1. Ejecutar migración SQL: truncar datos de prueba, agregar columnas a `gestion.usuarios`, crear nuevas tablas, y desconectar de `auth.users`.
-2. Refactorizar `AuthModule` en NestJS usando `passport-jwt` y `passport-local`.
-3. Implementar endpoints en NestJS (`/auth/register`, `/auth/login`, `/auth/refresh`, `/auth/logout`) que gestionen las cookies `HttpOnly`.
-4. Integrar Resend para enviar correos transaccionales (registro, recuperación de contraseña).
-5. Frontend: Refactorizar `src/actions/auth.actions.ts` y el middleware para leer la cookie de acceso de NestJS en lugar de la sesión de `@supabase/ssr`.
+- [x] 1. Ejecutar migración SQL: truncar datos de prueba, agregar columnas a `gestion.usuarios`, crear nuevas tablas, y desconectar de `auth.users`.
+- [x] 2. Refactorizar `AuthModule` en NestJS usando `passport-jwt` y `passport-local`.
+- [x] 3. Implementar endpoints en NestJS (`/auth/register`, `/auth/login`, `/auth/refresh`, `/auth/logout`) que gestionen las cookies `HttpOnly`.
+- [x] 4. Integrar Resend para enviar correos transaccionales (registro, recuperación de contraseña).
+- [x] 5. Frontend: Refactorizar `src/actions/auth.actions.ts` y el middleware para leer la cookie de acceso de NestJS en lugar de la sesión de `@supabase/ssr`.
 
 ---
 
@@ -134,10 +134,10 @@ CREATE TABLE gestion.verificacion_tokens (
 - `amigos.repository.ts` (Relaciones, sugerencias).
 
 **Tareas:**
-1. Crear módulos/servicios en NestJS equivalentes (ej. `HabitsModule`, `FriendsModule`).
-2. Mover la lógica de los repositorios de Next.js hacia los Repositories de NestJS.
-3. Actualizar los `Services` en el frontend para usar `apiClient` apuntando a NestJS.
-4. **Limpieza Final:** Al terminar esta fase, **Supabase Auth queda completamente eliminado del proyecto y las políticas RLS dependientes de `auth.uid()` se deshabilitan de forma definitiva.**
+- [ ] 1. Crear módulos/servicios en NestJS equivalentes (ej. `HabitsModule`, `FriendsModule`).
+- [ ] 2. Mover la lógica de los repositorios de Next.js hacia los Repositories de NestJS.
+- [ ] 3. Actualizar los `Services` en el frontend para usar `apiClient` apuntando a NestJS.
+- [ ] 4. **Limpieza Final:** Al terminar esta fase, **Supabase Auth queda completamente eliminado del proyecto y las políticas RLS dependientes de `auth.uid()` se deshabilitan de forma definitiva.**
 
 ---
 
@@ -145,10 +145,10 @@ CREATE TABLE gestion.verificacion_tokens (
 
 **Objetivos:** Soporte de login/registro con Google vía Passport en NestJS.
 **Tareas:**
-1. Configurar App en Google Cloud Console.
-2. Implementar `GoogleStrategy`.
-3. Lógica de vinculación segura: exigir `email_verified: true` del perfil de Google antes de asociarlo a un usuario existente.
-4. UI en frontend (Botón "Continuar con Google") y redirecciones con manejo de cookies post-callback.
+- [ ] 1. Configurar App en Google Cloud Console.
+- [ ] 2. Implementar `GoogleStrategy`.
+- [ ] 3. Lógica de vinculación segura: exigir `email_verified: true` del perfil de Google antes de asociarlo a un usuario existente.
+- [ ] 4. UI en frontend (Botón "Continuar con Google") y redirecciones con manejo de cookies post-callback.
 
 ---
 
