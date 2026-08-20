@@ -38,6 +38,24 @@ export interface CreateRoutineDto {
   }[];
 }
 
+/** Alias compatible con el tipo que usaba modules/entrenador/types.ts */
+export interface RutinaConUsuarios {
+  idRutina: string;
+  tipo: string;
+  descripcion: string | null;
+  duracion: number | null;
+  objetivo: string | null;
+  nivel: 'Principiante' | 'Intermedio' | 'Avanzado';
+  idEntrenador: string;
+  usuariosAsignados: {
+    idUsuario: string;
+    nombre: string;
+    apellido: string;
+    fechaInicio: string;
+    estado: string;
+  }[];
+}
+
 export interface UpdateRoutineDto {
   name?: string;
   description?: string;

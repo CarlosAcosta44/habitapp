@@ -9,8 +9,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { createHabitoAction } from "@/modules/habitos/habito.actions";
-import type { CategoriaHabito } from "@/modules/habitos/types";
+import { createHabitoAction } from "@/actions/habito.actions";
+import type { CategoriaHabito } from "@/types/domain/habito.types";
 
 interface HabitFormProps {
   categorias: CategoriaHabito[];
