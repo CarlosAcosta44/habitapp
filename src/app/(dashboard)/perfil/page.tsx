@@ -19,7 +19,7 @@ export default async function PerfilPage() {
   const user = await requireUser();
   const perfilService = new UsuarioService();
 
-  const result = await perfilService.getPerfilDashboardData(user.id);
+  const result = await perfilService.getPerfilDashboardData();
 
   if (!result.success) {
     return (

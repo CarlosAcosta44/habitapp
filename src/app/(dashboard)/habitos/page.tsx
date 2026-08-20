@@ -34,14 +34,14 @@ export default async function HabitosPage() {
   const usuarioId = user.id;
 
   // ── Obtener hábitos con progreso del día ────────────────────────────────────
-  const habitosResult = await habitoService.getDashboard(usuarioId);
+  const habitosResult = await habitoService.getDashboard();
   const habitos = habitosResult.success ? habitosResult.data : [];
 
   // ── Calcular rachas en paralelo ─────────────────────────────────────────────
   const rachasMap: Record<string, number> = {};
   await Promise.all(
     habitos.map(async (h) => {
-      const rachaResult = await registroService.getRacha(h.idHabito, usuarioId);
+      const rachaResult = await registroService.getRacha(h.idHabito);
       rachasMap[h.idHabito] = rachaResult.success
         ? rachaResult.data.rachaActual
         : 0;
@@ -62,7 +62,7 @@ export default async function HabitosPage() {
     : (user.user_metadata?.full_name?.split(" ")?.[0] || user.email?.split("@")[0] || "Campeón");
 
   // ── Obtener últimos 7 días para el panel semanal ──────────────────────────
-  const historialResult = await registroService.getHistorialUsuario(usuarioId);
+  const historialResult = await registroService.getHistorialUsuario();
   const registrosReales = historialResult.success ? historialResult.data : [];
   
   const diasCompletados = new Set(registrosReales.filter(r => r.completado).map(r => r.fecha));

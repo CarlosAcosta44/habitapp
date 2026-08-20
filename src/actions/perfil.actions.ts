@@ -81,7 +81,7 @@ export async function updateAvatarAction(
       return { success: false, message: "El archivo debe ser una imagen." };
     }
 
-    const result = await perfilService.updateAvatar(user.id, file);
+    const result = await perfilService.updateAvatar(file);
 
     if (!result.success) {
       return { success: false, message: result.error };

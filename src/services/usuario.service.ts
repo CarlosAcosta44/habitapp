@@ -2,33 +2,16 @@
  * @file src/services/usuario.service.ts
  * @description Service Layer para la gestión del perfil de usuario y dashboard.
  * @layer Business Logic (Capa 3)
+ * Todas las llamadas a datos pasan por apiClient hacia NestJS.
  */
 
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
 import { apiClient } from "@/lib/api/client";
-import { createClient } from "@/lib/supabase/server";
-import { PerfilRepository } from "@/repositories/perfil.repository";
-import { AmigosRepository } from "@/repositories/amigos.repository";
-import { RegistroRepository } from "@/repositories/registro.repository";
 import type { PerfilDashboardData, ProfileForEdit, UpdateProfileDTO } from "@/types/domain/perfil.types";
 import type { UserProfileDto, UpdateUserProfileDto } from "@/types/domain/usuario.types";
 
 export class UsuarioService {
-  private readonly perfilRepo: PerfilRepository;
-  private readonly amigosRepo: AmigosRepository;
-  private readonly registroRepo: RegistroRepository;
-
-  constructor(
-    perfilRepo?: PerfilRepository,
-    amigosRepo?: AmigosRepository,
-    registroRepo?: RegistroRepository
-  ) {
-    this.perfilRepo = perfilRepo ?? new PerfilRepository();
-    this.amigosRepo = amigosRepo ?? new AmigosRepository();
-    this.registroRepo = registroRepo ?? new RegistroRepository();
-  }
-
   /**
    * Obtiene el perfil completo del usuario autenticado actual.
    * Llama a: GET /users/me
@@ -47,46 +30,59 @@ export class UsuarioService {
 
   /**
    * Obtiene y consolida toda la información necesaria para el dashboard de perfil.
+   * Llama en paralelo a: /users/me/profile, /records/historial,
+   * /users/me/points-history, /friends, /friends/suggestions, /users/me/achievements
    */
-  async getPerfilDashboardData(userId: string): Promise<Result<PerfilDashboardData>> {
+  async getPerfilDashboardData(): Promise<Result<PerfilDashboardData>> {
     try {
-      // 1. Obtener datos básicos de perfil
-      const perfilResult = await this.perfilRepo.getPerfil(userId);
-      if (!perfilResult.success) {
-        return err(perfilResult.error);
-      }
-      const perfil = perfilResult.data;
+      // ─── Llamadas paralelas a la API ────────────────────────────────────────
+      const [
+        perfilRes,
+        historialRes,
+        puntosRes,
+        amigosRes,
+        sugerenciasRes,
+        logrosRes,
+      ] = await Promise.all([
+        apiClient.get<any>("users/me/profile"),
+        apiClient.get<any[]>("records/historial"),
+        apiClient.get<any[]>("users/me/points-history?limit=5"),
+        apiClient.get<any[]>("friends"),
+        apiClient.get<any[]>("friends/suggestions?limit=12"),
+        apiClient.get<any[]>("users/me/achievements"),
+      ]);
 
+      const perfil = perfilRes.success ? perfilRes.data : null;
       const puntos = perfil?.puntos ?? 0;
+      const registrosReales = historialRes.success ? historialRes.data : [];
+      const historialPuntos = puntosRes.success ? puntosRes.data : [];
+      const amigos = amigosRes.success ? amigosRes.data : [];
+      const sugerenciasAmigos = sugerenciasRes.success ? sugerenciasRes.data : [];
+      const logros = logrosRes.success ? logrosRes.data : [];
 
-      // 2. Obtener historial de registros para cálculo de estadísticas
-      const historialResult = await this.registroRepo.findByUsuarioId(userId);
-      const registrosReales = historialResult.success ? historialResult.data : [];
-
-      // Calcular días activos del mes
+      // ─── Estadísticas calculadas en frontend (presentación pura) ────────────
       const hoyDate = new Date();
       const mesActual = hoyDate.getMonth();
       const añoActual = hoyDate.getFullYear();
 
       const diasCompletadosMes = new Set(
         registrosReales
-          .filter((r) => r.completado)
-          .filter((r) => {
-            const rowDate = new Date(r.fecha + "T12:00:00Z"); // Fix TZ boundary
+          .filter((r: any) => r.completado)
+          .filter((r: any) => {
+            const rowDate = new Date(r.fecha + "T12:00:00Z");
             return rowDate.getMonth() === mesActual && rowDate.getFullYear() === añoActual;
           })
-          .map((r) => r.fecha)
+          .map((r: any) => r.fecha)
       );
       const diasActivosMensuales = diasCompletadosMes.size;
       const diasEnElMes = new Date(añoActual, mesActual + 1, 0).getDate();
-      const eficienciaMensual = diasEnElMes > 0 
-        ? Math.round((diasActivosMensuales / diasEnElMes) * 100)
-        : 0;
+      const eficienciaMensual =
+        diasEnElMes > 0 ? Math.round((diasActivosMensuales / diasEnElMes) * 100) : 0;
 
-      // Calcular Racha Global (Días consecutivos con al menos un hábito completado)
+      // Racha global
       const todosLosDias = Array.from(
-        new Set(registrosReales.filter((r) => r.completado).map((r) => r.fecha))
-      ).sort((a, b) => b.localeCompare(a));
+        new Set(registrosReales.filter((r: any) => r.completado).map((r: any) => r.fecha))
+      ).sort((a, b) => (b as string).localeCompare(a as string));
 
       let rachaGlobal = 0;
       for (let i = 0; i < todosLosDias.length; i++) {
@@ -100,11 +96,8 @@ export class UsuarioService {
         }
       }
 
-      // 3. Actividad de Puntos
-      const actividadResult = await this.perfilRepo.getPointsHistory(userId, 5);
-      const historialPuntos = actividadResult.success ? actividadResult.data : [];
-
-      const actividad = historialPuntos.map((hp, idx) => ({
+      // Actividad reciente
+      const actividad = historialPuntos.map((hp: any, idx: number) => ({
         id: hp.idhistorial,
         tipo: idx % 2 === 0 ? "habito" : "logro",
         titulo: hp.motivo,
@@ -130,20 +123,9 @@ export class UsuarioService {
         });
       }
 
-      // 4. Amigos
-      const amigosResult = await this.amigosRepo.getAcceptedFriends(userId);
-      const amigos = amigosResult.success ? amigosResult.data : [];
-
-      // 5. Sugerencias de amigos
-      const sugerenciasResult = await this.amigosRepo.getFriendSuggestions(userId, 12);
-      const sugerenciasAmigos = sugerenciasResult.success ? sugerenciasResult.data : [];
-
-      // 6. Logros
-      const logrosResult = await this.perfilRepo.getUserAchievements(userId);
-      const logros = logrosResult.success ? logrosResult.data : [];
       const logroDestacado = logros.length > 0 ? logros[0] : null;
 
-      // 7. Lógica de Próximo Objetivo
+      // Próximo objetivo
       let proximoObjetivo = { nombre: "Inicia tu camino", desc: "Consigue tus primeros puntos.", meta: 100, actual: puntos };
       if (puntos < 100) {
         proximoObjetivo = { nombre: "Aspirante", desc: "Consigue tus primeros 100 puntos", meta: 100, actual: puntos };
@@ -154,7 +136,6 @@ export class UsuarioService {
       } else {
         proximoObjetivo = { nombre: "Mente de Acero", desc: "Llega a la increíble suma de 5000 puntos", meta: 5000, actual: puntos };
       }
-
       const porcentajeObj = Math.min(100, Math.round((proximoObjetivo.actual / proximoObjetivo.meta) * 100));
 
       return ok({
@@ -179,7 +160,6 @@ export class UsuarioService {
 
   /**
    * Obtiene los datos ligeros necesarios para el formulario de edición de perfil.
-   * Llama a: GET /users/me en el backend de NestJS.
    */
   async getProfileForEdit(): Promise<Result<ProfileForEdit>> {
     const result = await this.getPerfilMe();
@@ -198,11 +178,9 @@ export class UsuarioService {
   }
 
   /**
-   * Actualiza los datos básicos del perfil (nombre, apellido, fotoperfil).
-   * Canaliza la mutación a través de la API en NestJS.
+   * Actualiza los datos básicos del perfil.
    */
   async updateProfile(dto: UpdateProfileDTO): Promise<Result<ProfileForEdit>> {
-    // Transform UpdateProfileDTO to UpdateUserProfileDto
     const updateDto: UpdateUserProfileDto = {
       nombre: dto.nombre,
       apellido: dto.apellido,
@@ -211,7 +189,7 @@ export class UsuarioService {
       genero: dto.genero,
       fechanacimiento: dto.fechanacimiento,
     };
-    
+
     const result = await this.updatePerfilMe(updateDto);
     if (!result.success) {
       return err(`Error al actualizar perfil: ${result.error}`);
@@ -228,26 +206,18 @@ export class UsuarioService {
   }
 
   /**
-   * Sube una nueva foto de perfil al bucket 'avatars' de Supabase
-   * y luego actualiza el registro llamando a updateProfile.
-   * @param userId El ID del usuario autenticado.
-   * @param file El archivo a subir (File object).
+   * Sube una nueva foto de perfil vía NestJS (endpoint /users/me/avatar).
+   * Usa fetch directamente porque multipart/form-data no puede pasar por apiClient.post JSON.
    */
-  async updateAvatar(userId: string, file: File): Promise<Result<string>> {
+  async updateAvatar(file: File): Promise<Result<string>> {
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
-      // Using raw fetch instead of apiClient.post because apiClient stringifies bodies.
-      // This assumes we fetch the token in a similar way as apiClient.
-      const supabase = await createClient();
-      const { data } = await supabase.auth.getSession();
-      const token = data.session?.access_token || null;
-      
       const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
       const response = await fetch(`${API_URL}/users/me/avatar`, {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        method: "POST",
+        credentials: "include", // envía las cookies HttpOnly del JWT
         body: formData,
       });
 
