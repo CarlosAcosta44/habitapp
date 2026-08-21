@@ -1,9 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { loginAction } from '@/actions/auth.actions'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { AuthSplitContainer } from '@/components/auth/AuthSplitContainer'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'
 
 // Iconos vectoriales simples
 const GoogleIcon = () => (
@@ -23,6 +26,19 @@ const FacebookIcon = () => (
     <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z" />
   </svg>
 )
+
+function OAuthErrorAlert() {
+  const searchParams = useSearchParams()
+  const error = searchParams.get('error')
+  
+  if (!error) return null
+
+  return (
+    <div className="p-3 mb-5 rounded-xl bg-red-500/10 text-red-400 text-sm font-medium border border-red-500/20">
+      {error}
+    </div>
+  )
+}
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
@@ -51,6 +67,10 @@ export default function LoginPage() {
         <h2 className="text-3xl font-bold text-white mb-8">
           Iniciar sesión
         </h2>
+
+        <Suspense fallback={null}>
+          <OAuthErrorAlert />
+        </Suspense>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
@@ -109,9 +129,9 @@ export default function LoginPage() {
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <button type="button" className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
+          <a href={`${API_URL}/auth/google`} className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
             <GoogleIcon />
-          </button>
+          </a>
           <button type="button" className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
             <AppleIcon />
           </button>

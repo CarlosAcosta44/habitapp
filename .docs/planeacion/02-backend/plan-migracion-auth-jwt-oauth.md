@@ -134,10 +134,10 @@ CREATE TABLE gestion.verificacion_tokens (
 - `amigos.repository.ts` (Relaciones, sugerencias).
 
 **Tareas:**
-- [ ] 1. Crear módulos/servicios en NestJS equivalentes (ej. `HabitsModule`, `FriendsModule`).
-- [ ] 2. Mover la lógica de los repositorios de Next.js hacia los Repositories de NestJS.
-- [ ] 3. Actualizar los `Services` en el frontend para usar `apiClient` apuntando a NestJS.
-- [ ] 4. **Limpieza Final:** Al terminar esta fase, **Supabase Auth queda completamente eliminado del proyecto y las políticas RLS dependientes de `auth.uid()` se deshabilitan de forma definitiva.**
+- [x] 1. Crear módulos/servicios en NestJS equivalentes (ej. `HabitsModule`, `FriendsModule`).
+- [x] 2. Mover la lógica de los repositorios de Next.js hacia los Repositories de NestJS.
+- [x] 3. Actualizar los `Services` en el frontend para usar `apiClient` apuntando a NestJS.
+- [x] 4. **Limpieza Final:** Al terminar esta fase, **Supabase Auth queda completamente eliminado del proyecto y las políticas RLS dependientes de `auth.uid()` se deshabilitan de forma definitiva.**
 
 ---
 
@@ -145,10 +145,10 @@ CREATE TABLE gestion.verificacion_tokens (
 
 **Objetivos:** Soporte de login/registro con Google vía Passport en NestJS.
 **Tareas:**
-- [ ] 1. Configurar App en Google Cloud Console.
-- [ ] 2. Implementar `GoogleStrategy`.
-- [ ] 3. Lógica de vinculación segura: exigir `email_verified: true` del perfil de Google antes de asociarlo a un usuario existente.
-- [ ] 4. UI en frontend (Botón "Continuar con Google") y redirecciones con manejo de cookies post-callback.
+- [x] 1. Configurar App en Google Cloud Console.
+- [x] 2. Implementar `GoogleStrategy`.
+- [x] 3. Lógica de vinculación segura: exigir `email_verified: true` del perfil de Google antes de asociarlo a un usuario existente.
+- [x] 4. UI en frontend (Botón "Continuar con Google") y redirecciones con manejo de cookies post-callback.
 
 ---
 
