@@ -21,7 +21,15 @@ const EyeIcon = ({ open }: { open: boolean }) =>
     </svg>
   )
 
+const GoogleIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+    <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.761H12.545z"/>
+  </svg>
+)
+
 const initialRegisterState: RegisterActionState = {}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'
 
 export default function RegisterPage() {
   const formRef = useRef<HTMLFormElement>(null)
@@ -175,6 +183,23 @@ export default function RegisterPage() {
             >
               Continuar
             </button>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-700/50"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase tracking-widest">
+                <span className="bg-[#0b0f19] px-4 text-slate-500">O INICIA CON</span>
+              </div>
+            </div>
+
+            <a 
+              href={`${API_URL}/auth/google`} 
+              className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium"
+            >
+              <GoogleIcon />
+              Google
+            </a>
           </div>
         </fieldset>
 
