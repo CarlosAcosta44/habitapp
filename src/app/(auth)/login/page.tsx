@@ -135,9 +135,9 @@ export default function LoginPage() {
           <button type="button" className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
             <AppleIcon />
           </button>
-          <button type="button" className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
+          <a href={`${API_URL}/auth/facebook`} className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
             <FacebookIcon />
-          </button>
+          </a>
         </div>
 
         <p className="text-center text-[14px] text-slate-400 pt-2">
