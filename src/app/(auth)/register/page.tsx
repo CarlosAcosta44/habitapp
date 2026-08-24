@@ -33,6 +33,15 @@ const FacebookIcon = () => (
   </svg>
 )
 
+const MicrosoftIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" fill="currentColor" className="w-5 h-5">
+    <path fill="#f25022" d="M0 0h11v11H0z"/>
+    <path fill="#00a4ef" d="M0 12h11v11H0z"/>
+    <path fill="#7fba00" d="M12 0h11v11H12z"/>
+    <path fill="#ffb900" d="M12 12h11v11H12z"/>
+  </svg>
+)
+
 const initialRegisterState: RegisterActionState = {}
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'
@@ -213,6 +222,14 @@ export default function RegisterPage() {
             >
               <FacebookIcon />
               Facebook
+            </a>
+
+            <a 
+              href={`${API_URL}/auth/microsoft`} 
+              className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium"
+            >
+              <MicrosoftIcon />
+              Microsoft
             </a>
           </div>
         </fieldset>
