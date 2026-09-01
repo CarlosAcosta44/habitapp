@@ -156,9 +156,22 @@ CREATE TABLE gestion.verificacion_tokens (
 
 **Objetivos:** Login/registro con Facebook. Misma arquitectura que Google, implementando `FacebookStrategy`.
 
+**Tareas:**
+- [x] 1. Instalar `passport-facebook` y `@types/passport-facebook`.
+- [x] 2. Implementar `FacebookStrategy`.
+- [x] 3. Lógica de vinculación compartida (`findOrCreateOAuthUser`) reutilizada de Google.
+- [x] 4. UI en frontend (Botón "Continuar con Facebook") en login y registro.
+
 ---
 
-### Fase 5 — OAuth Apple (Sign in with Apple)
+### Fase 5 — OAuth Microsoft
 
-**Objetivos:** Login/registro con Apple.
-**Consideraciones:** Requiere cuenta Apple Developer ($99/año), certificados `.p8` y entorno con HTTPS validado para el callback.
+**Objetivos:** Login/registro con Microsoft (Outlook/Hotmail/Live).
+**Ventajas:** Completamente gratuito, amplia base de usuarios, usa OAuth2 estándar.
+**Reemplaza:** Apple Sign In (requería cuenta Apple Developer $99/año).
+
+**Tareas:**
+- [x] 1. Instalar `passport-microsoft` y configurar app en Azure Portal (App registrations — gratuito).
+- [x] 2. Implementar `MicrosoftStrategy`.
+- [x] 3. Reutilizar `findOrCreateOAuthUser` del servicio (mismo patrón que Google/Facebook).
+- [x] 4. UI en frontend (Botón "Continuar con Microsoft") en login y registro.

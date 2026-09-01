@@ -38,12 +38,32 @@ ALTER TABLE gestion.identidades
 Ya no usamos `auth.uid()` en RLS. Puedes desactivar las políticas RLS que dependían de auth.uid():
 
 ```sql
--- Deshabilitar RLS en tablas que ya protegemos desde el backend
+-- Módulo de Gestión
 ALTER TABLE gestion.usuarios DISABLE ROW LEVEL SECURITY;
-ALTER TABLE gestion.habitos DISABLE ROW LEVEL SECURITY;
-ALTER TABLE gestion.registro_habitos DISABLE ROW LEVEL SECURITY;
+ALTER TABLE gestion.roles DISABLE ROW LEVEL SECURITY;
 ALTER TABLE gestion.amigos DISABLE ROW LEVEL SECURITY;
--- (aplicar a todas las tablas de gestion.*)
+ALTER TABLE gestion.notificaciones DISABLE ROW LEVEL SECURITY;
+ALTER TABLE gestion.logros DISABLE ROW LEVEL SECURITY;
+ALTER TABLE gestion.usuario_logro DISABLE ROW LEVEL SECURITY;
+ALTER TABLE gestion.identidades DISABLE ROW LEVEL SECURITY;
+ALTER TABLE gestion.refresh_tokens DISABLE ROW LEVEL SECURITY;
+ALTER TABLE gestion.verificacion_tokens DISABLE ROW LEVEL SECURITY;
+
+-- Módulo de Seguimiento
+ALTER TABLE seguimiento.categorias_habitos DISABLE ROW LEVEL SECURITY;
+ALTER TABLE seguimiento.habitos DISABLE ROW LEVEL SECURITY;
+ALTER TABLE seguimiento.registro_habitos DISABLE ROW LEVEL SECURITY;
+ALTER TABLE seguimiento.rutinas DISABLE ROW LEVEL SECURITY;
+ALTER TABLE seguimiento.recordatorios DISABLE ROW LEVEL SECURITY;
+ALTER TABLE seguimiento.usuario_rutina DISABLE ROW LEVEL SECURITY;
+ALTER TABLE seguimiento.entrenadores DISABLE ROW LEVEL SECURITY;
+ALTER TABLE seguimiento.usuario_entrenador DISABLE ROW LEVEL SECURITY;
+
+-- Módulo de Comunidad
+ALTER TABLE comunidad.foros DISABLE ROW LEVEL SECURITY;
+ALTER TABLE comunidad.comentarios DISABLE ROW LEVEL SECURITY;
+ALTER TABLE comunidad.articulos DISABLE ROW LEVEL SECURITY;
+ALTER TABLE comunidad.reacciones DISABLE ROW LEVEL SECURITY;
 ```
 
 > ⚠️ Solo hacer esto si el backend ya valida ownership en TODOS los endpoints. Si hay algún endpoint que no valida userId, primero corregirlo.
