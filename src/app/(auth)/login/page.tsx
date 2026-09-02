@@ -5,8 +5,7 @@ import { loginAction } from '@/actions/auth.actions'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { AuthSplitContainer } from '@/components/auth/AuthSplitContainer'
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'
+import { createClient } from '@/lib/supabase/client'
 
 // Iconos vectoriales simples
 const GoogleIcon = () => (
@@ -33,19 +32,30 @@ const FacebookIcon = () => (
 function OAuthErrorAlert() {
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
-  
-  if (!error) return null
+  const message = searchParams.get('message')
+
+  if (!error && !message) return null
 
   return (
-    <div className="p-3 mb-5 rounded-xl bg-red-500/10 text-red-400 text-sm font-medium border border-red-500/20">
-      {error}
-    </div>
+    <>
+      {error && (
+        <div className="p-3 mb-5 rounded-xl bg-red-500/10 text-red-400 text-sm font-medium border border-red-500/20">
+          {error}
+        </div>
+      )}
+      {message && (
+        <div className="p-3 mb-5 rounded-xl bg-green-500/10 text-green-400 text-sm font-medium border border-green-500/20">
+          {message}
+        </div>
+      )}
+    </>
   )
 }
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [oauthLoading, setOauthLoading] = useState<string | null>(null)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -59,6 +69,18 @@ export default function LoginPage() {
       setError(result.error)
       setLoading(false)
     }
+    // Si no hay error, loginAction hizo redirect y el componente se desmontará
+  }
+
+  const handleOAuth = async (provider: 'google' | 'facebook' | 'azure') => {
+    const supabase = createClient()
+    setOauthLoading(provider)
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
   }
 
   return (
@@ -132,15 +154,30 @@ export default function LoginPage() {
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <a href={`${API_URL}/auth/google`} className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
+          <button
+            type="button"
+            onClick={() => handleOAuth('google')}
+            disabled={!!oauthLoading}
+            className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 disabled:opacity-60"
+          >
             <GoogleIcon />
-          </a>
-          <a href={`${API_URL}/auth/microsoft`} className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOAuth('azure')}
+            disabled={!!oauthLoading}
+            className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 disabled:opacity-60"
+          >
             <MicrosoftIcon />
-          </a>
-          <a href={`${API_URL}/auth/facebook`} className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOAuth('facebook')}
+            disabled={!!oauthLoading}
+            className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 disabled:opacity-60"
+          >
             <FacebookIcon />
-          </a>
+          </button>
         </div>
 
         <p className="text-center text-[14px] text-slate-400 pt-2">

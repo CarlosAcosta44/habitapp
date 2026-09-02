@@ -4,6 +4,7 @@ import { useActionState, useRef, useState } from 'react'
 import { registerAction, type RegisterActionState } from '@/actions/auth.actions'
 import Link from 'next/link'
 import { AuthSplitContainer } from '@/components/auth/AuthSplitContainer'
+import { createClient } from '@/lib/supabase/client'
 import {
   ONBOARDING_HABIT_PRESETS,
   type OnboardingHabitPresetId,
@@ -44,9 +45,19 @@ const MicrosoftIcon = () => (
 
 const initialRegisterState: RegisterActionState = {}
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'
-
 export default function RegisterPage() {
+  const [oauthLoading, setOauthLoading] = useState<string | null>(null)
+
+  const handleOAuth = async (provider: 'google' | 'facebook' | 'azure') => {
+    const supabase = createClient()
+    setOauthLoading(provider)
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+  }
   const formRef = useRef<HTMLFormElement>(null)
   const [step, setStep] = useState<1 | 2>(1)
   const [showPassword, setShowPassword] = useState(false)
@@ -208,29 +219,35 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <a 
-              href={`${API_URL}/auth/google`} 
-              className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium"
+            <button
+              type="button"
+              onClick={() => handleOAuth('google')}
+              disabled={!!oauthLoading}
+              className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium disabled:opacity-60"
             >
               <GoogleIcon />
               Google
-            </a>
+            </button>
 
-            <a 
-              href={`${API_URL}/auth/facebook`} 
-              className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium"
+            <button
+              type="button"
+              onClick={() => handleOAuth('facebook')}
+              disabled={!!oauthLoading}
+              className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium disabled:opacity-60"
             >
               <FacebookIcon />
               Facebook
-            </a>
+            </button>
 
-            <a 
-              href={`${API_URL}/auth/microsoft`} 
-              className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium"
+            <button
+              type="button"
+              onClick={() => handleOAuth('azure')}
+              disabled={!!oauthLoading}
+              className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium disabled:opacity-60"
             >
               <MicrosoftIcon />
               Microsoft
-            </a>
+            </button>
           </div>
         </fieldset>
 

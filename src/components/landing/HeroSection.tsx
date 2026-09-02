@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { Particles } from "@/components/ui/Particles";
 
 export function HeroSection() {
   return (
@@ -79,13 +80,15 @@ export function HeroSection() {
           <div className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px]">
             {/* Glow effect under illustration */}
             <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
-            <Image
-              src="/landing/hero_v2.png"
-              alt="HabitApp Illustration"
-              fill
-              className="object-contain drop-shadow-[0_0_50px_rgba(99,102,241,0.3)]"
-              priority
-            />
+            
+            {/* Componente React Bits (Interactive Particles) */}
+            <div className="absolute inset-0 rounded-full overflow-hidden border border-indigo-500/20 shadow-[0_0_50px_rgba(99,102,241,0.2)] bg-indigo-950/20 backdrop-blur-sm">
+              <Particles 
+                particleCount={100}
+                particleColor="rgba(129, 140, 248, 0.8)" // indigo-400
+                lineColor="rgba(167, 139, 250, 0.3)" // violet-400
+              />
+            </div>
           </div>
         </motion.div>
       </div>
