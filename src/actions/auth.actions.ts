@@ -1,15 +1,26 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+/**
+ * @file src/actions/auth.actions.ts
+ * @description Server Actions de autenticación — usa Supabase Auth como fuente de verdad.
+ * El trigger `trigger_crear_perfil` en la BD sincroniza auth.users → gestion.usuarios.
+ *
+ * IMPORTANTE: Este archivo es exclusivo del frontend web (Next.js).
+ * La app móvil (Flutter) usa los endpoints JWT del backend NestJS.
+ */
+
+import { revalidatePath }  from 'next/cache'
 import { cookies, headers } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
-import { HabitoService } from '@/services/habito.service'
+import { redirect }         from 'next/navigation'
+import { z }                from 'zod'
+import { createClient }     from '@/lib/supabase/server'
+import { HabitoService }    from '@/services/habito.service'
 import {
   ONBOARDING_HABIT_PRESETS,
   ONBOARDING_PRESET_IDS,
 } from '@/lib/onboarding-habits'
+
+// ─── Tipos ────────────────────────────────────────────────────────────────────
 
 type AuthErrorLike = {
   message?: string
@@ -17,97 +28,42 @@ type AuthErrorLike = {
   status?: number
 }
 
-type UserDataWithRole = {
-  idrol?: number | null
-  roles?: { nombrerol?: string | null } | null
+export type RegisterActionState = {
+  error?: string
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/**
+ * Traduce errores de Supabase Auth al español para mostrarlos en la UI.
+ */
 function traducirErrorAuth(
   error: AuthErrorLike,
   contexto: 'login' | 'register' | 'reset' | 'updatePassword'
 ): string {
-  const msg = (error.message ?? '').toLowerCase()
-  const code = (error.code ?? '').toLowerCase()
+  const msg  = (error.message ?? '').toLowerCase()
+  const code = (error.code   ?? '').toLowerCase()
 
-  if (code === 'invalid_credentials' || msg.includes('invalid login credentials')) {
+  if (code === 'invalid_credentials' || msg.includes('invalid login credentials'))
     return 'Correo o contraseña inválidos.'
-  }
-  if (code === 'email_not_confirmed' || msg.includes('email not confirmed')) {
+  if (code === 'email_not_confirmed'  || msg.includes('email not confirmed'))
     return 'Debes confirmar tu correo antes de iniciar sesión.'
-  }
-  if (msg.includes('user already registered')) {
+  if (msg.includes('user already registered'))
     return 'Este correo ya está registrado.'
-  }
-  if (msg.includes('password should be at least')) {
-    return 'La contraseña es demasiado corta.'
-  }
-  if (msg.includes('unable to validate email address')) {
+  if (msg.includes('password should be at least'))
+    return 'La contraseña debe tener al menos 6 caracteres.'
+  if (msg.includes('unable to validate email address'))
     return 'El correo electrónico no es válido.'
-  }
-  if (msg.includes('signup is disabled')) {
+  if (msg.includes('signup is disabled'))
     return 'El registro de usuarios está deshabilitado temporalmente.'
-  }
-  if (msg.includes('email rate limit exceeded') || msg.includes('over_email_send_rate_limit')) {
+  if (msg.includes('email rate limit exceeded') || msg.includes('over_email_send_rate_limit'))
     return 'Se alcanzó el límite de envíos. Intenta nuevamente en unos minutos.'
-  }
 
-  if (contexto === 'login') return 'No fue posible iniciar sesión. Verifica tus datos e inténtalo de nuevo.'
-  if (contexto === 'register') return 'No fue posible crear la cuenta. Intenta nuevamente.'
-  if (contexto === 'reset') return 'No fue posible enviar el correo de recuperación. Intenta nuevamente.'
+  if (contexto === 'login')           return 'No fue posible iniciar sesión. Verifica tus datos.'
+  if (contexto === 'register')        return 'No fue posible crear la cuenta. Intenta nuevamente.'
+  if (contexto === 'reset')           return 'No fue posible enviar el correo de recuperación.'
   return 'No fue posible actualizar la contraseña. Intenta nuevamente.'
 }
-
-export async function loginAction(formData: FormData) {
-  const supabase = await createClient()
-
-  const { data: signInData, error } = await supabase.auth.signInWithPassword({
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  })
-
-  if (error) {
-    return { error: traducirErrorAuth(error, 'login') }
-  }
-
-  const userId = signInData.user?.id
-  const meta     = signInData.user?.user_metadata as Record<string, unknown> | undefined
-  if (userId && meta?.starter_habits) {
-    await aplicarHabitosPendientesDesdeMetadata(userId, meta.starter_habits)
-    await supabase.auth.updateUser({
-      data: { starter_habits: '' },
-    })
-  }
-
-  if (userId) {
-    const { data: userData } = await supabase
-      .schema('gestion')
-      .from('usuarios')
-      .select('idrol, roles(nombrerol)')
-      .eq('idusuario', userId)
-      .single()
-
-    const rol = (userData as UserDataWithRole)?.roles?.nombrerol
-    if (rol) {
-      const cookieStore = await cookies()
-      cookieStore.set('user_role', rol, { maxAge: 60 * 60 * 24 * 7, path: '/' })
-    }
-  }
-
-  revalidatePath('/', 'layout')
-  redirect('/habitos')
-}
-
-const RegisterSchema = z.object({
-  email:     z.string().email('Correo inválido'),
-  password:  z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
-  nombre:    z.string().trim().min(1, 'El nombre es obligatorio').max(45),
-  apellido:  z.string().trim().min(1, 'Los apellidos son obligatorios').max(45),
-  birthdate: z.string().optional(),
-  genero:    z.enum(['Masculino', 'Femenino'], {
-    message: 'Selecciona una opción de género'
-  }),
-  habit_presets_json: z.string().min(2),
-})
 
 function parseHabitPresetIds(json: string): string[] {
   try {
@@ -119,48 +75,45 @@ function parseHabitPresetIds(json: string): string[] {
   }
 }
 
+/**
+ * Crea los hábitos de onboarding en el backend NestJS usando el token
+ * de sesión activo de Supabase. Se llama solo cuando el registro es inmediato
+ * (sin confirmación de email).
+ */
 async function crearHabitosOnboarding(
-  usuarioId: string,
   presetIds: string[]
 ): Promise<void> {
-  const validIds = presetIds.filter((id) => ONBOARDING_PRESET_IDS.has(id))
+  const validIds = presetIds.filter(id => ONBOARDING_PRESET_IDS.has(id))
   if (validIds.length === 0) return
 
   try {
     const habitoService = new HabitoService()
-    
-    // Evitar duplicados si el usuario ya tiene hábitos (idempotencia)
-    const existentes = await habitoService.getAll()
-    if (existentes.success && existentes.data.length > 0) {
-      console.log(`[Onboarding] El usuario ${usuarioId} ya tiene hábitos. Saltando creación.`)
-      return
-    }
 
     const catsResult = await habitoService.getCategorias()
     if (!catsResult.success) {
-      console.error('[Onboarding] Error al obtener categorías:', catsResult.error)
+      console.warn('[Onboarding] No se pudieron obtener categorías:', catsResult.error)
       return
     }
 
     const categoriaPorNombre = new Map(
-      catsResult.data.map((c) => [c.nombre, c.idCategoria])
+      catsResult.data.map((c: any) => [c.nombre, c.idCategoria])
     )
 
     const hoy = new Date().toISOString().split('T')[0]
 
     for (const id of validIds) {
-      const preset = ONBOARDING_HABIT_PRESETS.find((p) => p.id === id)
+      const preset = ONBOARDING_HABIT_PRESETS.find(p => p.id === id)
       if (!preset) continue
-      
+
       const idCategoria = categoriaPorNombre.get(preset.categoria)
       if (!idCategoria) {
-        console.warn(`[Onboarding] Categoría "${preset.categoria}" no encontrada para el hábito "${preset.nombre}"`)
+        console.warn(`[Onboarding] Categoría "${preset.categoria}" no encontrada`)
         continue
       }
 
       await habitoService.create({
         nombre:       preset.nombre,
-        descripcion:  `Hábito inicial de ${preset.categoria}`,
+        descripcion:  `Hábito inicial — ${preset.categoria}`,
         fechaInicio:  hoy,
         puntos:       preset.puntos,
         idCategoria,
@@ -168,30 +121,60 @@ async function crearHabitosOnboarding(
         unidadMedida: 'vez',
       })
     }
-    console.log(`[Onboarding] ${validIds.length} hábitos creados exitosamente para ${usuarioId}`)
   } catch (error) {
-    console.error('[Onboarding] Error fatal durante la creación de hábitos:', error)
+    // No bloqueamos el registro si falla la creación de hábitos iniciales
+    console.warn('[Onboarding] Error al crear hábitos iniciales:', error)
   }
 }
 
-/** Si el registro guardó hábitos en user_metadata y aún no hay hábitos en BD, los crea (p. ej. tras confirmar email). */
-async function aplicarHabitosPendientesDesdeMetadata(
-  usuarioId: string,
-  starterHabitsRaw: unknown
-): Promise<void> {
-  if (typeof starterHabitsRaw !== 'string' || starterHabitsRaw.length < 3) return
-  const ids = parseHabitPresetIds(starterHabitsRaw)
-  if (ids.length === 0) return
-  await crearHabitosOnboarding(usuarioId, ids)
+// ─── Actions ──────────────────────────────────────────────────────────────────
+
+export async function loginAction(formData: FormData) {
+  const supabase = await createClient()
+
+  const { data: signInData, error } = await supabase.auth.signInWithPassword({
+    email:    formData.get('email')    as string,
+    password: formData.get('password') as string,
+  })
+
+  if (error) {
+    return { error: traducirErrorAuth(error, 'login') }
+  }
+
+  // Si el usuario tenía hábitos pendientes de onboarding (registró sin sesión inmediata),
+  // los creamos ahora en el primer login.
+  const meta = signInData.user?.user_metadata as Record<string, unknown> | undefined
+  if (meta?.starter_habits && typeof meta.starter_habits === 'string' && meta.starter_habits.length > 2) {
+    const ids = parseHabitPresetIds(meta.starter_habits)
+    if (ids.length > 0) {
+      await crearHabitosOnboarding(ids)
+      await supabase.auth.updateUser({ data: { starter_habits: '' } })
+    }
+  }
+
+  revalidatePath('/', 'layout')
+  redirect('/habitos')
 }
 
-export type RegisterActionState = {
-  error?: string
-}
+const RegisterSchema = z.object({
+  email:              z.string().email('Correo inválido'),
+  password:           z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  nombre:             z.string().trim().min(1, 'El nombre es obligatorio').max(45),
+  apellido:           z.string().trim().min(1, 'Los apellidos son obligatorios').max(45),
+  birthdate:          z.string().optional(),
+  genero:             z.enum(['Masculino', 'Femenino'], {
+    message: 'Selecciona una opción de género',
+  }),
+  habit_presets_json: z.string().min(2),
+})
 
 /**
- * Registro completo (paso 1 + paso 2). Las claves `nombre` y `apellido` deben
- * coincidir con el trigger en PostgreSQL (raw_user_meta_data).
+ * Registro completo de usuario. Flujo:
+ * 1. Validar campos con Zod
+ * 2. Crear usuario en Supabase Auth con metadata (nombre, apellido, genero, etc.)
+ * 3. El trigger de la BD crea automáticamente el perfil en gestion.usuarios
+ * 4. Si hay sesión inmediata (sin verificación de email): crear hábitos y redirigir
+ * 5. Si requiere confirmación de email: redirigir a login con mensaje
  */
 export async function registerAction(
   _prev: RegisterActionState | null,
@@ -214,29 +197,24 @@ export async function registerAction(
   if (!parsed.success) {
     const first = parsed.error.flatten().fieldErrors
     const msg =
-      first.nombre?.[0] ??
-      first.apellido?.[0] ??
-      first.email?.[0] ??
-      first.password?.[0] ??
-      first.genero?.[0] ??
+      first.nombre?.[0]             ??
+      first.apellido?.[0]           ??
+      first.email?.[0]              ??
+      first.password?.[0]           ??
+      first.genero?.[0]             ??
       'Revisa los datos del formulario'
     return { error: msg }
   }
-
-  const { email, password, nombre, apellido, birthdate, genero } = parsed.data
 
   if (habitIdsRaw.length === 0) {
     return { error: 'Elige al menos un hábito para empezar' }
   }
 
+  const { email, password, nombre, apellido, birthdate, genero } = parsed.data
+
   const supabase = await createClient()
 
-  const userMetadata: Record<string, string> = {
-    nombre,
-    apellido,
-    genero,
-    starter_habits: JSON.stringify(habitIdsRaw),
-  }
+  const userMetadata: Record<string, string> = { nombre, apellido, genero, starter_habits: JSON.stringify(habitIdsRaw) }
   if (birthdate && /^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
     userMetadata.fechanacimiento = birthdate
   }
@@ -251,32 +229,22 @@ export async function registerAction(
     return { error: traducirErrorAuth(error, 'register') }
   }
 
-  const userId = data.user?.id
-  if (data.session && userId) {
-    await crearHabitosOnboarding(userId, habitIdsRaw)
+  // Caso 1: Sesión inmediata (confirmación de email desactivada en Supabase)
+  // El trigger ya creó el perfil en gestion.usuarios.
+  // Creamos los hábitos de onboarding y redirigimos.
+  if (data.session && data.user?.id) {
+    await crearHabitosOnboarding(habitIdsRaw)
     await supabase.auth.updateUser({ data: { starter_habits: '' } })
-
-    const { data: userData } = await supabase
-      .schema('gestion')
-      .from('usuarios')
-      .select('idrol, roles(nombrerol)')
-      .eq('idusuario', userId)
-      .single()
-
-    const rol = (userData as UserDataWithRole)?.roles?.nombrerol
-    if (rol) {
-      const cookieStore = await cookies()
-      cookieStore.set('user_role', rol, { maxAge: 60 * 60 * 24 * 7, path: '/' })
-    }
-
     revalidatePath('/', 'layout')
     redirect('/habitos')
   }
 
+  // Caso 2: Requiere confirmación de email.
+  // Los hábitos se crearán en el primer loginAction (usando starter_habits del metadata).
   redirect(
     '/login?message=' +
       encodeURIComponent(
-        'Registro exitoso. Confirma tu correo si es necesario; al iniciar sesión se crearán los hábitos que elegiste.'
+        '¡Cuenta creada! Confirma tu correo electrónico para iniciar sesión.'
       )
   )
 }
@@ -290,16 +258,15 @@ export async function logoutAction() {
   redirect('/login')
 }
 
-export async function resetPasswordAction(formData: FormData) {
-  const supabase = await createClient()
-  const email = formData.get('email') as string
+export async function resetPasswordAction(formData: FormData): Promise<{ success?: string; error?: string }> {
+  const supabase  = await createClient()
+  const email     = formData.get('email') as string
 
   const headersList = await headers()
-  const host = headersList.get('host')
-  const protocol = host?.startsWith('localhost') ? 'http' : 'https'
-  const origin = `${protocol}://${host}`
+  const host        = headersList.get('host')
+  const protocol    = host?.startsWith('localhost') ? 'http' : 'https'
+  const origin      = `${protocol}://${host}`
 
-  // Dirigimos al callback primero para capturar e intercambiar el código por la sesión.
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/auth/callback?next=/update-password`,
   })
@@ -308,16 +275,14 @@ export async function resetPasswordAction(formData: FormData) {
     return { error: traducirErrorAuth(error, 'reset') }
   }
 
-  return { success: 'Revisa tu correo para continuar con el restablecimiento de tu contraseña.' }
+  return { success: 'Revisa tu correo para continuar con el restablecimiento de contraseña.' }
 }
 
-export async function updatePasswordAction(formData: FormData) {
+export async function updatePasswordAction(formData: FormData): Promise<{ error?: string } | void> {
   const supabase = await createClient()
   const password = formData.get('password') as string
 
-  const { error } = await supabase.auth.updateUser({
-    password: password
-  })
+  const { error } = await supabase.auth.updateUser({ password })
 
   if (error) {
     return { error: traducirErrorAuth(error, 'updatePassword') }
