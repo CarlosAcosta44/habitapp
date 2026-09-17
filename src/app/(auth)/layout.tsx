@@ -1,7 +1,13 @@
+'use client'
+
 import React from 'react'
 import Link from 'next/link'
+import { AnimatePresence } from 'framer-motion'
+import { usePathname } from 'next/navigation'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  
   return (
     <div className="absolute inset-0 bg-[#0b0f19] text-white font-sans overflow-x-hidden overflow-y-auto">
       {/* Header Fijo/Absoluto */}
@@ -16,9 +22,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       {/* Main Content a nivel raíz para estirarse al 100% */}
       <main className="w-full min-h-screen m-0 p-0">
-        {children}
+        <AnimatePresence mode="wait">
+          <div key={pathname} className="contents">
+            {children}
+          </div>
+        </AnimatePresence>
       </main>
       
     </div>
   )
 }
+

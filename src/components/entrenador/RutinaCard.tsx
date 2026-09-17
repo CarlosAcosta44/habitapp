@@ -3,7 +3,7 @@
  * @description Tarjeta que muestra una rutina con sus usuarios asignados.
  */
 
-import type { RutinaConUsuarios } from "@/modules/entrenador/types";
+import type { RutinaConUsuarios } from "@/services/coach.service";
 
 const nivelColor = {
   Principiante: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",

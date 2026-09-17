@@ -1,139 +1,69 @@
 /**
  * @file src/services/habito.service.ts
- * @description Service Layer para la lógica de negocio de Hábitos.
+ * @description Service Layer para hábitos — todas las llamadas pasan por apiClient hacia NestJS.
  * @layer Business Logic (Capa 3)
- *
- * Responsabilidades:
- * - Aplicar reglas de negocio antes de llamar al repositorio
- * - Validar estados y restricciones de dominio
- * - Retornar Result<T> estandarizado
- *
- * @pattern Service Layer
- * @principle SRP — solo lógica de negocio de hábitos
+ * La validación de reglas de negocio (fechas, puntos, ownership) vive en el backend.
+ * Este servicio solo orquesta las llamadas y transforma respuestas.
  */
 
-import { ok, err } from "@/lib/result";
+import { apiClient } from "@/lib/api/client";
 import type { Result } from "@/lib/result";
-import { HabitoRepository } from "@/repositories/habito.repository";
-import type {
-  Habito,
-  HabitoConCategoria,
-  HabitoConProgreso,
-  CreateHabitoDTO,
-  UpdateHabitoDTO,
-  HabitoFilters,
-  CategoriaHabito,
-} from "@/types/domain/habito.types";
 
 export class HabitoService {
-  private readonly repo: HabitoRepository;
-
-  constructor(repo?: HabitoRepository) {
-    this.repo = repo ?? new HabitoRepository();
-  }
-
-  // ─── getAll ────────────────────────────────────────────────────────────────
-  async getAll(): Promise<Result<HabitoConCategoria[]>> {
-    return this.repo.findAll();
-  }
-
-  // ─── getById ───────────────────────────────────────────────────────────────
-  async getById(id: string): Promise<Result<HabitoConCategoria>> {
-    const result = await this.repo.findById(id);
-    if (!result.success) return err(result.error);
-    if (!result.data)    return err(`Hábito con ID ${id} no encontrado`);
-    return ok(result.data);
-  }
-
-  // ─── getByUsuario ──────────────────────────────────────────────────────────
-  async getByUsuario(
-    usuarioId: string,
-    filters?: HabitoFilters
-  ): Promise<Result<HabitoConCategoria[]>> {
-    if (!usuarioId) return err("El ID del usuario es requerido");
-    return this.repo.findByUserId(usuarioId, filters);
-  }
-
   // ─── getDashboard ──────────────────────────────────────────────────────────
-  /**
-   * Trae los hábitos activos del usuario con el progreso de hoy.
-   * Es el método principal del dashboard del usuario.
-   */
-  async getDashboard(
-    usuarioId: string
-  ): Promise<Result<HabitoConProgreso[]>> {
-    if (!usuarioId) return err("El ID del usuario es requerido");
-    return this.repo.findByUserIdConProgreso(usuarioId);
+  async getDashboard(): Promise<Result<any[]>> {
+    return apiClient.get<any[]>("habits/dashboard");
   }
 
   // ─── getCategorias ─────────────────────────────────────────────────────────
-  async getCategorias(): Promise<Result<CategoriaHabito[]>> {
-    return this.repo.findCategorias();
+  async getCategorias(): Promise<Result<any[]>> {
+    return apiClient.get<any[]>("habits/categorias");
+  }
+
+  // ─── getAll ────────────────────────────────────────────────────────────────
+  async getAll(estado?: string): Promise<Result<any[]>> {
+    const url = estado ? `habits?estado=${estado}` : "habits";
+    return apiClient.get<any[]>(url);
+  }
+
+  // ─── getById ───────────────────────────────────────────────────────────────
+  async getById(id: string): Promise<Result<any>> {
+    return apiClient.get<any>(`habits/${id}`);
   }
 
   // ─── create ────────────────────────────────────────────────────────────────
-  async create(dto: CreateHabitoDTO): Promise<Result<Habito>> {
-    if (dto.fechaFin && dto.fechaFin <= dto.fechaInicio) {
-      return err("La fecha de fin debe ser posterior a la fecha de inicio");
-    }
-    if (dto.puntos < 1 || dto.puntos > 100) {
-      return err("Los puntos deben estar entre 1 y 100");
-    }
-    if (!dto.nombre.trim()) {
-      return err("El nombre del hábito no puede estar vacío");
-    }
-
-    return this.repo.create({
-      ...dto,
-      estado: "Activo",
-      fechaInicio: dto.fechaInicio || new Date().toISOString().split("T")[0],
-    });
+  async create(dto: {
+    nombre: string;
+    descripcion?: string;
+    fechaInicio: string;
+    fechaFin?: string;
+    puntos: number;
+    metaDiaria?: number;
+    unidadMedida?: string;
+    idCategoria: string;
+  }): Promise<Result<any>> {
+    return apiClient.post<any>("habits", dto);
   }
 
   // ─── update ────────────────────────────────────────────────────────────────
-    async update(id: string, updates: UpdateHabitoDTO, ownerId: string): Promise<Result<Habito>> {
-    const existe = await this.repo.findById(id);
-    if (!existe.success) return err(existe.error);
-    if (!existe.data)    return err(`Hábito con ID ${id} no encontrado`);
-
-    // Ownership validation
-    if (existe.data.idUsuario !== ownerId) {
-      return err('Ownership no válido');
-    }
-
-    if (existe.data.estado === "Completado" && updates.estado === "Activo") {
-      return err("No se puede reactivar un hábito ya completado");
-    }
-    if (updates.fechaFin && updates.fechaFin <= existe.data.fechaInicio) {
-      return err("La fecha de fin debe ser posterior a la fecha de inicio");
-    }
-
-    const result = await this.repo.update(id, updates);
-    if (!result.success) return err(result.error);
-    if (!result.data)    return err("Error al actualizar el hábito");
-    return ok(result.data);
-  }
-
-  // ─── delete ────────────────────────────────────────────────────────────────
-    async delete(id: string, ownerId: string): Promise<Result<boolean>> {
-    const habito = await this.repo.findById(id);
-    if (!habito.success) return err(habito.error);
-    if (!habito.data) return err(`Hábito con ID ${id} no encontrado`);
-    if (habito.data.idUsuario !== ownerId) {
-      return err('Ownership no válido');
-    }
-    return this.repo.delete(id);
-
+  async update(id: string, updates: {
+    nombre?: string;
+    descripcion?: string;
+    fechaFin?: string;
+    estado?: string;
+    puntos?: number;
+    idCategoria?: string;
+  }): Promise<Result<any>> {
+    return apiClient.patch<any>(`habits/${id}`, updates);
   }
 
   // ─── completar ─────────────────────────────────────────────────────────────
-    async completar(id: string, ownerId: string): Promise<Result<Habito>> {
-      const habito = await this.repo.findById(id);
-      if (!habito.success) return err(habito.error);
-      if (!habito.data) return err(`Hábito con ID ${id} no encontrado`);
-      if (habito.data.idUsuario !== ownerId) {
-        return err('Ownership no válido');
-      }
-      return this.update(id, { estado: "Completado" }, ownerId);
-    }
+  async completar(id: string): Promise<Result<any>> {
+    return apiClient.patch<any>(`habits/${id}/completar`, {});
+  }
+
+  // ─── delete ────────────────────────────────────────────────────────────────
+  async delete(id: string): Promise<Result<any>> {
+    return apiClient.delete<any>(`habits/${id}`);
+  }
 }

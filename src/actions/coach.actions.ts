@@ -86,3 +86,35 @@ export async function getCoachClientsAction() {
     return { success: false, error: error.message };
   }
 }
+
+// ─── createRutinaAction — compatible con useActionState ──────────────────────
+// Reemplaza el equivalente de modules/entrenador/entrenador.actions.ts
+export async function createRutinaAction(
+  _prevState: { success: boolean; message: string; errors?: Record<string, string[]> } | null,
+  formData: FormData
+): Promise<{ success: boolean; message: string; errors?: Record<string, string[]> }> {
+  const rawData = {
+    tipo:        formData.get("tipo") as string,
+    descripcion: formData.get("descripcion") as string | undefined || undefined,
+    duracion:    formData.get("duracion") ? Number(formData.get("duracion")) : undefined,
+    objetivo:    formData.get("objetivo") as string | undefined || undefined,
+    nivel:       formData.get("nivel") as string,
+  };
+
+  // Validación de forma (shape) — la validación de negocio la hace el backend
+  if (!rawData.tipo || rawData.tipo.length < 3) {
+    return { success: false, message: "El tipo debe tener al menos 3 caracteres" };
+  }
+  if (!rawData.nivel || !["Principiante", "Intermedio", "Avanzado"].includes(rawData.nivel)) {
+    return { success: false, message: "Nivel inválido" };
+  }
+
+  try {
+    const response = await apiClient.post<any>("coach/routines", rawData);
+    if (!response.success) return { success: false, message: response.error ?? "Error al crear rutina" };
+    revalidatePath("/dashboard/entrenador/rutinas");
+    return { success: true, message: "Rutina creada exitosamente" };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+}

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { motion } from 'framer-motion'
 
 interface AuthSplitContainerProps {
   children: React.ReactNode
@@ -38,7 +39,11 @@ export function AuthSplitContainer({
     <div className={`w-full min-h-screen flex flex-col ${reverseImage ? 'md:flex-row-reverse' : 'md:flex-row'} items-stretch`}>
       
       {/* Panel de Imagen Decorativa */}
-      <div className="hidden md:flex w-1/2 relative min-h-screen items-center justify-center overflow-hidden">
+      <motion.div 
+        layoutId="auth-image-panel"
+        transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+        className="hidden md:flex w-1/2 relative min-h-screen items-center justify-center overflow-hidden"
+      >
         
         {/* Degradado — clase completa según lado */}
         {reverseImage ? (
@@ -91,14 +96,18 @@ export function AuthSplitContainer({
           </div>
 
         </div>
-      </div>
+      </motion.div>
 
       {/* Panel del Formulario */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-4 sm:p-8 min-h-screen">
+      <motion.div 
+        layoutId="auth-form-panel"
+        transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+        className="w-full md:w-1/2 flex items-center justify-center p-4 sm:p-8 min-h-screen"
+      >
         <div className={`w-full ${formMaxWidth === 'lg' ? 'max-w-lg' : 'max-w-sm'}`}>
           {children}
         </div>
-      </div>
+      </motion.div>
 
     </div>
   )

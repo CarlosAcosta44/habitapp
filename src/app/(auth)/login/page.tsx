@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { loginAction } from '@/actions/auth.actions'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { AuthSplitContainer } from '@/components/auth/AuthSplitContainer'
+import { createClient } from '@/lib/supabase/client'
 
 // Iconos vectoriales simples
 const GoogleIcon = () => (
@@ -12,9 +14,12 @@ const GoogleIcon = () => (
   </svg>
 )
 
-const AppleIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor" className="w-5 h-5">
-    <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
+const MicrosoftIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" fill="currentColor" className="w-5 h-5">
+    <path fill="#f25022" d="M0 0h11v11H0z"/>
+    <path fill="#00a4ef" d="M0 12h11v11H0z"/>
+    <path fill="#7fba00" d="M12 0h11v11H12z"/>
+    <path fill="#ffb900" d="M12 12h11v11H12z"/>
   </svg>
 )
 
@@ -24,9 +29,33 @@ const FacebookIcon = () => (
   </svg>
 )
 
+function OAuthErrorAlert() {
+  const searchParams = useSearchParams()
+  const error = searchParams.get('error')
+  const message = searchParams.get('message')
+
+  if (!error && !message) return null
+
+  return (
+    <>
+      {error && (
+        <div className="p-3 mb-5 rounded-xl bg-red-500/10 text-red-400 text-sm font-medium border border-red-500/20">
+          {error}
+        </div>
+      )}
+      {message && (
+        <div className="p-3 mb-5 rounded-xl bg-green-500/10 text-green-400 text-sm font-medium border border-green-500/20">
+          {message}
+        </div>
+      )}
+    </>
+  )
+}
+
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [oauthLoading, setOauthLoading] = useState<string | null>(null)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -40,6 +69,18 @@ export default function LoginPage() {
       setError(result.error)
       setLoading(false)
     }
+    // Si no hay error, loginAction hizo redirect y el componente se desmontará
+  }
+
+  const handleOAuth = async (provider: 'google' | 'facebook' | 'azure') => {
+    const supabase = createClient()
+    setOauthLoading(provider)
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
   }
 
   return (
@@ -51,6 +92,10 @@ export default function LoginPage() {
         <h2 className="text-3xl font-bold text-white mb-8">
           Iniciar sesión
         </h2>
+
+        <Suspense fallback={null}>
+          <OAuthErrorAlert />
+        </Suspense>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
@@ -109,13 +154,28 @@ export default function LoginPage() {
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <button type="button" className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
+          <button
+            type="button"
+            onClick={() => handleOAuth('google')}
+            disabled={!!oauthLoading}
+            className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 disabled:opacity-60"
+          >
             <GoogleIcon />
           </button>
-          <button type="button" className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
-            <AppleIcon />
+          <button
+            type="button"
+            onClick={() => handleOAuth('azure')}
+            disabled={!!oauthLoading}
+            className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 disabled:opacity-60"
+          >
+            <MicrosoftIcon />
           </button>
-          <button type="button" className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300">
+          <button
+            type="button"
+            onClick={() => handleOAuth('facebook')}
+            disabled={!!oauthLoading}
+            className="flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 disabled:opacity-60"
+          >
             <FacebookIcon />
           </button>
         </div>

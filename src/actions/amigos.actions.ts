@@ -41,7 +41,7 @@ export async function addFriendAction(
     };
   }
 
-  const result = await service.addFriend(user.id, validation.data.targetUserId);
+  const result = await service.addFriend(validation.data.targetUserId);
   if (!result.success) return { success: false, message: result.error };
 
   revalidatePath("/perfil");

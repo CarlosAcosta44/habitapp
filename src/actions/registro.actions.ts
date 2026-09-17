@@ -55,8 +55,6 @@ export async function marcarCompletadoAction(
 
   const result = await service.marcarCompletado({
     idHabito:    validation.data.idHabito,
-    idUsuario:   user.id,
-    fecha:       validation.data.fecha,
     observacion: validation.data.observacion,
   });
 
@@ -81,7 +79,7 @@ export async function desmarcarCompletadoAction(
   const idHabito = formData.get("idHabito") as string;
   if (!idHabito) return { success: false, message: "ID del hábito requerido" };
 
-  const result = await service.desmarcarCompletado(idHabito, user.id);
+  const result = await service.desmarcarCompletado(idHabito);
   if (!result.success) {
     return { success: false, message: result.error };
   }
@@ -119,10 +117,7 @@ export async function avanzarProgresoAction(
 
   const result = await service.avanzarProgreso({
     idHabito:       validation.data.idHabito,
-    idUsuario:      user.id,
-    fecha:          validation.data.fecha,
-    cantidadAsumar: validation.data.cantidadAsumar,
-    metaDiaria:     validation.data.metaDiaria,
+    cantidadASumar: validation.data.cantidadAsumar,
     observacion:    validation.data.observacion,
   });
 
