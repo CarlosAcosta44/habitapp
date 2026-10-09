@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { UsuarioService } from "@/services/usuario.service";
-import { requireUser } from "@/lib/supabase/server";
+import { requireUserStrict as requireUser } from "@/lib/auth/require-user";
 
 export type PerfilActionState = {
   success: boolean;

@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api/client';
+import { coachRepository } from "@/repositories/coach.repository";
 import type { Result } from '@/lib/result';
 
 export interface CoachClient {
@@ -75,34 +75,34 @@ export interface ClientProgress {
 
 export const coachService = {
   async getClients(): Promise<Result<CoachClient[]>> {
-    return apiClient.get<CoachClient[]>('/coach/clients');
+    return coachRepository.get<CoachClient[]>('/coach/clients');
   },
 
   async getRoutines(): Promise<Result<CoachRoutine[]>> {
-    return apiClient.get<CoachRoutine[]>('/coach/routines');
+    return coachRepository.get<CoachRoutine[]>('/coach/routines');
   },
 
   async createRoutine(dto: CreateRoutineDto): Promise<Result<CoachRoutine>> {
-    return apiClient.post<CoachRoutine>('/coach/routines', dto);
+    return coachRepository.post<CoachRoutine>('/coach/routines', dto);
   },
 
   async getRoutineById(id: string): Promise<Result<CoachRoutine>> {
-    return apiClient.get<CoachRoutine>(`/coach/routines/${id}`);
+    return coachRepository.get<CoachRoutine>(`/coach/routines/${id}`);
   },
 
   async updateRoutine(id: string, dto: UpdateRoutineDto): Promise<Result<CoachRoutine>> {
-    return apiClient.patch<CoachRoutine>(`/coach/routines/${id}`, dto);
+    return coachRepository.patch<CoachRoutine>(`/coach/routines/${id}`, dto);
   },
 
   async deleteRoutine(id: string): Promise<Result<any>> {
-    return apiClient.delete(`/coach/routines/${id}`);
+    return coachRepository.delete(`/coach/routines/${id}`);
   },
 
   async assignRoutine(clientId: string, routineId: string): Promise<Result<any>> {
-    return apiClient.post(`/coach/clients/${clientId}/routines/${routineId}/assign`);
+    return coachRepository.post(`/coach/clients/${clientId}/routines/${routineId}/assign`);
   },
 
   async getClientProgress(clientId: string): Promise<Result<ClientProgress>> {
-    return apiClient.get<ClientProgress>(`/coach/clients/${clientId}/progress`);
+    return coachRepository.get<ClientProgress>(`/coach/clients/${clientId}/progress`);
   },
 };

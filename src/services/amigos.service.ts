@@ -4,19 +4,19 @@
  * @layer Business Logic (Capa 3)
  */
 
-import { apiClient } from "@/lib/api/client";
+import { amigosRepository } from "@/repositories/amigos.repository";
 import type { Result } from "@/lib/result";
 
 export class AmigosService {
   async addFriend(targetUserId: string): Promise<Result<any>> {
-    return apiClient.post<any>("friends", { targetUserId });
+    return amigosRepository.post<any>("friends", { targetUserId });
   }
 
   async getFriends(): Promise<Result<any[]>> {
-    return apiClient.get<any[]>("friends");
+    return amigosRepository.get<any[]>("friends");
   }
 
   async getFriendSuggestions(limit = 12): Promise<Result<any[]>> {
-    return apiClient.get<any[]>(`friends/suggestions?limit=${limit}`);
+    return amigosRepository.get<any[]>(`friends/suggestions?limit=${limit}`);
   }
 }

@@ -8,7 +8,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z }              from "zod";
-import { createClient }   from "@/lib/supabase/server";
+import { requireUser }    from "@/lib/auth/require-user";
 import { ComunidadService } from "@/services/comunidad.service";
 import type { ActionState } from "@/actions/habito.actions";
 
@@ -38,9 +38,9 @@ export async function comentarAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const rawData = {
     foroId:            formData.get("foroId"),
@@ -77,9 +77,9 @@ export async function reaccionarAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const rawData = {
     tipo:         formData.get("tipo"),
@@ -115,9 +115,9 @@ export async function suscribirseAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const validation = SuscripcionSchema.safeParse({
     foroId: formData.get("foroId"),
@@ -145,9 +145,9 @@ export async function desuscribirseAction(
   _prevState: ActionState | null,
   formData:   FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const validation = SuscripcionSchema.safeParse({
     foroId: formData.get("foroId"),

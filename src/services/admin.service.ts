@@ -1,6 +1,6 @@
-import { apiClient } from '@/lib/api/client';
+import { adminRepository } from "@/repositories/admin.repository";
 import type { Result } from '@/lib/result';
-import type { UserProfileDto, UserRole } from '@/types/domain/usuario.types';
+import type { UserProfileDto, UserRole } from '@/domain/usuario.types';
 
 export const adminService = {
   /**
@@ -8,7 +8,7 @@ export const adminService = {
    * Llama a GET /admin/users
    */
   async getUsers(): Promise<Result<UserProfileDto[]>> {
-    return apiClient.get<UserProfileDto[]>('admin/users');
+    return adminRepository.get<UserProfileDto[]>('admin/users');
   },
 
   /**
@@ -16,7 +16,7 @@ export const adminService = {
    * Llama a PATCH /admin/users/:id/role
    */
   async updateUserRole(userId: string, newRole: UserRole | string): Promise<Result<any>> {
-    return apiClient.patch(`admin/users/${userId}/role`, { role: newRole });
+    return adminRepository.patch(`admin/users/${userId}/role`, { role: newRole });
   },
 
   /**
@@ -24,7 +24,7 @@ export const adminService = {
    * Llama a DELETE /admin/forum/:id
    */
   async deleteForum(forumId: string): Promise<Result<any>> {
-    return apiClient.delete(`admin/forum/${forumId}`);
+    return adminRepository.delete(`admin/forum/${forumId}`);
   },
 
   /**
@@ -32,6 +32,6 @@ export const adminService = {
    * Llama a DELETE /admin/forum/comments/:id
    */
   async deleteForumComment(commentId: string): Promise<Result<any>> {
-    return apiClient.delete(`admin/forum/comments/${commentId}`);
+    return adminRepository.delete(`admin/forum/comments/${commentId}`);
   },
 };

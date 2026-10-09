@@ -5,13 +5,13 @@
  * @layer Business Logic (Capa 3)
  */
 
-import { apiClient } from "@/lib/api/client";
+import { reportesRepository } from "@/repositories/reportes.repository";
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
 import type {
   HabitoReporte,
   RankingUsuario,
-} from "@/types/domain/reportes.types";
+} from "@/domain/reportes.types";
 
 export interface ComparativaGraphed {
   diasSemana: string[];
@@ -32,11 +32,11 @@ export interface BackendUserSummary {
 
 export class ReportesService {
   async getEstadisticas(userId: string): Promise<Result<BackendUserSummary>> {
-    return apiClient.get<BackendUserSummary>(`/reports/user/${userId}`);
+    return reportesRepository.get<BackendUserSummary>(`/reports/user/${userId}`);
   }
 
   async getRanking(userId: string): Promise<Result<RankingUsuario[]>> {
-    const res = await apiClient.get<any[]>('/reports/ranking');
+    const res = await reportesRepository.get<any[]>('/reports/ranking');
     if (!res.success) return err(res.error);
 
     const data: RankingUsuario[] = res.data.map((row: any, index: number) => ({
@@ -55,10 +55,10 @@ export class ReportesService {
   // TODO: Estos endpoints deben ser implementados en el backend para reemplazar las
   // antiguas consultas directas a la base de datos vía Supabase.
   async getHabitosReporte(userId: string): Promise<Result<HabitoReporte[]>> {
-    return apiClient.get<HabitoReporte[]>(`/reports/user/${userId}/habits`);
+    return reportesRepository.get<HabitoReporte[]>(`/reports/user/${userId}/habits`);
   }
 
   async getComparativaSemanal(userId: string): Promise<Result<ComparativaGraphed>> {
-    return apiClient.get<ComparativaGraphed>(`/reports/user/${userId}/comparative`);
+    return reportesRepository.get<ComparativaGraphed>(`/reports/user/${userId}/comparative`);
   }
 }

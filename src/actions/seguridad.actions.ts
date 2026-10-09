@@ -4,9 +4,8 @@
  * @layer Presentation (Capa 1 — Server-side)
  *
  * - updateNameAction  → Proxy hacia PATCH /users/me del backend NestJS
- * - updateEmailAction → Llama directamente a Supabase Auth (cambio de email
- *                       requiere confirmación por correo, no pasa por NestJS)
- * - updatePasswordAction → Llama directamente a Supabase Auth
+ * - updateEmailAction → Pendiente de migración a NestJS (Custom Auth)
+ * - updatePasswordAction → Pendiente de migración a NestJS (Custom Auth)
  *
  * @directive "use server" — OBLIGATORIO en Server Actions
  */
@@ -16,7 +15,7 @@
 import { z }              from "zod";
 import { revalidatePath } from "next/cache";
 import { headers }        from "next/headers";
-import { createClient }   from "@/lib/supabase/server";
+
 import { UsuarioService } from "@/services/usuario.service";
 
 // ─── Tipo de retorno estándar ─────────────────────────────────────────────────
@@ -85,8 +84,8 @@ export async function updateNameAction(
 
 // ─── updateEmailAction ────────────────────────────────────────────────────────
 /**
- * Actualiza el correo electrónico del usuario directamente vía Supabase Auth.
- * El cambio de email requiere confirmación por correo y no pasa por NestJS.
+ * Actualiza el correo electrónico del usuario vía NestJS Custom Auth.
+ * (Actualmente en migración)
  */
 export async function updateEmailAction(
   _prev: ActionState | null,
@@ -100,40 +99,14 @@ export async function updateEmailAction(
     return { formErrors: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { error: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente." };
-  }
-
-  // Construir la URL de confirmación de forma dinámica
-  const headersList = await headers();
-  const host = headersList.get("host");
-  const protocol = host?.startsWith("localhost") ? "http" : "https";
-  const origin = `${protocol}://${host}`;
-
-  const { error } = await supabase.auth.updateUser(
-    { email: parsed.data.email },
-    { emailRedirectTo: `${origin}/auth/callback?next=/ajustes/seguridad` }
-  );
-
-  if (error) {
-    if (error.message.toLowerCase().includes("rate limit")) {
-      return { error: "Se alcanzó el límite de solicitudes. Intenta nuevamente en unos minutos." };
-    }
-    return { error: "No fue posible actualizar el correo. Intenta nuevamente." };
-  }
-
-  return {
-    success: "Se ha enviado un enlace de confirmación a tu nuevo correo. Revisa tu bandeja de entrada.",
-  };
+  // TODO: Implementar cambio de correo en NestJS
+  return { error: "El cambio de correo electrónico está en migración hacia el nuevo sistema Custom Auth." };
 }
 
 // ─── updatePasswordAction ─────────────────────────────────────────────────────
 /**
- * Actualiza la contraseña del usuario directamente vía Supabase Auth.
- * No pasa por NestJS — la gestión de credenciales es responsabilidad de Supabase.
+ * Actualiza la contraseña del usuario autenticado vía NestJS Custom Auth.
+ * (Actualmente en migración)
  */
 export async function updatePasswordAction(
   _prev: ActionState | null,
@@ -148,24 +121,6 @@ export async function updatePasswordAction(
     return { formErrors: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { error: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente." };
-  }
-
-  const { error } = await supabase.auth.updateUser({
-    password: parsed.data.newPassword,
-  });
-
-  if (error) {
-    if (error.message.toLowerCase().includes("password")) {
-      return { error: "La nueva contraseña no cumple los requisitos mínimos de seguridad." };
-    }
-    return { error: "No fue posible actualizar la contraseña. Intenta nuevamente." };
-  }
-
-  revalidatePath("/ajustes/seguridad");
-  return { success: "¡Tu contraseña ha sido actualizada exitosamente!" };
+  // TODO: Implementar cambio de contraseña autenticado en NestJS
+  return { error: "El cambio de contraseña está en migración hacia el nuevo sistema Custom Auth." };
 }

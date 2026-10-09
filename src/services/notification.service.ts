@@ -4,9 +4,9 @@
  * @layer Business Logic (Capa 3)
  */
 
-import { apiClient } from "@/lib/api/client";
+import { notificationRepository } from "@/repositories/notification.repository";
 import type { Result } from "@/lib/result";
-import type { Notification } from "@/types/domain/notification.types";
+import type { Notification } from "@/domain/notification.types";
 
 export class NotificationService {
   /**
@@ -14,7 +14,7 @@ export class NotificationService {
    * Llama a: GET /notifications
    */
   async getNotifications(): Promise<Result<Notification[]>> {
-    return apiClient.get<Notification[]>("notifications");
+    return notificationRepository.get<Notification[]>("notifications");
   }
 
   /**
@@ -22,7 +22,7 @@ export class NotificationService {
    * Llama a: PATCH /notifications/:id/read
    */
   async markAsRead(id: string): Promise<Result<void>> {
-    return apiClient.patch<void>(`notifications/${id}/read`);
+    return notificationRepository.patch<void>(`notifications/${id}/read`);
   }
 
   /**
@@ -30,6 +30,6 @@ export class NotificationService {
    * Llama a: PATCH /notifications/read-all
    */
   async markAllAsRead(): Promise<Result<void>> {
-    return apiClient.patch<void>("notifications/read-all");
+    return notificationRepository.patch<void>("notifications/read-all");
   }
 }

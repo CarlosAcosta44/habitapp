@@ -1,6 +1,6 @@
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
-import { apiClient } from "@/lib/api/client";
+import { comunidadRepository } from "@/repositories/comunidad.repository";
 import type {
   Foro,
   ForoConMetricas,
@@ -11,7 +11,7 @@ import type {
   EntrenadorPublico,
   CreateComentarioDTO,
   CreateReaccionDTO,
-} from "@/types/domain/comunidad.types";
+} from "@/domain/comunidad.types";
 
 export class ComunidadService {
   constructor() {}
@@ -19,7 +19,7 @@ export class ComunidadService {
   async getForos(usuarioId: string): Promise<Result<ForoConMetricas[]>> {
     if (!usuarioId) return err("ID del usuario requerido");
     try {
-      return await apiClient.get<ForoConMetricas[]>('/community/forums');
+      return await comunidadRepository.get<ForoConMetricas[]>('/community/forums');
     } catch (e: any) {
       return err(`Error al obtener foros: ${e.message}`);
     }
@@ -28,7 +28,7 @@ export class ComunidadService {
   async getComentarios(foroId: string): Promise<Result<ComentarioConAutor[]>> {
     if (!foroId) return err("ID del foro requerido");
     try {
-      return await apiClient.get<ComentarioConAutor[]>(`/community/forums/${foroId}/comments`);
+      return await comunidadRepository.get<ComentarioConAutor[]>(`/community/forums/${foroId}/comments`);
     } catch (e: any) {
       return err(`Error al obtener comentarios: ${e.message}`);
     }
@@ -39,7 +39,7 @@ export class ComunidadService {
     if (dto.contenido.length > 500) return err("El comentario no puede superar 500 caracteres");
 
     try {
-      return await apiClient.post<Comentario>('/community/comments', dto);
+      return await comunidadRepository.post<Comentario>('/community/comments', dto);
     } catch (e: any) {
       return err(`Error al crear comentario: ${e.message}`);
     }
@@ -50,7 +50,7 @@ export class ComunidadService {
       return err("Debes especificar un comentario o artículo");
     }
     try {
-      return await apiClient.post<boolean>('/community/react', dto);
+      return await comunidadRepository.post<boolean>('/community/react', dto);
     } catch (e: any) {
       return err(`Error al reaccionar: ${e.message}`);
     }
@@ -58,7 +58,7 @@ export class ComunidadService {
 
   async suscribirse(usuarioId: string, foroId: string): Promise<Result<boolean>> {
     try {
-      return await apiClient.post<boolean>(`/community/forums/${foroId}/subscribe`);
+      return await comunidadRepository.post<boolean>(`/community/forums/${foroId}/subscribe`);
     } catch (e: any) {
       return err(`Error al suscribirse al foro: ${e.message}`);
     }
@@ -66,7 +66,7 @@ export class ComunidadService {
 
   async desuscribirse(usuarioId: string, foroId: string): Promise<Result<boolean>> {
     try {
-      await apiClient.delete(`/community/forums/${foroId}/subscribe`);
+      await comunidadRepository.delete(`/community/forums/${foroId}/subscribe`);
       return ok(true);
     } catch (e: any) {
       return err(`Error al desuscribirse del foro: ${e.message}`);
@@ -77,7 +77,7 @@ export class ComunidadService {
     try {
       let url = '/community/articles';
       if (limit) url += `?limit=${limit}`;
-      return await apiClient.get<Articulo[]>(url);
+      return await comunidadRepository.get<Articulo[]>(url);
     } catch (e: any) {
       return err(`Error al obtener artículos: ${e.message}`);
     }
@@ -85,7 +85,7 @@ export class ComunidadService {
 
   async getEntrenadores(): Promise<Result<EntrenadorPublico[]>> {
     try {
-      return await apiClient.get<EntrenadorPublico[]>('/community/trainers');
+      return await comunidadRepository.get<EntrenadorPublico[]>('/community/trainers');
     } catch (e: any) {
       return err(`Error al obtener entrenadores: ${e.message}`);
     }
