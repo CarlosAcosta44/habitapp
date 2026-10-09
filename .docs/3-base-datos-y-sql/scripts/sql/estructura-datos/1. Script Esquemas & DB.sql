@@ -2,9 +2,8 @@
   SISTEMA DE HÁBITOS SALUDABLES
   Script SQL Final - Supabase (PostgreSQL)
   
-  IMPORTANTE: Este script asume que Supabase Auth
-  ya está activo. La tabla auth.users es creada y
-  gestionada automáticamente por Supabase.
+  IMPORTANTE: Este script usa Custom Auth.
+  Las contraseñas y JWT son gestionados por NestJS.
 ====================================================*/
 
 /*====================================================
@@ -25,10 +24,9 @@ CREATE TABLE gestion.roles (
     descripcion VARCHAR(100)
 );
 
--- Tabla que extiende auth.users con datos del perfil
--- idusuario referencia directamente a auth.users(id)
+-- Tabla principal de usuarios del sistema
 CREATE TABLE gestion.usuarios (
-    idusuario       UUID        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    idusuario       UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     nombre          VARCHAR(45)  NOT NULL,
     apellido        VARCHAR(45)  NOT NULL,
     telefono        VARCHAR(20),
@@ -37,6 +35,7 @@ CREATE TABLE gestion.usuarios (
     fotoperfil      VARCHAR(200),
     estado          VARCHAR(20)  NOT NULL DEFAULT 'Activo' CHECK (estado IN ('Activo', 'Inactivo', 'Suspendido')),
     puntostotales   INT          NOT NULL DEFAULT 0,
+    password_hash   VARCHAR(255) NOT NULL,
     idrol           UUID         NOT NULL,
     FOREIGN KEY (idrol) REFERENCES gestion.roles(idrol)
 );
@@ -378,32 +377,10 @@ WHERE u.estado = 'Activo'
 ORDER BY u.puntostotales DESC;
 
 /*====================================================
-  TRIGGER: CREAR PERFIL AUTOMÁTICAMENTE
-  
-  Cuando un usuario se registra en Supabase Auth,
-  este trigger crea automáticamente su registro
-  en gestion.usuarios con el rol 'Usuario' por defecto.
+  NOTA: El trigger de creación automática de usuarios 
+  desde auth.users fue eliminado. Ahora NestJS 
+  controla el registro e inserción directamente.
 ====================================================*/
-CREATE OR REPLACE FUNCTION gestion.crear_perfil_usuario()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO gestion.usuarios (idusuario, nombre, apellido, genero, fechanacimiento, idrol)
-    VALUES (
-        NEW.id,
-        COALESCE(NEW.raw_user_meta_data->>'nombre', 'Sin nombre'),
-        COALESCE(NEW.raw_user_meta_data->>'apellido', 'Sin apellido'),
-        (NEW.raw_user_meta_data->>'genero'),
-        (NEW.raw_user_meta_data->>'fechanacimiento')::DATE,
-        (SELECT idrol FROM gestion.roles WHERE nombrerol = 'Usuario')
-    );
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-CREATE TRIGGER trigger_crear_perfil
-    AFTER INSERT ON auth.users
-    FOR EACH ROW
-    EXECUTE FUNCTION gestion.crear_perfil_usuario();
 
 /*====================================================
   TRIGGER: SUMAR PUNTOS AL COMPLETAR HÁBITO

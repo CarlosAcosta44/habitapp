@@ -9,9 +9,9 @@ El **Sistema de Hábitos Saludables** está construido sobre un stack moderno, e
 │                    CLIENTE / FRONTEND                │
 │                      Next.js 14+                     │
 ├─────────────────────────────────────────────────────┤
-│               BACKEND AS A SERVICE (BaaS)            │
-│                       Supabase                       │
-│        (Auth · Database · Storage · Realtime)        │
+│               BACKEND API (REST / Custom Auth)       │
+│                        NestJS                        │
+│        (Autenticación · Lógica · Integración)        │
 ├─────────────────────────────────────────────────────┤
 │                  INFRAESTRUCTURA / NUBE              │
 │               Amazon Web Services (AWS)              │
@@ -64,34 +64,31 @@ app/
 
 - Renderiza la interfaz de usuario para los tres módulos del sistema.
 - Gestiona la navegación y protección de rutas según el rol del usuario.
-- Consume los servicios de Supabase desde el cliente y el servidor.
-- Desplegado en AWS para producción.
+- Consume los servicios de NestJS a través de un `apiClient` fuertemente tipado.
+- Desplegado en Vercel para producción.
 
 ---
 
-## 2. 🟩 Supabase — Backend as a Service
+## 2. 🟩 Backend API — NestJS + Supabase (BaaS Oculto)
 
 ### ¿Qué es?
 
-Supabase es una plataforma open source que ofrece base de datos PostgreSQL, autenticación, almacenamiento de archivos, funciones serverless y comunicación en tiempo real, todo a través de una API REST y cliente JavaScript.
+La aplicación ahora utiliza una Arquitectura Limpia donde el frontend de Next.js **nunca** se comunica directamente con la base de datos. En su lugar, el frontend se conecta a una API REST construida en **NestJS**, la cual expone los servicios de Autenticación (Custom Auth basado en JWT), Usuarios, Hábitos y Comunidad.
 
 ### ¿Por qué lo usamos?
 
-| Servicio | Uso en el proyecto |
+| Componente | Uso en el proyecto |
 |----------|--------------------|
-| **PostgreSQL** | Base de datos relacional robusta para los tres módulos (gestión, seguimiento, comunidad) |
-| **Auth** | Registro, inicio de sesión, recuperación de contraseña y gestión de roles (CU1–CU9) |
-| **Realtime** | Actualización en tiempo real del ranking global y notificaciones de la comunidad |
-| **Storage** | Almacenamiento de fotos de perfil y archivos multimedia de artículos |
-| **Edge Functions** | Automatizaciones como asignación de puntos al completar hábitos y creación de perfil al registrarse |
-| **Row Level Security (RLS)** | Control de acceso a datos por rol directamente desde la base de datos |
+| **NestJS API** | Capa intermedia que protege la lógica de negocio, valida los datos, y gestiona la sesión mediante cookies seguras HTTP-only (`access_token`). |
+| **Supabase PostgreSQL** | Base de datos relacional robusta (gestionada únicamente por el backend NestJS). |
+| **Custom Auth** | Registro e inicio de sesión gestionados 100% por NestJS, eliminando la dependencia del frontend hacia Supabase Auth. |
+| **Storage** | Almacenamiento de fotos de perfil gestionado a través de los endpoints de NestJS. |
 
 ### Rol en el proyecto
 
-- Única fuente de verdad para todos los datos de la aplicación.
-- Gestiona la autenticación y autorización de los tres tipos de actores.
-- Ejecuta la lógica de negocio crítica mediante triggers y edge functions.
-- Se comunica con Next.js a través del SDK oficial `@supabase/supabase-js`.
+- Única fuente de verdad para el Frontend.
+- Abstrae toda la complejidad de Supabase, convirtiéndolo en un simple proveedor de persistencia de datos oculto detrás de la API.
+- Gestiona la seguridad perimetral (JWT, Guards, Decoradores en NestJS).
 
 ---
 
@@ -107,7 +104,7 @@ La infraestructura del proyecto combina plataformas de despliegue administradas 
 |----------|-------------------|
 | **Vercel** | Despliegue frontend con previews por Pull Request y producción controlada |
 | **Railway / Fly** | Despliegue backend NestJS como API independiente |
-| **Supabase Cloud** | PostgreSQL, Auth, Storage, RLS y service role server-side |
+| **Supabase Cloud** | Base de datos PostgreSQL (accedida sólo por el backend) |
 | **GitHub Actions** | CI/CD para validar lint, tests y build antes de integrar |
 
 ### Arquitectura de despliegue
@@ -117,11 +114,12 @@ Usuario Final
      │
      ▼
 Frontend Next.js (Vercel)
+     │ (apiClient con cookies JWT)
+     ▼
+Backend NestJS API (Railway/Fly)
      │
-     ├──► Backend NestJS API (Railway/Fly)
-     │          │
-     │          ▼
-     └────► Supabase Cloud (Auth + DB + Storage + RLS)
+     ▼
+Supabase Cloud (Base de Datos PostgreSQL Oculta)
 ```
 
 ### Flujo de despliegue
