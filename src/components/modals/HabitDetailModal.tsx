@@ -4,7 +4,7 @@
 import React, { useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Flame, Trash2, Ban, CheckCircle2 } from 'lucide-react';
-import type { HabitoConProgreso } from '@/types/domain/habito.types';
+import type { HabitoConProgreso } from '@/domain/habito.types';
 import { 
   marcarCompletadoAction, 
   avanzarProgresoAction 

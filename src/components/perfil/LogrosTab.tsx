@@ -1,5 +1,5 @@
 import React from 'react';
-import type { LogroReal, ProximoObjetivo } from '@/types/domain/perfil.types';
+import type { LogroReal, ProximoObjetivo } from '@/domain/perfil.types';
 
 interface LogrosTabProps {
   logros: LogroReal[];

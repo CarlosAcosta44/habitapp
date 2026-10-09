@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/supabase/server";
+import { requireUserStrict as requireUser } from "@/lib/auth/require-user";
 import { UsuarioService } from "@/services/usuario.service";
 import { EditProfileForm } from "@/components/perfil/EditProfileForm";
 import Link from "next/link";

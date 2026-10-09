@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ActividadItem } from '@/types/domain/perfil.types';
+import type { ActividadItem } from '@/domain/perfil.types';
 
 interface ActividadTabProps {
   actividad: ActividadItem[];

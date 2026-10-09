@@ -4,7 +4,7 @@
  * descripción, badge de estado y conteo de miembros.
  */
 
-import type { ForoConMetricas } from "@/types/domain/comunidad.types";
+import type { ForoConMetricas } from "@/domain/comunidad.types";
 import Link from "next/link";
 import { DeleteForumButton } from "./DeleteForumButton";
 

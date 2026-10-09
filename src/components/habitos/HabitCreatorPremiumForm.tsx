@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Bell, Plus, Search } from "lucide-react";
 import { createHabitoAction } from "@/actions/habito.actions";
-import type { CategoriaHabito } from "@/types/domain/habito.types";
+import type { CategoriaHabito } from "@/domain/habito.types";
 import { useHabitForm } from "@/hooks/useHabitForm";
 
 interface HabitCreatorPremiumFormProps {

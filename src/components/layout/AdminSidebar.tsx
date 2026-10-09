@@ -13,7 +13,7 @@ import {
   Power
 } from 'lucide-react';
 import { logoutAction } from '@/actions/auth.actions';
-import { User } from '@/types/domain/user.types';
+import { User } from '@/domain/user.types';
 
 interface AdminSidebarProps {
   user: User;

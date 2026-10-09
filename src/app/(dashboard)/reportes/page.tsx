@@ -5,7 +5,7 @@
  * y progreso individual por hábito.
  */
 
-import { requireUser }        from "@/lib/supabase/server";
+import { requireUserStrict as requireUser } from "@/lib/auth/require-user";
 import { ReportesService }    from "@/services/reportes.service";
 
 export const metadata = { title: "Reportes | HabitApp" };

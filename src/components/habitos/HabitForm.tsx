@@ -10,7 +10,7 @@
 
 import { useActionState } from "react";
 import { createHabitoAction } from "@/actions/habito.actions";
-import type { CategoriaHabito } from "@/types/domain/habito.types";
+import type { CategoriaHabito } from "@/domain/habito.types";
 
 interface HabitFormProps {
   categorias: CategoriaHabito[];

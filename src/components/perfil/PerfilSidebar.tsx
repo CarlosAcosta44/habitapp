@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import type { AmigoReal, ProximoObjetivo } from '@/types/domain/perfil.types';
+import type { AmigoReal, ProximoObjetivo } from '@/domain/perfil.types';
 
 interface PerfilSidebarProps {
   diasActivosMensuales: number;

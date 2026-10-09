@@ -5,7 +5,7 @@
  * artículos destacados y CTA de newsletter.
  */
 
-import { requireUser }        from "@/lib/supabase/server";
+import { requireUserStrict as requireUser } from "@/lib/auth/require-user";
 import { ComunidadService }   from "@/services/comunidad.service";
 import { ExplorarHabitos }    from "@/components/comunidad/ExplorarHabitos";
 import { ForoComunidadCard }  from "@/components/comunidad/ForoComunidadCard";

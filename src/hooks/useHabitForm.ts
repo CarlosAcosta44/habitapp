@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Activity, Droplets, BookOpen, Dumbbell, Moon, Sun } from "lucide-react";
-import type { CategoriaHabito } from "@/types/domain/habito.types";
+import type { CategoriaHabito } from "@/domain/habito.types";
 
 export function useHabitForm(categorias: CategoriaHabito[]) {
   const [habitName, setHabitName] = useState("Caminar");

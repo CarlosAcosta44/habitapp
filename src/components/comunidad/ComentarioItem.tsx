@@ -10,7 +10,7 @@ import { useState, useTransition } from "react";
 import { reaccionarAction }        from "@/actions/comunidad.actions";
 import { ComentarioForm }          from "./ComentarioForm";
 import { DeleteCommentButton }     from "./DeleteCommentButton";
-import type { ComentarioConAutor } from "@/types/domain/comunidad.types";
+import type { ComentarioConAutor } from "@/domain/comunidad.types";
 
 interface ComentarioItemProps {
   comentario: ComentarioConAutor;

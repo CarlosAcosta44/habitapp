@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useRef, useEffect } from "react";
 import { updatePerfilBasicoAction, updateAvatarAction } from "@/actions/perfil.actions";
-import type { ProfileForEdit } from "@/types/domain/perfil.types";
+import type { ProfileForEdit } from "@/domain/perfil.types";
 import { useRouter } from "next/navigation";
 
 interface Props {

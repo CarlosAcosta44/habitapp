@@ -4,7 +4,7 @@
  * Podio visual del top 3 y tabla del 4to en adelante.
  */
 
-import { requireUser }       from "@/lib/supabase/server";
+import { requireUserStrict as requireUser } from "@/lib/auth/require-user";
 import { ReportesService }   from "@/services/reportes.service";
 
 export const metadata = { title: "Ranking | HabitApp" };

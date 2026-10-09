@@ -3,7 +3,7 @@
  * @description Detalle de un foro con comentarios anidados.
  */
 
-import { requireUser }      from "@/lib/supabase/server";
+import { requireUserStrict as requireUser } from "@/lib/auth/require-user";
 import { ComunidadService } from "@/services/comunidad.service";
 import { ComentarioItem }   from "@/components/comunidad/ComentarioItem";
 import { ComentarioForm }   from "@/components/comunidad/ComentarioForm";

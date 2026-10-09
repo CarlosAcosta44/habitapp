@@ -4,8 +4,7 @@
  * Server Component que carga las categorías y pasa al formulario cliente.
  */
 
-import { createClient }  from "@/lib/supabase/server";
-import { redirect }      from "next/navigation";
+import { requireUserStrict }  from "@/lib/auth/require-user";
 import { HabitoService } from "@/services/habito.service";
 import { HabitForm }     from "@/components/habitos/HabitForm";
 import Link              from "next/link";
@@ -15,9 +14,7 @@ export const metadata = { title: "Nuevo Hábito | HabitApp" };
 const habitoService = new HabitoService();
 
 export default async function NuevoHabitoPage() {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect("/login");
+  await requireUserStrict();
 
   // Cargar categorías para el select del formulario
   const categoriasResult = await habitoService.getCategorias();

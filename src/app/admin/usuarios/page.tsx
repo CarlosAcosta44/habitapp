@@ -12,7 +12,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { getUsersAction, updateUserRoleAction } from '@/actions/admin.actions';
-import type { UserProfileDto } from '@/types/domain/usuario.types';
+import type { UserProfileDto } from '@/domain/usuario.types';
 import Link from 'next/link';
 
 export default function AdminUsersPage() {

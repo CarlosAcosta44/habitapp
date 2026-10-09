@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { NewHabitModal } from '../modals/NewHabitModal';
 import { logoutAction } from '@/actions/auth.actions';
-import { User } from '@/types/domain/user.types';
+import { User } from '@/domain/user.types';
 import { NotificationBell } from '../notifications/NotificationBell';
 
 interface SidebarProps {
