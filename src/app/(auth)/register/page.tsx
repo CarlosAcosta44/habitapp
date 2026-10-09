@@ -4,7 +4,7 @@ import { useActionState, useRef, useState } from 'react'
 import { registerAction, type RegisterActionState } from '@/actions/auth.actions'
 import Link from 'next/link'
 import { AuthSplitContainer } from '@/components/auth/AuthSplitContainer'
-import { createClient } from '@/lib/supabase/client'
+
 import {
   ONBOARDING_HABIT_PRESETS,
   type OnboardingHabitPresetId,
@@ -49,14 +49,8 @@ export default function RegisterPage() {
   const [oauthLoading, setOauthLoading] = useState<string | null>(null)
 
   const handleOAuth = async (provider: 'google' | 'facebook' | 'azure') => {
-    const supabase = createClient()
-    setOauthLoading(provider)
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    })
+    // TODO: Implementar SDKs nativos para Custom Auth
+    alert(`El registro con ${provider} está en migración hacia el nuevo sistema Custom Auth.`);
   }
   const formRef = useRef<HTMLFormElement>(null)
   const [step, setStep] = useState<1 | 2>(1)

@@ -5,7 +5,7 @@ import { loginAction } from '@/actions/auth.actions'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { AuthSplitContainer } from '@/components/auth/AuthSplitContainer'
-import { createClient } from '@/lib/supabase/client'
+
 
 // Iconos vectoriales simples
 const GoogleIcon = () => (
@@ -73,14 +73,9 @@ export default function LoginPage() {
   }
 
   const handleOAuth = async (provider: 'google' | 'facebook' | 'azure') => {
-    const supabase = createClient()
-    setOauthLoading(provider)
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    })
+    // TODO: Implementar SDKs nativos de Google/Facebook para obtener el idToken
+    // y enviarlo a NestJS (POST /auth/google).
+    alert(`El inicio de sesión con ${provider} está en migración hacia el nuevo sistema Custom Auth.`);
   }
 
   return (

@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
 
 interface AuthSplitContainerProps {
@@ -23,16 +22,8 @@ export function AuthSplitContainer({
   const [userCount, setUserCount] = useState<number | null>(null)
 
   useEffect(() => {
-    const fetchUserCount = async () => {
-      const supabase = createClient()
-      const { data, error } = await supabase.rpc('get_total_usuarios')
-      if (error) {
-        console.error('Error obteniendo usuarios:', error.message)
-      } else if (data !== null) {
-        setUserCount(Number(data))
-      }
-    }
-    fetchUserCount()
+    // TODO: Llamar al endpoint de métricas públicas de NestJS cuando esté disponible
+    // Por ahora usamos un valor fijo o null (que mostrará "+ 12k usuarios")
   }, [])
 
   return (

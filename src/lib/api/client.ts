@@ -7,27 +7,23 @@
 
 import { ok, err }       from "@/lib/result";
 import type { Result }   from "@/lib/result";
-import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
-
-
 
 /**
  * Obtiene las cabeceras de autorización con el Bearer JWT del usuario autenticado.
  */
 async function getAuthHeader(): Promise<Record<string, string>> {
   try {
-    let token = null;
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getSession();
-    token = data.session?.access_token || null;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("access_token")?.value || null;
 
     if (token) {
       return { Authorization: `Bearer ${token}` };
     }
   } catch (error) {
-    console.error("Error al obtener token de sesión de Supabase:", error);
+    console.error("Error al obtener token de sesión de cookies:", error);
   }
   return {};
 }
