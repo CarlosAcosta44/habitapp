@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html lang="es" style=""><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"error":"#ba1a1a","secondary":"#6053a2","tertiary-fixed-dim":"#ffb59d","on-surface":"#1c1a25","on-secondary-fixed-variant":"#483b88","on-primary-container":"#f7f2ff","on-secondary":"#ffffff","surface-container":"#f1ebfa","surface":"#fdf8ff","surface-variant":"#e6e0ef","surface-dim":"#ddd7e6","on-tertiary-fixed-variant":"#832600","inverse-primary":"#c9beff","on-tertiary-fixed":"#390c00","primary-container":"#704efd","tertiary":"#9b340a","surface-tint":"#5e38eb","on-secondary-fixed":"#1b065c","tertiary-fixed":"#ffdbd0","surface-bright":"#fdf8ff","on-secondary-container":"#463987","secondary-fixed-dim":"#c9beff","on-error-container":"#93000a","surface-container-highest":"#e6e0ef","primary-fixed-dim":"#c9beff","surface-container-low":"#f7f1ff","tertiary-container":"#bc4c22","primary":"#572de4","outline":"#797587","secondary-container":"#b6a8fe","surface-container-high":"#ece6f5","background":"#fdf8ff","on-surface-variant":"#484556","on-primary-fixed-variant":"#4608d4","on-tertiary":"#ffffff","on-primary":"#ffffff","primary-fixed":"#e6deff","outline-variant":"#c9c4d8","inverse-on-surface":"#f4eefd","on-background":"#1c1a25","error-container":"#ffdad6","on-primary-fixed":"#1b0063","surface-container-lowest":"#ffffff","inverse-surface":"#312f3a","on-error":"#ffffff","on-tertiary-container":"#fff1ed","secondary-fixed":"#e6deff"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-sm":"0.75rem","screen-edge":"1.25rem","space-2xl":"2rem","gutter-default":"0.75rem","space-lg":"1.25rem","space-md":"1rem","space-3xl":"2.5rem","card-padding":"1.25rem","space-xl":"1.5rem","space-xs":"0.5rem","space-2xs":"0.25rem"},fontFamily:{"label-md":["Plus Jakarta Sans"],"numeric-stat":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"display":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"]},fontSize:{"label-md":["13px",{"lineHeight":"18px","fontWeight":"600"}],"numeric-stat":["24px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-md":["22px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"label-lg":["15px",{"lineHeight":"20px","fontWeight":"600"}],"display":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.04em","fontWeight":"600"}],"headline-sm":["18px",{"lineHeight":"24px","fontWeight":"600"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface relative min-h-screen overflow-x-hidden">
+<!-- Capa completa de contenido de la página (sidebar + vista comunidad) desenfocada y oscurecida detrás del modal -->
+<div class="relative w-full min-h-screen opacity-40 blur-[3px] select-none pointer-events-none transition-all duration-300" id="main-content-layer">
+<aside class="fixed left-4 top-4 bottom-4 w-64 bg-surface-container-low/95 backdrop-blur-xl z-20 flex flex-col justify-between py-6 px-4 rounded-2xl shadow-[0_8px_20px_rgba(112,78,253,0.22)]"><div class="flex flex-col gap-8"><div class="flex items-center justify-between px-1"><div class="flex items-center gap-3"><img alt="HabitApp Logo" class="h-10 w-10 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WeaIN6MaV52iRFmo3ihGkGy3dJfAxfKliiyfiokFz0-_nMyWl0Nd9u9GMjBTkv18Juq8m360OwiC5eI3iCnyNjOWpqixJgbqSqiK8P-G4lOYYQH50lYOufgJw2mcD8j2i2sSTUf8zgVmlYD2g5r3M9hRAxwQEFoBlsLYg8PBDDDr4qHRTSxv5Dd5z1d9YFDUp5wcK-DUjI1YCmgddDjxeg9FrWatNKPRujX7b5YRRkmSLEUCWTJbWAhOnZOEOW0qoSUNuO6jTeRQ"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface leading-tight">HabitApp</span><span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Salud Mental &amp; Hábitos</span></div></div><button class="relative p-1.5 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="Notificaciones" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-tertiary-container"></span></button></div><nav class="flex flex-col gap-1"><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="habitos" href="#"><span class="material-symbols-outlined text-[20px]">check_circle</span><span class="">Hábitos</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="retos-y-desafios" href="#"><span class="material-symbols-outlined text-[20px]">emoji_events</span><span class="">Retos y Desafíos</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-on-primary font-semibold shadow-md transition-colors font-label-md text-label-md" data-path="comunidad" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span class="">Comunidad</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="progreso-y-metricas" href="#"><span class="material-symbols-outlined text-[20px]">bar_chart</span><span class="">Progreso y Métricas</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="ajustes" href="#"><span class="material-symbols-outlined text-[20px]">settings</span><span class="">Ajustes</span></a></nav></div><div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between shadow-[0_1px_3px_rgba(121,117,130,0.04)]"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-headline-sm text-headline-sm">MS</div><div class="flex flex-col"><span class="font-label-md text-label-md text-on-surface truncate max-w-[100px]">Marina Soler</span><span class="font-label-sm text-label-sm text-secondary truncate max-w-[100px]">Usuario</span></div></div><div class="flex items-center gap-1 text-on-surface-variant"><button class="p-1 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Ayuda" type="button"><span class="material-symbols-outlined text-[18px]">help</span></button><button class="p-1 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Cerrar sesión" type="button"><span class="material-symbols-outlined text-[18px]">logout</span></button></div></div></aside><div class="pl-72"><main class="relative bg-surface min-h-screen w-full px-8 pb-12 pt-6"><div class="flex flex-col w-full relative">
+<!-- Vista previa de fondo: Pantalla de Foros de la Comunidad -->
+<div class="w-full flex flex-col gap-8">
+<!-- Header principal de Comunidad -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">Espacio Seguro</span>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">4,890 miembros conectados</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Comunidad &amp; Bienestar</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Conecta con personas que comparten tu camino hacia una vida serena y consciente.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-container-high text-on-surface font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+<span>Filtros</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Crear Foro</span>
+</button>
+</div>
+</div>
+<!-- Buscador de gran formato -->
+<div class="w-full bg-surface-container-lowest rounded-2xl shadow-sm p-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-outline ml-3 text-[22px]">search</span>
+<input class="w-full bg-transparent font-body-md text-body-md text-on-surface focus:outline-none" placeholder="Buscar preguntas, reflexiones, temas de apoyo..." readonly="" type="text"/>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant font-label-sm text-label-sm mr-2 font-mono">⌘ K</span>
+</div>
+<!-- Pestañas horizontales de navegación comunitaria -->
+<div class="flex items-center gap-2">
+<button class="px-5 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm">Foros de Apoyo</button>
+<button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">Salas de Meditación</button>
+<button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">Diarios Compartidos</button>
+<button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">Historias de Éxito</button>
+</div>
+<!-- Mosaico / Grid de Foros detrás -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col justify-between gap-4">
+<div>
+<div class="flex items-center justify-between gap-2 mb-3">
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">#Ansiedad</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Hace 15 min</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Técnicas 4-7-8 para ataques nocturnos</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Llevo aplicando este ejercicio durante una semana completa y los despertares han menguado visiblemente...</p>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm flex items-center justify-center font-bold">LC</div>
+<span>Laura C.</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble</span> 24</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">favorite</span> 58</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col justify-between gap-4">
+<div>
+<div class="flex items-center justify-between gap-2 mb-3">
+<span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm">#Mindfulness</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Hace 1 hora</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Paseos conscientes sin auriculares</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Al principio sentía prisa constante por llegar al destino, pero enfocarme en los sonidos del parque me cambió la rutina.</p>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm flex items-center justify-center font-bold">DR</div>
+<span>David R.</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble</span> 18</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">favorite</span> 42</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col justify-between gap-4">
+<div>
+<div class="flex items-center justify-between gap-2 mb-3">
+<span class="px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">#Hábitos</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Hace 3 horas</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Despertar a las 6:30 AM sin posponer alarma</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">El mayor obstáculo era tener el teléfono cerca de la mesita de noche. Dejarlo en la cómoda fue la clave absoluta.</p>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm flex items-center justify-center font-bold">AM</div>
+<span>Ana M.</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble</span> 37</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">favorite</span> 91</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div>
+</div>
+<!-- OVERLAY OSCURO Y CRISTALINO QUE CUBRE TODA LA PANTALLA (INCLUYENDO SIDEBAR) -->
+<div class="fixed inset-0 z-40 bg-on-surface/40 backdrop-blur-sm transition-opacity duration-300" id="modal-overlay"></div>
+<!-- MODAL FLOTANTE CENTRADO (Crear Foro) POR ENCIMA DE TODA LA PANTALLA -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto pointer-events-none">
+<div class="pointer-events-auto w-full max-w-2xl bg-surface-container-lowest rounded-3xl shadow-[0_24px_60px_-15px_rgba(28,26,37,0.25),0_12px_24px_-6px_rgba(87,45,228,0.12)] p-6 sm:p-8 flex flex-col gap-6 relative transform transition-all duration-300 scale-100 my-auto">
+<!-- Botón de cierre en esquina superior derecha -->
+<button aria-label="Cerrar ventana" class="absolute top-6 right-6 w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" id="close-modal-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+<!-- Cabecera del Modal -->
+<div class="flex items-start gap-4 pr-10">
+<div class="w-12 h-12 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[26px]">forum</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-md text-headline-md text-on-surface">Crear un Foro</h2>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">Comunidad</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+            Comparte tus dudas, experiencias o reflexiones con la comunidad en un entorno de apoyo y empatía.
+          </p>
+</div>
+</div>
+<!-- Formulario de Creación -->
+<form class="flex flex-col gap-5" onsubmit="event.preventDefault();">
+<!-- Campo 1: Categoría / Etiqueta temática -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1.5" for="forum-tag-input">
+<span>Categoría / Etiqueta temática</span>
+<span class="text-tertiary font-bold">*</span>
+</label>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Selecciona o escribe</span>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[18px]">sell</span>
+</div>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-container-low rounded-xl font-body-md text-body-md text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all outline-none" id="forum-tag-input" placeholder="Ej: Ansiedad, Mindfulness o Hábitos" type="text" value="Ansiedad"/>
+</div>
+<!-- Sugerencias rápidas en píldoras clicables -->
+<div class="flex flex-wrap items-center gap-1.5 pt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant mr-1">Sugerencias:</span>
+<button class="tag-pill px-3 py-1 rounded-full bg-primary-fixed text-primary font-label-sm text-label-sm transition-transform active:scale-95 shadow-sm font-semibold" data-tag="Ansiedad" type="button">#Ansiedad</button>
+<button class="tag-pill px-3 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-sm text-label-sm transition-all active:scale-95" data-tag="Mindfulness" type="button">#Mindfulness</button>
+<button class="tag-pill px-3 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-sm text-label-sm transition-all active:scale-95" data-tag="Autoestima" type="button">#Autoestima</button>
+<button class="tag-pill px-3 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-sm text-label-sm transition-all active:scale-95" data-tag="Sueño" type="button">#Sueño</button>
+<button class="tag-pill px-3 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-sm text-label-sm transition-all active:scale-95" data-tag="Crecimiento personal" type="button">#Crecimiento personal</button>
+</div>
+</div>
+<!-- Campo 2: Título del foro -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1.5" for="forum-title-input">
+<span>Título del foro</span>
+<span class="text-tertiary font-bold">*</span>
+</label>
+<div class="relative">
+<input class="w-full px-4 py-3 bg-surface-container-low rounded-xl font-body-md text-body-md text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all outline-none font-medium" id="forum-title-input" placeholder="Escribe una pregunta o título descriptivo..." type="text" value="¿Cómo gestionáis la ansiedad matutina?"/>
+</div>
+</div>
+<!-- Campo 3: Contenido / Compartir o preguntar -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1.5" for="forum-content-textarea">
+<span>¿Qué quieres compartir o preguntar?</span>
+<span class="text-tertiary font-bold">*</span>
+</label>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono" id="char-counter">147 / 500</span>
+</div>
+<div class="relative">
+<textarea class="w-full p-4 bg-surface-container-low rounded-xl font-body-md text-body-md text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all outline-none resize-none leading-relaxed" id="forum-content-textarea" maxlength="500" placeholder="Describe tu situación o lanza tu pregunta de forma respetuosa..." rows="4">Llevo varios días notando una sensación de aceleración nada más levantarme. ¿Qué rutinas o respiraciones os ayudan más en los primeros 15 minutos?</textarea>
+</div>
+</div>
+<!-- Pautas sutiles de comunidad -->
+<div class="flex items-center gap-3 p-3.5 rounded-xl bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px] text-primary flex-shrink-0">verified_user</span>
+<p class="font-body-sm text-body-sm">
+<span class="font-semibold text-on-surface">Pauta de convivencia:</span> Recuerda mantener un tono empático y respetuoso. Espacio seguro y libre de juicios.
+          </p>
+</div>
+<!-- Barra de acciones inferior -->
+<div class="flex items-center justify-between pt-2">
+<button class="px-6 py-3 rounded-xl bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-all active:scale-98" id="cancel-btn" type="button">
+            Cancelar
+          </button>
+<button class="flex items-center gap-2.5 px-8 py-3 rounded-xl bg-primary text-on-primary font-label-md text-label-md shadow-lg shadow-primary/25 hover:bg-primary-container transition-all active:scale-98 font-semibold" type="submit">
+<span class="material-symbols-outlined text-[18px]">send</span>
+<span>Publicar Foro</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<script>
+  // Micro-interacción: Selección de etiquetas temáticas sugeridas
+  const tagInput = document.getElementById('forum-tag-input');
+  const tagPills = document.querySelectorAll('.tag-pill');
+
+  tagPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const selected = pill.getAttribute('data-tag');
+      tagInput.value = selected;
+      
+      tagPills.forEach(p => {
+        p.classList.remove('bg-primary-fixed', 'text-primary', 'font-semibold', 'shadow-sm');
+        p.classList.add('bg-surface-container', 'text-on-surface-variant');
+      });
+
+      pill.classList.remove('bg-surface-container', 'text-on-surface-variant');
+      pill.classList.add('bg-primary-fixed', 'text-primary', 'font-semibold', 'shadow-sm');
+    });
+  });
+
+  // Micro-interacción: Contador de caracteres
+  const contentArea = document.getElementById('forum-content-textarea');
+  const charCounter = document.getElementById('char-counter');
+
+  if (contentArea && charCounter) {
+    const updateCount = () => {
+      const len = contentArea.value.length;
+      charCounter.textContent = `${len} / 500`;
+    };
+    contentArea.addEventListener('input', updateCount);
+    updateCount();
+  }
+
+  // Micro-interacción de cerrar modal (demostración visual)
+  const closeBtn = document.getElementById('close-modal-btn');
+  const cancelBtn = document.getElementById('cancel-btn');
+  const overlay = document.getElementById('modal-overlay');
+
+  const dismissModal = () => {
+    if (overlay) overlay.classList.add('opacity-0');
+    const modalWrapper = document.querySelector('.pointer-events-auto');
+    if (modalWrapper) {
+      modalWrapper.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        const bgLayer = document.getElementById('main-content-layer');
+        if (bgLayer) {
+          bgLayer.classList.remove('opacity-40', 'blur-[3px]', 'pointer-events-none', 'select-none');
+        }
+      }, 150);
+    }
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', dismissModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', dismissModal);
+  if (overlay) overlay.addEventListener('click', dismissModal);
+</script>
+</body></html>

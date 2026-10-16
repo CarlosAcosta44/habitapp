@@ -15,17 +15,20 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1
  * Obtiene las cabeceras de autorización con el Bearer JWT del usuario autenticado.
  */
 async function getAuthHeader(): Promise<Record<string, string>> {
+  const headers: Record<string, string> = {
+    "x-timezone-offset": new Date().getTimezoneOffset().toString(),
+  };
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value || null;
 
     if (token) {
-      return { Authorization: `Bearer ${token}` };
+      headers["Authorization"] = `Bearer ${token}`;
     }
   } catch (error) {
-    console.error("Error al obtener token de sesión de cookies:", error);
+    // cookies() may throw if called outside request context (e.g. during build)
   }
-  return {};
+  return headers;
 }
 
 interface FetchOptions extends RequestInit {

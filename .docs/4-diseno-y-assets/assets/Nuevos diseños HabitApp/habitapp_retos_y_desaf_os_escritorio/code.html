@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-tertiary-container":"#fff1ed","on-primary-fixed":"#1b0063","primary-fixed":"#e6deff","surface-container-highest":"#e6e0ef","on-tertiary-fixed":"#390c00","on-primary-container":"#f7f2ff","primary":"#2563EB","tertiary-container":"#bc4c22","background":"#f8fafc","secondary-container":"#b6a8fe","on-surface":"#1e293b","on-primary-fixed-variant":"#4608d4","on-secondary":"#ffffff","secondary":"#6053a2","inverse-primary":"#c9beff","on-error":"#ffffff","secondary-fixed":"#e6deff","surface":"#ffffff","surface-bright":"#ffffff","inverse-surface":"#312f3a","on-tertiary":"#ffffff","surface-container-high":"#f1f5f9","error":"#ba1a1a","on-secondary-container":"#463987","on-background":"#0f172a","secondary-fixed-dim":"#c9beff","tertiary-fixed":"#ffdbd0","primary-fixed-dim":"#c9beff","on-secondary-fixed":"#1b065c","tertiary-fixed-dim":"#ffb59d","outline-variant":"#cbd5e1","tertiary":"#9b340a","on-error-container":"#93000a","surface-variant":"#f1f5f9","surface-tint":"#2563EB","on-tertiary-fixed-variant":"#832600","surface-container-lowest":"#ffffff","on-surface-variant":"#64748b","inverse-on-surface":"#f4eefd","surface-container":"#f8fafc","on-primary":"#ffffff","surface-dim":"#e2e8f0","on-secondary-fixed-variant":"#483b88","surface-container-low":"#f8fafc","error-container":"#ffdad6","primary-container":"#2563EB","outline":"#94a3b8"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","2xl":"1rem","3xl":"1.5rem","full":"9999px"},"spacing":{"space-lg":"1.25rem","space-2xl":"2rem","card-padding":"1.25rem","screen-edge":"1.25rem","space-2xs":"0.25rem","gutter-default":"0.75rem","space-xs":"0.5rem","space-sm":"0.75rem","space-3xl":"2.5rem","space-xl":"1.5rem","space-md":"1rem"},"fontFamily":{"headline-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"numeric-stat":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"display":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"]}}}};</script></head><body class="bg-[#f8f9fc] font-body-md text-body-md text-slate-800 antialiased min-h-screen p-4 flex gap-5">
+<!-- SIDEBAR FLOTANTE -->
+<aside class="w-64 h-[calc(100vh-2rem)] sticky top-4 bg-white rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between p-5 shrink-0 z-30">
+<div class="flex flex-col gap-6">
+<!-- Header Logo HabitApp + Notificaciones -->
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-3">
+<img alt="HabitApp Logo" class="h-9 w-9 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WeaIN6MaV52iRFmo3ihGkGy3dJfAxfKliiyfiokFz0-_nMyWl0Nd9u9GMjBTkv18Juq8m360OwiC5eI3iCnyNjOWpqixJgbqSqiK8P-G4lOYYQH50lYOufgJw2mcD8j2i2sSTUf8zgVmlYD2g5r3M9hRAxwQEFoBlsLYg8PBDDDr4qHRTSxv5Dd5z1d9YFDUp5wcK-DUjI1YCmgddDjxeg9FrWatNKPRujX7b5YRRkmSLEUCWTJbWAhOnZOEOW0qoSUNuO6jTeRQ"/>
+<div class="flex flex-col">
+<span class="text-[17px] font-bold text-slate-900 leading-tight">HabitApp</span>
+<span class="text-[11px] font-medium text-slate-400">Salud Mental &amp; Hábitos</span>
+</div>
+</div>
+<button class="relative flex items-center justify-center w-8 h-8 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors" title="Notificaciones">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1.5" data-active-classes="bg-blue-600 text-white font-semibold rounded-xl">
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-[14px] font-medium" data-path="habitos" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">check_circle</span>
+<span>Hábitos</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-[14px] font-medium" data-path="retos-y-desafios" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">emoji_events</span>
+<span>Retos y Desafíos</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white shadow-sm text-[14px] font-semibold" data-path="comunidad" href="#">
+<span class="material-symbols-outlined text-[20px] text-white">group</span>
+<span>Comunidad</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-[14px] font-medium" data-path="progreso-y-metricas" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">insights</span>
+<span>Progreso y Métricas</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-[14px] font-medium" data-path="ajustes" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">settings</span>
+<span>Ajustes</span>
+</a>
+</nav>
+</div>
+<!-- Bottom User Profile Card -->
+<div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50/80 border border-slate-100">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-full bg-blue-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0">
+          MS
+        </div>
+<div class="flex flex-col min-w-0">
+<span class="text-[13px] font-semibold text-slate-900 truncate">Marina Soler</span>
+<span class="text-[11px] text-slate-400 truncate">Usuario</span>
+</div>
+</div>
+<div class="flex items-center gap-0.5 text-slate-400">
+<button class="p-1 hover:text-slate-600 rounded" title="Ayuda">
+<span class="material-symbols-outlined text-[17px]">help</span>
+</button>
+<button class="p-1 hover:text-slate-600 rounded" title="Cerrar sesión">
+<span class="material-symbols-outlined text-[17px]">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- CONTENIDO PRINCIPAL -->
+<main class="flex-1 min-w-0 flex flex-col gap-6">
+<!-- CABECERA SUPERIOR CALCADA EXACTA -->
+<div class="flex flex-col gap-5 mb-8">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-3">
+<h1 class="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">Comunidad &amp; Bienestar</h1>
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-xs text-emerald-800 font-semibold">4,890 miembros conectados</span>
+</div>
+</div>
+<p class="text-sm text-slate-500">
+          Espacio seguro y colaborativo para compartir rutinas, debatir y conectar con profesionales.
+        </p>
+</div>
+<!-- Search Input Bar -->
+<div class="relative w-full my-1">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[22px]">search</span>
+<input class="w-full h-12 pl-12 pr-24 rounded-2xl bg-white border border-slate-200/80 text-sm text-slate-800 placeholder:text-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" placeholder="Buscar foros, hábitos comunitarios, artículos o especialistas..." type="text"/>
+<div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-medium text-slate-500 border border-slate-200">
+<span>⌘</span><span>K</span>
+</div>
+</div>
+<!-- Horizontal Category Tabs -->
+<div class="flex items-center gap-2.5 overflow-x-auto py-0.5 no-scrollbar">
+<a class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all whitespace-nowrap" data-path="todo" href="#">
+<span class="material-symbols-outlined text-[17px]">dashboard</span>
+<span>Todo</span>
+</a>
+<a class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all whitespace-nowrap" data-path="foros-de-apoyo" href="#">
+<span class="material-symbols-outlined text-[17px]">forum</span>
+<span>Foros de Apoyo</span>
+</a>
+<a class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all whitespace-nowrap" data-path="habitos-compartidos" href="#">
+<span class="material-symbols-outlined text-[17px]">repeat</span>
+<span>Hábitos Compartidos</span>
+</a>
+<a class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all whitespace-nowrap" data-path="articulos-y-guias" href="#">
+<span class="material-symbols-outlined text-[17px]">auto_stories</span>
+<span>Artículos y Guías</span>
+</a>
+<a class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all whitespace-nowrap" data-path="especialistas" href="#">
+<span class="material-symbols-outlined text-[17px]">verified_user</span>
+<span>Especialistas</span>
+</a>
+<a aria-current="page" class="flex items-center gap-2 px-5 py-2 rounded-full bg-blue-600 text-white font-medium text-xs shadow-sm hover:bg-blue-700 transition-all whitespace-nowrap" data-path="retos" href="#">
+<span class="material-symbols-outlined text-[17px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+<span>Retos</span>
+</a>
+</div>
+</div>
+<!-- CONTENIDO ESPECÍFICO DE RETOS Y DESAFÍOS -->
+<div class="flex flex-col gap-6 pb-12">
+<!-- Sub-header & Action Toolbar -->
+<section class="flex flex-col gap-4">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3 flex-wrap">
+<h2 class="text-[24px] font-bold text-slate-900 tracking-tight">Retos y Desafíos Comunitarios</h2>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[11px] uppercase tracking-wider font-bold">
+<span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+              Temporada activa
+            </span>
+</div>
+<div class="flex items-center gap-3">
+<div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200/80 text-slate-700 shadow-xs">
+<span class="material-symbols-outlined text-[18px] text-blue-600" style="font-variation-settings: 'FILL' 1;">flag</span>
+<span class="text-[13px]">Tus retos activos: <strong class="text-blue-600 font-bold">2 en curso</strong></span>
+</div>
+<button class="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 active:scale-95 transition-all shadow-[0_4px_14px_rgba(37,99,235,0.25)] text-[14px] font-semibold">
+<span class="material-symbols-outlined text-[19px]">add</span>
+<span>Crear Reto Personalizado</span>
+</button>
+</div>
+</div>
+<!-- Category Filter Pills -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" id="categories-bar">
+<button class="category-btn active px-4 py-2 rounded-full bg-blue-600 text-white text-[13px] font-semibold transition-all shadow-xs shrink-0">
+            Todos los retos
+          </button>
+<button class="category-btn px-4 py-2 rounded-full bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-[13px] font-medium transition-all shadow-2xs shrink-0">
+            🌙 Bienestar y Sueño
+          </button>
+<button class="category-btn px-4 py-2 rounded-full bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-[13px] font-medium transition-all shadow-2xs shrink-0">
+            💧 Hidratación y Salud
+          </button>
+<button class="category-btn px-4 py-2 rounded-full bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-[13px] font-medium transition-all shadow-2xs shrink-0">
+            🧘 Mindfulness
+          </button>
+<button class="category-btn px-4 py-2 rounded-full bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-[13px] font-medium transition-all shadow-2xs shrink-0">
+            🏃 Movimiento y Actividad
+          </button>
+<button class="category-btn px-4 py-2 rounded-full bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-[13px] font-medium transition-all shadow-2xs shrink-0">
+            📵 Desconexión digital
+          </button>
+</div>
+</section>
+<!-- Active Challenges (2 Columns) -->
+<section class="flex flex-col gap-3.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-[22px]">play_circle</span>
+<h3 class="text-[17px] font-bold text-slate-900">Tus Retos Activos</h3>
+<span class="text-[11px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full font-bold">2 en curso</span>
+</div>
+<a class="text-[13px] font-medium text-blue-600 hover:underline flex items-center gap-1" href="#">
+            Ver historial y medallas
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<!-- Active Card 1 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between gap-5 hover:shadow-md transition-all">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3.5">
+<div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[26px]">bedtime</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[11px] uppercase tracking-wide text-slate-400 font-bold">Bienestar • Quedan 2 días</span>
+<h4 class="text-[16px] text-slate-900 font-bold">7 Días de Detox Nocturno</h4>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-[12px] font-bold shrink-0">
+                  Día 5/7
+                </span>
+</div>
+<!-- Progress Bar & Stats -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between text-[12px]">
+<span class="text-slate-500 font-medium">Progreso total</span>
+<span class="text-blue-600 font-bold">71% completado</span>
+</div>
+<div class="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
+<div class="h-full rounded-full bg-blue-600 transition-all duration-700" style="width: 71%;"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2 overflow-hidden">
+<img alt="Participante" class="inline-block h-7 w-7 rounded-full object-cover ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_cZx-8K7aUg_s0R7TcB5DfWVV3TCwsVJ8LX14gAtGhxtOt29u-eCn-92qOD0Rlg2ga-qoNeBhxQuTKIkV3zy0BC95mzpDYjql7-4eY8xQYN8CpJVthnK1-OgoXbxt9HkmWVztv9FRBETVhurQXQks5hpo4o_h2TMdWeQjLqBijWcHhit6B6z0yJhRc2tpuBDDZVX2hBKp4ByM-dzNdnN34NvHs5e0RF2arXzqNJjUFlci0-q4x7fS"/>
+<img alt="Participante" class="inline-block h-7 w-7 rounded-full object-cover ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8_anuyFJRx7vxOHRreelGMb_1DtVf9h-OH7epXaVX-6a37t5KRVTjv_-7o8rB8MnbA5a4LR7BS3ss6YO2C8XJaf7BMI7K579q1CmqscMwvyqh6GcBwwuqTxGXPZoD5r6OJ5Jg0gDVUA21BF1_gARgi2kCWXqNqQZECf-beHmUr0iZgYe8qIaUszZ2uhbM0q62uyv-i4dKShGOZHjzs19MGYdT554yNmp-XqPyS9UXKMq9_gNhF743"/>
+<img alt="Participante" class="inline-block h-7 w-7 rounded-full object-cover ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHYkHlKwglXycb9Pxgqb-5xg0A_cgZE3ItRzSxLf0Ka5DqOKJhzlQKkqbZk7s8RlNKxi52rjfQGkf2dhISqMuwb1cq8-2fUqcczY1iaBeZJkhCGlSkZk-x5qZL36b4fKr2cGggQ9T3KvP0xui0xjNaCwrYoJP4LCK4kYVuBVlt5ME5kvG87Q-j6yxM_JY6oTYrwl83q2HnBO39roK9vtitFRrZLpbWC6dNtxg0iSeVj1xRrkd3xdT6"/>
+</div>
+<span class="text-[12px] text-slate-500 font-medium">+3,418 amigos participando</span>
+</div>
+<button class="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 active:scale-95 transition-all text-[13px] font-semibold flex items-center gap-1.5 shadow-sm" id="register-btn-1">
+<span class="material-symbols-outlined text-[17px]">check_circle</span>
+<span>Registrar hoy</span>
+</button>
+</div>
+</article>
+<!-- Active Card 2 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between gap-5 hover:shadow-md transition-all">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3.5">
+<div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[26px]">water_drop</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[11px] uppercase tracking-wide text-slate-400 font-bold">Salud física • Quedan 12 días</span>
+<h4 class="text-[16px] text-slate-900 font-bold">Hidratación Consciente 21D</h4>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-800 text-[12px] font-bold shrink-0">
+                  Día 9/21
+                </span>
+</div>
+<!-- Progress Bar & Stats -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between text-[12px]">
+<span class="text-slate-500 font-medium">Progreso total</span>
+<span class="text-cyan-700 font-bold">43% completado</span>
+</div>
+<div class="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
+<div class="h-full rounded-full bg-cyan-500 transition-all duration-700" style="width: 43%;"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2 overflow-hidden">
+<img alt="Participante" class="inline-block h-7 w-7 rounded-full object-cover ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmOYjlBBZNWojET9xoKFntUFcVkKjP1ZvdTuRM9chGY3xZ_BuGp4q-2b7aEN-y3M77CN-HOWMVzcqSsTKhFb6q14ZiOAN08OuUj292RxNbGcx-YhEAhffI-xF6I6memUq947bSWUSgTOo167lVCsLJ-Y2x0b-Nv4RJIh3HxNEy3Rg1Oc58sDjIGoVBuTkz0nkUjQJbVtToktm9MyyKcBFbIVpeDCbQt1Yr1163JNdFMwEyu8W_RvUn"/>
+<img alt="Participante" class="inline-block h-7 w-7 rounded-full object-cover ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3T5R231zqbWiM-Qi828BnbhYoaqR0c7x2gQMqObjICa-tJchSDtI6Hlr_oFIzjdUuR4PITw4zOENdaSzL80UQUMjeK_AY1HVFuqsY0o8gLWgovjtoohUwLDliSVeyk8mRSDKu96HdR1YzZ0uwnqqFNmNwYpedhoKHfxQb5ZolAjtI8EKM6Hujx1ASnV68q8X5VNxqv0WBtYdCaJS7ax42JxLbvkv7Saok_6cljc5_CiH6HVVNRun0"/>
+</div>
+<span class="text-[12px] text-slate-500 font-medium">1,890 inscritos</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-50 text-emerald-700 text-[13px] font-semibold border border-emerald-100">
+<span class="material-symbols-outlined text-[17px] text-emerald-600" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>✓ Completado hoy</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Highlight Banner (Challenge Friends) -->
+<section class="relative overflow-hidden rounded-3xl p-7 bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_10px_28px_rgba(37,99,235,0.22)] flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="relative z-10 flex items-start gap-4 max-w-2xl">
+<div class="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-[30px] text-white" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-[11px] text-white/80 font-bold uppercase tracking-widest">Retos Grupales &amp; Amigos</span>
+<h3 class="text-[20px] font-bold text-white tracking-tight">¿Quieres desafiar a tus amigos?</h3>
+<p class="text-[13px] text-white/90 leading-relaxed">
+              Crea un reto grupal con reglas a tu medida y ranking privado de amigos para motivarse juntos. Establece tus propias metas semanales y gana insignias exclusivas.
+            </p>
+</div>
+</div>
+<div class="relative z-10 shrink-0">
+<button class="px-5 py-2.5 rounded-full bg-white text-blue-600 hover:bg-slate-50 active:scale-95 transition-all shadow-md text-[14px] font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[19px]">group_add</span>
+<span>Crear Reto Personalizado</span>
+</button>
+</div>
+<!-- Decorative ambient shapes -->
+<div class="absolute -right-12 -top-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+<div class="absolute right-1/3 -bottom-16 w-48 h-48 rounded-full bg-cyan-400/20 blur-xl pointer-events-none"></div>
+</section>
+<!-- Available Community Challenges (3 Columns Grid) -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-[22px]">explore</span>
+<h3 class="text-[17px] font-bold text-slate-900">Retos Disponibles de la Comunidad</h3>
+</div>
+<div class="flex items-center gap-2 text-slate-500 text-[13px]">
+<span>Ordenar por:</span>
+<select class="bg-white border border-slate-200/80 rounded-xl px-2.5 py-1 text-slate-700 font-semibold focus:outline-none cursor-pointer text-[13px] shadow-2xs">
+<option>Más populares</option>
+<option>Nuevos</option>
+<option>Duración menor</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<!-- Challenge 1 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5">
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[13px]">self_improvement</span>
+                  Mindfulness matutino
+                </span>
+<span class="text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+                  +150 pts
+                </span>
+</div>
+<h4 class="text-[16px] text-slate-900 font-bold mt-1">21 Días de Meditación</h4>
+<p class="text-[13px] text-slate-500 leading-relaxed">
+                Dedica 10 minutos cada mañana a la respiración guiada para reducir el estrés y aumentar la claridad mental.
+              </p>
+</div>
+<div class="flex flex-col gap-3 pt-1">
+<div class="flex items-center justify-between text-slate-400 text-[12px]">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+                  21 días
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">groups</span>
+                  5.2k participantes
+                </span>
+</div>
+<button class="join-challenge-btn w-full py-2.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 active:scale-98 transition-all text-[13px] font-semibold flex items-center justify-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Unirme al reto</span>
+</button>
+</div>
+</article>
+<!-- Challenge 2 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5">
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[13px]">directions_walk</span>
+                  Fitness &amp; Vitalidad
+                </span>
+<span class="text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+                  +120 pts
+                </span>
+</div>
+<h4 class="text-[16px] text-slate-900 font-bold mt-1">Caminata Diaria 8,000 Pasos</h4>
+<p class="text-[13px] text-slate-500 leading-relaxed">
+                Activa tu cuerpo y despeja la mente caminando al aire libre antes de que caiga el sol. Sincroniza tu podómetro.
+              </p>
+</div>
+<div class="flex flex-col gap-3 pt-1">
+<div class="flex items-center justify-between text-slate-400 text-[12px]">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+                  30 días
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">groups</span>
+                  3.8k participantes
+                </span>
+</div>
+<button class="join-challenge-btn w-full py-2.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 active:scale-98 transition-all text-[13px] font-semibold flex items-center justify-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Unirme al reto</span>
+</button>
+</div>
+</article>
+<!-- Challenge 3 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5">
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[13px]">phonelink_off</span>
+                  Higiene del Sueño
+                </span>
+<span class="text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+                  +80 pts
+                </span>
+</div>
+<h4 class="text-[16px] text-slate-900 font-bold mt-1">Cero Pantallas 1h Antes de Dormir</h4>
+<p class="text-[13px] text-slate-500 leading-relaxed">
+                Optimiza la fase REM y la conciliación del sueño sustituyendo pantallas por lectura, estiramientos o música suave.
+              </p>
+</div>
+<div class="flex flex-col gap-3 pt-1">
+<div class="flex items-center justify-between text-slate-400 text-[12px]">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+                  7 días
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">groups</span>
+                  4.1k participantes
+                </span>
+</div>
+<button class="join-challenge-btn w-full py-2.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 active:scale-98 transition-all text-[13px] font-semibold flex items-center justify-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Unirme al reto</span>
+</button>
+</div>
+</article>
+<!-- Challenge 4 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5">
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-700 bg-sky-50 px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[13px]">auto_stories</span>
+                  Enfoque mental
+                </span>
+<span class="text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+                  +100 pts
+                </span>
+</div>
+<h4 class="text-[16px] text-slate-900 font-bold mt-1">Lectura Diaria 20 Minutos</h4>
+<p class="text-[13px] text-slate-500 leading-relaxed">
+                Construye el hábito de la lectura analógica diaria para mejorar tu concentración y descansar de las redes sociales.
+              </p>
+</div>
+<div class="flex flex-col gap-3 pt-1">
+<div class="flex items-center justify-between text-slate-400 text-[12px]">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+                  14 días
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">groups</span>
+                  2.9k participantes
+                </span>
+</div>
+<button class="join-challenge-btn w-full py-2.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 active:scale-98 transition-all text-[13px] font-semibold flex items-center justify-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Unirme al reto</span>
+</button>
+</div>
+</article>
+<!-- Challenge 5 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5">
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[13px]">restaurant</span>
+                  Nutrición
+                </span>
+<span class="text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+                  +90 pts
+                </span>
+</div>
+<h4 class="text-[16px] text-slate-900 font-bold mt-1">Alimentación Consciente 14D</h4>
+<p class="text-[13px] text-slate-500 leading-relaxed">
+                Planifica y disfruta tus comidas sin distracciones tecnológicas, conectando con las señales de saciedad y sabor.
+              </p>
+</div>
+<div class="flex flex-col gap-3 pt-1">
+<div class="flex items-center justify-between text-slate-400 text-[12px]">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+                  14 días
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">groups</span>
+                  3.1k participantes
+                </span>
+</div>
+<button class="join-challenge-btn w-full py-2.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 active:scale-98 transition-all text-[13px] font-semibold flex items-center justify-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Unirme al reto</span>
+</button>
+</div>
+</article>
+<!-- Challenge 6 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5">
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[13px]">air</span>
+                  Gestión de Ansiedad
+                </span>
+<span class="text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+                  +110 pts
+                </span>
+</div>
+<h4 class="text-[16px] text-slate-900 font-bold mt-1">Respiración Antipánico 7D</h4>
+<p class="text-[13px] text-slate-500 leading-relaxed">
+                Técnicas diafragmáticas guiadas por profesionales para activar el nervio vago y calmar picos agudos de estrés.
+              </p>
+</div>
+<div class="flex flex-col gap-3 pt-1">
+<div class="flex items-center justify-between text-slate-400 text-[12px]">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+                  7 días
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">groups</span>
+                  6.4k participantes
+                </span>
+</div>
+<button class="join-challenge-btn w-full py-2.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 active:scale-98 transition-all text-[13px] font-semibold flex items-center justify-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Unirme al reto</span>
+</button>
+</div>
+</article>
+</div>
+</section>
+</div>
+</main>
+<script>
+    // Micro-interacción en filtros de categorías
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.category-btn').forEach(b => {
+          b.classList.remove('bg-blue-600', 'text-white');
+          b.classList.add('bg-white', 'text-slate-600');
+        });
+        this.classList.add('bg-blue-600', 'text-white');
+        this.classList.remove('bg-white', 'text-slate-600');
+      });
+    });
+
+    // Registrar hoy micro-interacción
+    const regBtn = document.getElementById('register-btn-1');
+    if (regBtn) {
+      regBtn.addEventListener('click', function() {
+        this.classList.remove('bg-blue-600', 'text-white');
+        this.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-100');
+        this.innerHTML = `<span class="material-symbols-outlined text-[17px] text-emerald-600" style="font-variation-settings: 'FILL' 1;">check_circle</span><span>✓ Completado hoy</span>`;
+      });
+    }
+
+    // Unirme al reto micro-interacción
+    document.querySelectorAll('.join-challenge-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        this.classList.remove('bg-blue-600', 'text-white');
+        this.classList.add('bg-slate-100', 'text-blue-600');
+        this.innerHTML = `<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">check</span><span>¡Inscrito con éxito!</span>`;
+      });
+    });
+  </script>
+</body></html>

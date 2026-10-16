@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"error":"#ba1a1a","secondary":"#2563eb","tertiary-fixed-dim":"#ffb59d","on-surface":"#1e293b","on-secondary-fixed-variant":"#1e40af","on-primary-container":"#ffffff","on-secondary":"#ffffff","surface-container":"#f1f5f9","surface":"#f8fafc","surface-variant":"#e2e8f0","surface-dim":"#cbd5e1","on-tertiary-fixed-variant":"#832600","inverse-primary":"#bfdbfe","on-tertiary-fixed":"#390c00","primary-container":"#1d4ed8","tertiary":"#9b340a","surface-tint":"#2563eb","on-secondary-fixed":"#172554","tertiary-fixed":"#ffdbd0","surface-bright":"#ffffff","on-secondary-container":"#1e40af","secondary-fixed-dim":"#bfdbfe","on-error-container":"#93000a","surface-container-highest":"#e2e8f0","primary-fixed-dim":"#bfdbfe","surface-container-low":"#f8fafc","tertiary-container":"#bc4c22","primary":"#2563eb","outline":"#94a3b8","secondary-container":"#dbeafe","surface-container-high":"#edf2f7","background":"#f8fafc","on-surface-variant":"#64748b","on-primary-fixed-variant":"#1e40af","on-tertiary":"#ffffff","on-primary":"#ffffff","primary-fixed":"#dbeafe","outline-variant":"#cbd5e1","inverse-on-surface":"#f8fafc","on-background":"#1e293b","error-container":"#ffdad6","on-primary-fixed":"#172554","surface-container-lowest":"#ffffff","inverse-surface":"#1e293b","on-error":"#ffffff","on-tertiary-container":"#fff1ed","secondary-fixed":"#dbeafe"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","2xl":"1rem","full":"9999px"},spacing:{"space-sm":"0.75rem","screen-edge":"1.25rem","space-2xl":"2rem","gutter-default":"0.75rem","space-lg":"1.25rem","space-md":"1rem","space-3xl":"2.5rem","card-padding":"1.25rem","space-xl":"1.5rem","space-xs":"0.5rem","space-2xs":"0.25rem"},fontFamily:{"label-md":["Plus Jakarta Sans"],"numeric-stat":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"display":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"]},fontSize:{"label-md":["13px",{"lineHeight":"18px","fontWeight":"600"}],"numeric-stat":["24px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"700"}],"headline-lg":["26px",{"lineHeight":"34px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-md":["20px",{"lineHeight":"26px","letterSpacing":"-0.01em","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"label-lg":["15px",{"lineHeight":"20px","fontWeight":"600"}],"display":["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.04em","fontWeight":"600"}],"headline-sm":["17px",{"lineHeight":"22px","fontWeight":"600"}]}}}};</script></head><body class="bg-[#f8fafc] font-body-md text-on-surface antialiased"><aside class="fixed left-4 top-4 bottom-4 w-64 bg-surface-container-lowest/95 backdrop-blur-xl z-50 flex flex-col justify-between py-6 px-4 rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.06)] border border-slate-100"><div class="flex flex-col gap-8"><div class="flex items-center justify-between px-1"><div class="flex items-center gap-3"><img alt="HabitApp Logo" class="h-10 w-10 object-contain rounded-xl" src="https://lh3.googleusercontent.com/aida/AEtjO1WeaIN6MaV52iRFmo3ihGkGy3dJfAxfKliiyfiokFz0-_nMyWl0Nd9u9GMjBTkv18Juq8m360OwiC5eI3iCnyNjOWpqixJgbqSqiK8P-G4lOYYQH50lYOufgJw2mcD8j2i2sSTUf8zgVmlYD2g5r3M9hRAxwQEFoBlsLYg8PBDDDr4qHRTSxv5Dd5z1d9YFDUp5wcK-DUjI1YCmgddDjxeg9FrWatNKPRujX7b5YRRkmSLEUCWTJbWAhOnZOEOW0qoSUNuO6jTeRQ"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface leading-tight font-bold">HabitApp</span><span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Salud Mental &amp; Hábitos</span></div></div><button class="relative p-1.5 rounded-full text-on-surface-variant hover:bg-slate-100 hover:text-on-surface transition-colors" title="Notificaciones" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span></button></div><nav class="flex flex-col gap-1.5"><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-slate-100 hover:text-on-surface transition-colors font-label-md text-label-md" data-path="habitos" href="#"><span class="material-symbols-outlined text-[20px]">check_circle</span><span class="">Hábitos</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-slate-100 hover:text-on-surface transition-colors font-label-md text-label-md" data-path="retos-y-desafios" href="#"><span class="material-symbols-outlined text-[20px]">emoji_events</span><span class="">Retos y Desafíos</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#2563eb] text-white font-semibold shadow-md shadow-blue-500/20 transition-all font-label-md text-label-md" data-path="comunidad" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span class="">Comunidad</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-slate-100 hover:text-on-surface transition-colors font-label-md text-label-md" data-path="progreso-y-metricas" href="#"><span class="material-symbols-outlined text-[20px]">bar_chart</span><span class="">Progreso y Métricas</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-slate-100 hover:text-on-surface transition-colors font-label-md text-label-md" data-path="ajustes" href="#"><span class="material-symbols-outlined text-[20px]">settings</span><span class="">Ajustes</span></a></nav></div><div class="bg-slate-50 border border-slate-100 p-3.5 rounded-xl flex items-center justify-between shadow-sm"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0">MS</div><div class="flex flex-col min-w-0"><span class="font-label-md text-label-md text-slate-800 truncate">Marina Soler</span><span class="font-label-sm text-label-sm text-slate-500 truncate">Usuario</span></div></div><div class="flex items-center gap-0.5 text-on-surface-variant shrink-0"><button class="p-1 rounded-lg hover:bg-slate-200 hover:text-on-surface transition-colors" title="Ayuda" type="button"><span class="material-symbols-outlined text-[18px]">help</span></button><button class="p-1 rounded-lg hover:bg-slate-200 hover:text-on-surface transition-colors" title="Cerrar sesión" type="button"><span class="material-symbols-outlined text-[18px]">logout</span></button></div></div></aside><div class="pl-72"><main class="relative bg-[#f8fafc] min-h-screen w-full px-8 pb-12 pt-6"><div class="flex flex-col w-full max-w-7xl mx-auto">
+<!-- Cabecera Superior: Comunidad & Bienestar -->
+<header class="flex flex-col gap-6 mb-7"><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-center gap-3 flex-wrap">
+<h1 class="font-display text-display text-slate-900 tracking-tight font-bold">Comunidad &amp; Bienestar</h1>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-[#2563eb] font-label-sm text-label-sm font-medium">
+<span class="w-2 h-2 rounded-full bg-[#2563eb] animate-pulse"></span>
+            4,890 miembros conectados
+          </span>
+</div>
+</div>
+<!-- Barra de búsqueda horizontal de ancho completo -->
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+<input class="w-full h-12 pl-11 pr-16 bg-white border border-slate-200 rounded-xl font-body-md text-body-md text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/15 transition-all shadow-sm" placeholder="Buscar foros, temas o experiencias..." type="text"/>
+<div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 px-2 py-0.5 rounded bg-slate-100 text-slate-500 font-label-sm text-label-sm border border-slate-200">
+<span class="">⌘</span><span class="">K</span>
+</div>
+</div>
+<!-- Pestañas horizontales (limpias, sin borde inferior ni desalineaciones) -->
+<div class="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
+<button class="px-5 py-2.5 rounded-xl font-label-md text-label-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors whitespace-nowrap">
+        Todo
+      </button>
+<button class="px-5 py-2.5 rounded-xl font-label-md text-label-md bg-[#2563eb] text-white shadow-sm hover:bg-blue-700 transition-all whitespace-nowrap flex items-center gap-2 font-semibold">
+<span class="material-symbols-outlined text-[18px]">forum</span>
+        Foros de Apoyo
+      </button>
+<button class="px-5 py-2.5 rounded-xl font-label-md text-label-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors whitespace-nowrap">
+        Hábitos Compartidos
+      </button>
+<button class="px-5 py-2.5 rounded-xl font-label-md text-label-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors whitespace-nowrap">
+        Artículos y Guías
+      </button>
+<button class="px-5 py-2.5 rounded-xl font-label-md text-label-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors whitespace-nowrap">
+        Especialistas
+      </button>
+<button class="px-5 py-2.5 rounded-xl font-label-md text-label-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors whitespace-nowrap">
+        Retos
+      </button>
+</div></header>
+<!-- Banner Destacado: Crear Foro -->
+<section class="bg-white border border-slate-200/70 p-6 lg:p-7 rounded-2xl shadow-sm mb-7 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-blue-100/60 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex flex-col gap-2 max-w-xl relative z-10">
+<div class="flex items-center gap-2 text-[#2563eb] font-label-sm text-label-sm uppercase tracking-wider font-semibold">
+<span class="material-symbols-outlined text-[18px]">add_comment</span>
+        Iniciativa comunitaria
+      </div>
+<h2 class="font-headline-lg text-headline-lg text-slate-900 font-bold">¿Quieres iniciar una conversación?</h2>
+<p class="font-body-md text-body-md text-slate-600 leading-relaxed">
+        Crea un foro, comparte tus reflexiones y conecta con otros miembros de la comunidad en un entorno de apoyo y empatía.
+      </p>
+</div>
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 relative z-10 shrink-0">
+<button class="h-11 px-6 rounded-xl bg-[#2563eb] text-white font-label-md text-label-md font-semibold flex items-center justify-center gap-2 shadow-sm hover:bg-blue-700 hover:shadow-md transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-[20px]">add</span>
+        Crear foro
+      </button>
+</div>
+</section>
+<!-- Barra de Filtros y Orden -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
+<div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+<button class="px-4 py-1.5 rounded-full font-label-sm text-label-sm bg-[#2563eb] text-white font-semibold transition-colors whitespace-nowrap shadow-sm">
+        Todos
+      </button>
+<button class="px-4 py-1.5 rounded-full font-label-sm text-label-sm bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors whitespace-nowrap">
+        #Ansiedad
+      </button>
+<button class="px-4 py-1.5 rounded-full font-label-sm text-label-sm bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors whitespace-nowrap">
+        #Mindfulness
+      </button>
+<button class="px-4 py-1.5 rounded-full font-label-sm text-label-sm bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors whitespace-nowrap">
+        #Autoestima
+      </button>
+<button class="px-4 py-1.5 rounded-full font-label-sm text-label-sm bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors whitespace-nowrap">
+        #Sueño
+      </button>
+<button class="px-4 py-1.5 rounded-full font-label-sm text-label-sm bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors whitespace-nowrap">
+        #Crecimiento personal
+      </button>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="font-label-sm text-label-sm text-slate-500">Ordenar por:</span>
+<select class="bg-white border border-slate-200 text-slate-700 font-label-sm text-label-sm px-3 py-1.5 rounded-lg focus:outline-none focus:border-[#2563eb] cursor-pointer shadow-sm">
+<option>Más recientes</option>
+<option>Más populares</option>
+<option>Sin responder</option>
+</select>
+</div>
+</div>
+<!-- Contenedor Principal en 2 Columnas -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-7 items-start">
+<!-- Columna Principal: Feed de Foros -->
+<div class="xl:col-span-8 flex flex-col gap-5">
+<!-- Tarjeta 1: Marina López (#Ansiedad) -->
+<article class="bg-white border border-slate-200/70 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
+              ML
+            </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-slate-900 font-semibold">Marina López</span>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-slate-500">
+<span class="font-label-sm text-label-sm text-[#2563eb] bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md font-medium">#Ansiedad</span>
+<span class="">•</span>
+<span class="">hace 18 min</span>
+</div>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-700 transition-colors p-1" title="Guardar">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="font-headline-md text-headline-md text-slate-900 hover:text-[#2563eb] transition-colors cursor-pointer font-bold leading-snug">
+            ¿Qué hacéis cuando la sensación de opresión en el pecho aparece de la nada?
+          </h3>
+<p class="font-body-md text-body-md text-slate-600 line-clamp-2 leading-relaxed">
+            Llevo unos días con bastante sobrecarga emocional y hoy me ha dado una pequeña crisis sin un desencadenante claro. Me gustaría saber qué técnicas de respiración rápida o anclajes sensoriales os ayudan más a recuperar el control.
+          </p>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100">
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors font-label-sm text-label-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+<span class="">58 apoyos</span>
+</button>
+<div class="flex items-center gap-1.5 text-slate-500 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[18px]">chat_bubble_outline</span>
+<span class="">34 respuestas</span>
+</div>
+</div>
+<button class="px-4 py-2 rounded-xl bg-slate-50 hover:bg-[#2563eb] hover:text-white transition-all text-[#2563eb] font-label-md text-label-md flex items-center gap-1.5 font-medium">
+<span class="">Participar</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Tarjeta 2: David Gómez (#Mindfulness) -->
+<article class="bg-white border border-slate-200/70 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm shrink-0">
+              DG
+            </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-slate-900 font-semibold">David Gómez</span>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-slate-500">
+<span class="font-label-sm text-label-sm text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md font-medium">#Mindfulness</span>
+<span class="">•</span>
+<span class="">hace 2 horas</span>
+</div>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-700 transition-colors p-1" title="Guardar">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="font-headline-md text-headline-md text-slate-900 hover:text-[#2563eb] transition-colors cursor-pointer font-bold leading-snug">
+            Mi primer mes meditando 10 minutos al día: lo que realmente cambió
+          </h3>
+<p class="font-body-md text-body-md text-slate-600 line-clamp-2 leading-relaxed">
+            No me convertí en un monje budista ni desapareció el estrés de golpe, pero la capacidad de hacer una pausa antes de reaccionar de forma impulsiva en el trabajo ha marcado una diferencia brutal. Os dejo los 3 pilares que me sirvieron.
+          </p>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100">
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors font-label-sm text-label-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+<span class="">120 apoyos</span>
+</button>
+<div class="flex items-center gap-1.5 text-slate-500 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[18px]">chat_bubble_outline</span>
+<span class="">72 respuestas</span>
+</div>
+</div>
+<button class="px-4 py-2 rounded-xl bg-slate-50 hover:bg-[#2563eb] hover:text-white transition-all text-[#2563eb] font-label-md text-label-md flex items-center gap-1.5 font-medium">
+<span class="">Participar</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Tarjeta 3: Clara Sánchez (#Autoestima) -->
+<article class="bg-white border border-slate-200/70 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm shrink-0">
+              CS
+            </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-slate-900 font-semibold">Clara Sánchez</span>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-slate-500">
+<span class="font-label-sm text-label-sm text-purple-700 bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-md font-medium">#Autoestima</span>
+<span class="">•</span>
+<span class="">hace 4 horas</span>
+</div>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-700 transition-colors p-1" title="Guardar">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="font-headline-md text-headline-md text-slate-900 hover:text-[#2563eb] transition-colors cursor-pointer font-bold leading-snug">
+            Aprender a decir "no" sin sentir una culpa demoledora
+          </h3>
+<p class="font-body-md text-body-md text-slate-600 line-clamp-2 leading-relaxed">
+            Siempre he sido complaciente con familia y amigos por miedo a decepcionar. Esta semana rechacé un plan que me agotaba mentalmente y el remordimiento fue tremendo. ¿Alguien más ha pasado por este proceso de desaprender?
+          </p>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100">
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors font-label-sm text-label-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+<span class="">91 apoyos</span>
+</button>
+<div class="flex items-center gap-1.5 text-slate-500 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[18px]">chat_bubble_outline</span>
+<span class="">49 respuestas</span>
+</div>
+</div>
+<button class="px-4 py-2 rounded-xl bg-slate-50 hover:bg-[#2563eb] hover:text-white transition-all text-[#2563eb] font-label-md text-label-md flex items-center gap-1.5 font-medium">
+<span class="">Participar</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Tarjeta 4: Carlos Ruiz (#Sueño) -->
+<article class="bg-white border border-slate-200/70 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm shrink-0">
+              CR
+            </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-slate-900 font-semibold">Carlos Ruiz</span>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-slate-500">
+<span class="font-label-sm text-label-sm text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-md font-medium">#Sueño</span>
+<span class="">•</span>
+<span class="">hace 6 horas</span>
+</div>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-700 transition-colors p-1" title="Guardar">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="font-headline-md text-headline-md text-slate-900 hover:text-[#2563eb] transition-colors cursor-pointer font-bold leading-snug">
+            Rutina nocturna sin pantallas: cómo vencer la tentación del móvil
+          </h3>
+<p class="font-body-md text-body-md text-slate-600 line-clamp-2 leading-relaxed">
+            El mayor obstáculo para dormir bien era el scroll infinito en la cama. Comencé dejando el teléfono en otra habitación y cambiándolo por lectura física. Mis horas de descanso profundo han aumentado considerablemente.
+          </p>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100">
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors font-label-sm text-label-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+<span class="">64 apoyos</span>
+</button>
+<div class="flex items-center gap-1.5 text-slate-500 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[18px]">chat_bubble_outline</span>
+<span class="">28 respuestas</span>
+</div>
+</div>
+<button class="px-4 py-2 rounded-xl bg-slate-50 hover:bg-[#2563eb] hover:text-white transition-all text-[#2563eb] font-label-md text-label-md flex items-center gap-1.5 font-medium">
+<span class="">Participar</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Tarjeta 5: Elena P. (#Crecimiento) -->
+<article class="bg-white border border-slate-200/70 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm shrink-0">
+              EP
+            </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-slate-900 font-semibold">Elena P.</span>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-slate-500">
+<span class="font-label-sm text-label-sm text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md font-medium">#Crecimiento</span>
+<span class="">•</span>
+<span class="">hace 1 día</span>
+</div>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-700 transition-colors p-1" title="Guardar">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="font-headline-md text-headline-md text-slate-900 hover:text-[#2563eb] transition-colors cursor-pointer font-bold leading-snug">
+            Superando el síndrome del impostor en el trabajo
+          </h3>
+<p class="font-body-md text-body-md text-slate-600 line-clamp-2 leading-relaxed">
+            Me acaban de ascender a líder de equipo y cada mañana siento que no estoy cualificada y que pronto descubrirán que no sé lo suficiente. ¿Cómo gestionáis esos pensamientos automáticos invalidantes?
+          </p>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100">
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors font-label-sm text-label-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+<span class="">115 apoyos</span>
+</button>
+<div class="flex items-center gap-1.5 text-slate-500 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[18px]">chat_bubble_outline</span>
+<span class="">53 respuestas</span>
+</div>
+</div>
+<button class="px-4 py-2 rounded-xl bg-slate-50 hover:bg-[#2563eb] hover:text-white transition-all text-[#2563eb] font-label-md text-label-md flex items-center gap-1.5 font-medium">
+<span class="">Participar</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</article>
+</div>
+<!-- Columna Derecha: Widgets de Soporte -->
+<aside class="xl:col-span-4 flex flex-col gap-6">
+<!-- Widget: Normas de convivencia -->
+<div class="bg-white border border-slate-200/70 p-6 rounded-2xl shadow-sm flex flex-col gap-4">
+<div class="flex items-center gap-2.5 text-slate-900">
+<span class="material-symbols-outlined text-[#2563eb] text-[22px]">verified_user</span>
+<h3 class="font-headline-sm text-headline-sm font-bold">Normas de convivencia</h3>
+</div>
+<p class="font-body-sm text-body-sm text-slate-600">
+          Este es un espacio de cuidado mutuo. Para mantener un entorno seguro y positivo:
+        </p>
+<ul class="flex flex-col gap-3 font-body-sm text-body-sm text-slate-600">
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[#2563eb] text-[18px] shrink-0 mt-0.5">check</span>
+<span class="">Trata a todos los miembros con <strong>empatía y respeto</strong> absoluto.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[#2563eb] text-[18px] shrink-0 mt-0.5">check</span>
+<span class="">Espacio <strong>libre de juicios</strong>: cada proceso personal es único.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[#2563eb] text-[18px] shrink-0 mt-0.5">check</span>
+<span class="">No sustituye consejo médico o psicológico de urgencia.</span>
+</li>
+</ul>
+</div>
+<!-- Widget: Temas en tendencia -->
+<div class="bg-white border border-slate-200/70 p-6 rounded-2xl shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-slate-900">
+<span class="material-symbols-outlined text-amber-600 text-[22px]">trending_up</span>
+<h3 class="font-headline-sm text-headline-sm font-bold">Temas en tendencia</h3>
+</div>
+<button class="font-label-sm text-label-sm text-[#2563eb] hover:underline font-semibold">Ver todos</button>
+</div>
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer border border-slate-100">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-slate-900 font-semibold">#Ansiedad</span>
+<span class="font-body-sm text-body-sm text-slate-500">320 hilos activos</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer border border-slate-100">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-slate-900 font-semibold">#Mindfulness</span>
+<span class="font-body-sm text-body-sm text-slate-500">210 hilos activos</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer border border-slate-100">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-slate-900 font-semibold">#SueñoReparador</span>
+<span class="font-body-sm text-body-sm text-slate-500">185 hilos activos</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer border border-slate-100">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-slate-900 font-semibold">#Autoestima</span>
+<span class="font-body-sm text-body-sm text-slate-500">140 hilos activos</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div></main></div></body></html>

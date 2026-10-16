@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"error":"#ba1a1a","secondary":"#4f46e5","primary":"#2563eb","primary-container":"#2563eb","primary-hover":"#1d4ed8","surface-container":"#f1f5f9","surface":"#f8fafc","surface-variant":"#e2e8f0","surface-container-high":"#e2e8f0","surface-container-low":"#ffffff","surface-container-lowest":"#ffffff","on-surface":"#0f172a","on-surface-variant":"#64748b","on-primary":"#ffffff","on-primary-container":"#ffffff"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","2xl":"1rem","full":"9999px"},fontFamily:{"body":["Plus Jakarta Sans","sans-serif"],"heading":["Plus Jakarta Sans","sans-serif"]}}}};</script></head><body class="bg-[#f8fafc] font-body text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900"><aside class="fixed left-5 top-5 bottom-5 w-64 bg-white/95 backdrop-blur-xl z-50 flex flex-col justify-between py-6 px-4 rounded-2xl shadow-[0_4px_25px_rgba(37,99,235,0.06)] border border-slate-100"><div class="flex flex-col gap-7"><div class="flex items-center justify-between px-1"><div class="flex items-center gap-3"><img alt="HabitApp Logo" class="h-10 w-10 object-contain rounded-xl" src="https://lh3.googleusercontent.com/aida/AEtjO1WeaIN6MaV52iRFmo3ihGkGy3dJfAxfKliiyfiokFz0-_nMyWl0Nd9u9GMjBTkv18Juq8m360OwiC5eI3iCnyNjOWpqixJgbqSqiK8P-G4lOYYQH50lYOufgJw2mcD8j2i2sSTUf8zgVmlYD2g5r3M9hRAxwQEFoBlsLYg8PBDDDr4qHRTSxv5Dd5z1d9YFDUp5wcK-DUjI1YCmgddDjxeg9FrWatNKPRujX7b5YRRkmSLEUCWTJbWAhOnZOEOW0qoSUNuO6jTeRQ"/><div class="flex flex-col"><span class="font-bold text-base text-slate-900 leading-tight">HabitApp</span><span class="text-xs text-slate-500 font-normal">Salud Mental &amp; Hábitos</span></div></div><button class="relative p-1.5 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors" title="Notificaciones" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-600"></span></button></div><nav class="flex flex-col gap-1.5"><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-sm font-medium" data-path="habitos" href="#"><span class="material-symbols-outlined text-[20px]">check_circle</span><span>Hábitos</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-sm font-medium" data-path="retos-y-desafios" href="#"><span class="material-symbols-outlined text-[20px]">emoji_events</span><span>Retos y Desafíos</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow-md shadow-blue-500/20 transition-all text-sm" data-path="comunidad" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span>Comunidad</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-sm font-medium" data-path="progreso-y-metricas" href="#"><span class="material-symbols-outlined text-[20px]">bar_chart</span><span>Progreso y Métricas</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-sm font-medium" data-path="ajustes" href="#"><span class="material-symbols-outlined text-[20px]">settings</span><span>Ajustes</span></a></nav></div><div class="bg-slate-50/80 border border-slate-100 p-3.5 rounded-xl flex items-center justify-between shadow-sm"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm">MS</div><div class="flex flex-col"><span class="text-sm font-semibold text-slate-900 truncate max-w-[100px]">Marina Soler</span><span class="text-xs text-slate-500 truncate max-w-[100px]">Usuario</span></div></div><div class="flex items-center gap-1 text-slate-400"><button class="p-1 rounded-lg hover:bg-white hover:text-slate-700 transition-colors" title="Ayuda" type="button"><span class="material-symbols-outlined text-[18px]">help</span></button><button class="p-1 rounded-lg hover:bg-white hover:text-slate-700 transition-colors" title="Cerrar sesión" type="button"><span class="material-symbols-outlined text-[18px]">logout</span></button></div></div></aside><div class="pl-72"><main class="relative bg-[#f8fafc] min-h-screen w-full px-8 pb-12 pt-7"><div class="flex flex-col w-full max-w-7xl mx-auto">
+<!-- Top Section: Header & Community Stats -->
+<div class="flex flex-col gap-5 mb-8">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-3">
+<h1 class="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">Comunidad &amp; Bienestar</h1>
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-xs text-emerald-800 font-semibold">4,890 miembros conectados</span>
+</div>
+</div>
+<p class="text-sm text-slate-500">
+          Espacio seguro y colaborativo para compartir rutinas, debatir y conectar con profesionales.
+        </p>
+</div>
+<!-- Search Input Bar -->
+<div class="relative w-full my-1">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[22px]">search</span>
+<input class="w-full h-12 pl-12 pr-24 rounded-2xl bg-white border border-slate-200/80 text-sm text-slate-800 placeholder:text-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" placeholder="Buscar foros, hábitos comunitarios, artículos o especialistas..." type="text"/>
+<div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-medium text-slate-500 border border-slate-200">
+<span>⌘</span><span>K</span>
+</div>
+</div>
+<!-- Horizontal Category Tabs -->
+<div class="flex items-center gap-2.5 overflow-x-auto py-0.5 no-scrollbar">
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-blue-600 text-white font-medium text-xs shadow-sm hover:bg-blue-700 transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Todo</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]">forum</span>
+<span>Foros de Apoyo</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]">repeat</span>
+<span>Hábitos Compartidos</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]">auto_stories</span>
+<span>Artículos y Guías</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]">verified_user</span>
+<span>Especialistas</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]">military_tech</span>
+<span>Retos</span>
+</button>
+</div>
+</div>
+<!-- Main Multi-Column Content River -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-7 items-start">
+<!-- LEFT FEED (8 Cols on xl) -->
+<div class="xl:col-span-8 flex flex-col gap-8">
+<!-- BLOCK 1: HÁBITOS DE LA COMUNIDAD -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-[22px]">diversity_3</span>
+<h2 class="text-lg font-bold text-slate-900">Hábitos de la comunidad</h2>
+</div>
+<p class="text-xs text-slate-500 mt-1">
+              Inspirados por otros miembros para cuidar la salud emocional día a día.
+            </p>
+</div>
+<a class="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors" href="#">
+<span>Ver todos</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Card 1 -->
+<div class="flex flex-col justify-between p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all">
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined text-[19px]">edit_note</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-600 text-[11px] font-semibold">
+                  Popular
+                </span>
+</div>
+<div>
+<h3 class="font-bold text-sm text-slate-900 leading-snug">Diario de Gratitud 5 min</h3>
+<p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                  Anota 3 cosas amables antes de que empiece el día.
+                </p>
+</div>
+</div>
+<div class="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-slate-500 text-[11px]">
+<span class="material-symbols-outlined text-[15px] text-blue-500">group</span>
+<span>12.4k hacen esto</span>
+</div>
+<button class="px-3.5 py-1.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 text-xs font-semibold shadow-sm transition-all flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[15px]">add</span>
+<span>Añadir</span>
+</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="flex flex-col justify-between p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all">
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+<span class="material-symbols-outlined text-[19px]">self_improvement</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-medium">
+                  10 min / día
+                </span>
+</div>
+<div>
+<h3 class="font-bold text-sm text-slate-900 leading-snug">Meditación Sonora 10 min</h3>
+<p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                  Escaneo corporal guiado para aliviar tensión muscular al mediodía.
+                </p>
+</div>
+</div>
+<div class="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-slate-500 text-[11px]">
+<span class="material-symbols-outlined text-[15px] text-blue-500">group</span>
+<span>8.9k hacen esto</span>
+</div>
+<button class="px-3.5 py-1.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 text-xs font-semibold shadow-sm transition-all flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[15px]">add</span>
+<span>Añadir</span>
+</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="flex flex-col justify-between p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all">
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center text-amber-700">
+<span class="material-symbols-outlined text-[19px]">directions_walk</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-medium">
+                  Desconexión
+                </span>
+</div>
+<div>
+<h3 class="font-bold text-sm text-slate-900 leading-snug">Paseo Sin Pantallas</h3>
+<p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                  Caminar 20 minutos al aire libre desconectado de notificaciones.
+                </p>
+</div>
+</div>
+<div class="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-slate-500 text-[11px]">
+<span class="material-symbols-outlined text-[15px] text-blue-500">group</span>
+<span>5.2k hacen esto</span>
+</div>
+<button class="px-3.5 py-1.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 text-xs font-semibold shadow-sm transition-all flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[15px]">add</span>
+<span>Añadir</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- BLOCK 2: FOROS Y CÍRCULOS DE APOYO (EXACTLY ONE FORUM) -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-[22px]">forum</span>
+<h2 class="text-lg font-bold text-slate-900">Foros y Círculos de Apoyo</h2>
+</div>
+<p class="text-xs text-slate-500 mt-1">
+              Conversaciones reales, empáticas y respetuosas guiadas por la comunidad.
+            </p>
+</div>
+<a class="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors" href="#">
+<span>Ver todos los foros</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</a>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Single Forum Article -->
+<article class="p-5 md:p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700">ML</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-slate-900">Marina López</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span class="text-[11px] text-slate-400">hace 18 min</span>
+</div>
+<span class="text-xs font-semibold text-blue-600">#Ansiedad</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200/60 text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[14px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>Foro Destacado
+</span>
+<button class="text-slate-400 hover:text-slate-700 p-1 rounded-lg transition-colors" title="Guardar" type="button">
+<span class="material-symbols-outlined text-[19px]">bookmark_border</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="text-sm md:text-base font-bold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer leading-snug">
+              ¿Qué hacéis cuando la sensación en el pecho aparece de la nada?
+            </h3>
+<p class="text-xs md:text-sm text-slate-600 mt-2 leading-relaxed">
+              Llevo una semana tranquila pero hoy al salir del trabajo he sentido una presión repentina. Trato de recordar las técnicas de respiración diafragmática, pero me cuesta volver al centro. ¿Algún anclaje sensorial que os funcione rápido?
+            </p>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-100">
+<div class="flex items-center gap-5">
+<div class="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
+<span class="material-symbols-outlined text-[17px] text-blue-600">mode_comment</span>
+<span>34 respuestas</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
+<span class="material-symbols-outlined text-[17px] text-rose-500" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span>58 apoyos</span>
+</div>
+</div>
+<button class="px-4 py-1.5 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[15px]">reply</span>
+<span>Participar</span>
+</button>
+</div>
+</article>
+</div>
+</section>
+<!-- BLOCK 3: ARTÍCULOS Y GUÍAS CLÍNICAS -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-[22px]">auto_stories</span>
+<h2 class="text-lg font-bold text-slate-900">Artículos y Guías Clínicas</h2>
+</div>
+<p class="text-xs text-slate-500 mt-1">
+              Contenido respaldado por evidencia científica y revisado por profesionales.
+            </p>
+</div>
+<a class="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors" href="#">
+<span>Ver biblioteca</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Article 1 -->
+<div class="p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-semibold">
+                  Neurociencia
+                </span>
+<span class="text-xs text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                  5 min lectura
+                </span>
+</div>
+<div>
+<h3 class="font-bold text-sm text-slate-900 leading-snug">Cómo gestionar el sobrepensamiento nocturno</h3>
+<p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                  Técnicas basadas en terapia cognitivo-conductual para desactivar el bucle rumiante antes de conciliar el sueño.
+                </p>
+</div>
+</div>
+<div class="mt-5 pt-3.5 border-t border-slate-100 flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-[11px] font-bold">
+                EV
+              </div>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-slate-900 leading-tight">Dra. Elena Vidal</span>
+<span class="text-[11px] text-slate-500">Psiquiatra Colegiada</span>
+</div>
+</div>
+</div>
+<!-- Article 2 -->
+<div class="p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold">
+                  Fisiología
+                </span>
+<span class="text-xs text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                  7 min lectura
+                </span>
+</div>
+<div>
+<h3 class="font-bold text-sm text-slate-900 leading-snug">El impacto del sueño en el cortisol y la ansiedad</h3>
+<p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                  Por qué descansar menos de 7 horas continuas eleva la reactividad del sistema nervioso autónomo.
+                </p>
+</div>
+</div>
+<div class="mt-5 pt-3.5 border-t border-slate-100 flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-[11px] font-bold">
+                JR
+              </div>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-slate-900 leading-tight">Dr. Javier Ruiz</span>
+<span class="text-[11px] text-slate-500">Neurofisiólogo Clínico</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- RIGHT SIDEBAR (4 Cols on xl) -->
+<aside class="xl:col-span-4 flex flex-col gap-6">
+<!-- WIDGET 1: ESPECIALISTAS VERIFICADOS -->
+<section class="flex flex-col gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-[20px]">verified</span>
+<h3 class="text-base font-bold text-slate-900">Especialistas Verificados</h3>
+</div>
+<p class="text-xs text-slate-500 mt-1 leading-relaxed">
+          Terapeutas colegiados con sesiones online confidenciales y personalizadas.
+        </p>
+</div>
+<div class="flex flex-col gap-3.5">
+<!-- Specialist Card 1 -->
+<div class="p-4 rounded-xl bg-slate-50/80 border border-slate-100 flex flex-col gap-3">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-11 h-11 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                SA
+              </div>
+<span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-slate-900">Lic. Sofía Aranda</span>
+<span class="text-[11px] text-slate-500">Psicóloga Clínica · TCC y Trauma</span>
+<div class="flex items-center gap-1 text-amber-500 mt-0.5">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-[11px] font-bold text-slate-800">4.9</span>
+<span class="text-[11px] text-slate-400">(68 reseñas)</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-xs pt-1.5 border-t border-slate-200/60">
+<span class="flex items-center gap-1.5 text-emerald-600 font-semibold text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> En línea
+          </span>
+<span class="text-sm font-bold text-slate-900">45€ <span class="text-xs text-slate-400 font-normal">/ sesión</span></span>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-0.5">
+<button class="py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-medium hover:bg-slate-100 transition-all text-center" type="button">
+            Ver perfil
+          </button>
+<button class="py-2 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 shadow-sm transition-all text-center" type="button">
+            Agendar sesión
+          </button>
+</div>
+</div>
+<!-- Specialist Card 2 -->
+<div class="p-4 rounded-xl bg-slate-50/80 border border-slate-100 flex flex-col gap-3">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-11 h-11 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                MV
+              </div>
+<span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-slate-900">Dr. Marcos Valiente</span>
+<span class="text-[11px] text-slate-500">Mindfulness Terapéutico &amp; Burnout</span>
+<div class="flex items-center gap-1 text-amber-500 mt-0.5">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-[11px] font-bold text-slate-800">5.0</span>
+<span class="text-[11px] text-slate-400">(94 reseñas)</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-xs pt-1.5 border-t border-slate-200/60">
+<span class="flex items-center gap-1.5 text-emerald-600 font-semibold text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> En línea
+          </span>
+<span class="text-sm font-bold text-slate-900">50€ <span class="text-xs text-slate-400 font-normal">/ sesión</span></span>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-0.5">
+<button class="py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-medium hover:bg-slate-100 transition-all text-center" type="button">
+            Ver perfil
+          </button>
+<button class="py-2 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 shadow-sm transition-all text-center" type="button">
+            Agendar sesión
+          </button>
+</div>
+</div>
+</div>
+<a class="text-xs font-semibold text-blue-600 text-center hover:text-blue-700 pt-1" href="#">
+        Ver todos los especialistas disponibles (18) →
+      </a>
+</section>
+<!-- WIDGET 2: RETOS COMUNITARIOS ACTIVOS (EXACTLY ONE CHALLENGE) -->
+<section class="flex flex-col gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-[20px]">emoji_events</span>
+<h3 class="text-base font-bold text-slate-900">Retos Comunitarios Activos</h3>
+</div>
+<a class="text-xs font-semibold text-blue-600 hover:text-blue-700" href="#">Ver todos →</a>
+</div>
+<!-- Single Challenge Card -->
+<div class="p-4 rounded-xl bg-slate-50/80 border border-slate-100 flex flex-col gap-3.5">
+<div class="flex items-start justify-between">
+<div>
+<span class="px-2.5 py-0.5 rounded-md bg-blue-100 text-blue-700 text-[11px] font-semibold">
+              Faltan 4 días
+            </span>
+<h4 class="text-sm font-bold text-slate-900 mt-2">7 Días de Detox Nocturno</h4>
+</div>
+<div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined text-[19px]">bedtime</span>
+</div>
+</div>
+<p class="text-xs text-slate-500 leading-relaxed">
+          Apagar pantallas 45 minutos antes de dormir para mejorar la arquitectura del descanso.
+        </p>
+<!-- Progress bar -->
+<div class="flex flex-col gap-1.5 pt-0.5">
+<div class="w-full bg-slate-200/80 h-2 rounded-full overflow-hidden">
+<div class="bg-blue-600 h-full rounded-full transition-all" style="width: 58%;"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-slate-500">
+<span>3,420 participantes activos</span>
+<span class="font-bold text-slate-800">58% completado</span>
+</div>
+</div>
+<button class="w-full py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 shadow-sm transition-all flex items-center justify-center gap-2 mt-0.5" type="button">
+<span class="material-symbols-outlined text-[17px]">flag</span>
+<span>Unirme al Reto</span>
+</button>
+</div>
+</section>
+</aside>
+</div>
+</div></main></div></body></html>

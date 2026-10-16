@@ -1,0 +1,348 @@
+<!DOCTYPE html><html lang="es" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-secondary-fixed-variant": "#483b88",
+          "background": "#fdf8ff",
+          "surface-container-lowest": "#ffffff",
+          "on-primary-fixed": "#1b0063",
+          "secondary-fixed-dim": "#c9beff",
+          "on-tertiary": "#ffffff",
+          "tertiary-fixed-dim": "#ffb59d",
+          "secondary-container": "#b6a8fe",
+          "on-error-container": "#93000a",
+          "on-background": "#1c1a25",
+          "inverse-on-surface": "#f4eefd",
+          "on-primary": "#ffffff",
+          "on-error": "#ffffff",
+          "surface-container-high": "#ece6f5",
+          "on-secondary": "#ffffff",
+          "tertiary": "#9b340a",
+          "surface-variant": "#e6e0ef",
+          "on-tertiary-container": "#fff1ed",
+          "surface": "#fdf8ff",
+          "on-secondary-fixed": "#1b065c",
+          "tertiary-fixed": "#ffdbd0",
+          "on-tertiary-fixed": "#390c00",
+          "secondary-fixed": "#e6deff",
+          "outline": "#797587",
+          "surface-bright": "#fdf8ff",
+          "inverse-surface": "#312f3a",
+          "surface-container": "#f1ebfa",
+          "surface-tint": "#5e38eb",
+          "on-surface": "#1c1a25",
+          "on-primary-container": "#f7f2ff",
+          "primary-fixed": "#e6deff",
+          "inverse-primary": "#c9beff",
+          "primary-container": "#704efd",
+          "on-tertiary-fixed-variant": "#832600",
+          "primary": "#572de4",
+          "surface-container-highest": "#e6e0ef",
+          "outline-variant": "#c9c4d8",
+          "error-container": "#ffdad6",
+          "secondary": "#6053a2",
+          "on-secondary-container": "#463987",
+          "tertiary-container": "#bc4c22",
+          "error": "#ba1a1a",
+          "surface-dim": "#ddd7e6",
+          "on-surface-variant": "#484556",
+          "primary-fixed-dim": "#c9beff",
+          "on-primary-fixed-variant": "#4608d4",
+          "surface-container-low": "#f7f1ff"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-3xl": "2.5rem",
+          "space-xs": "0.5rem",
+          "card-padding": "1.25rem",
+          "space-lg": "1.25rem",
+          "space-xl": "1.5rem",
+          "space-2xl": "2rem",
+          "space-sm": "0.75rem",
+          "gutter-default": "0.75rem",
+          "space-2xs": "0.25rem",
+          "space-md": "1rem",
+          "screen-edge": "1.25rem"
+        },
+        "fontFamily": {
+          "body-sm": ["Plus Jakarta Sans"],
+          "label-md": ["Plus Jakarta Sans"],
+          "label-sm": ["Plus Jakarta Sans"],
+          "numeric-stat": ["Plus Jakarta Sans"],
+          "headline-lg": ["Plus Jakarta Sans"],
+          "body-md": ["Plus Jakarta Sans"],
+          "headline-md": ["Plus Jakarta Sans"],
+          "body-lg": ["Plus Jakarta Sans"],
+          "headline-sm": ["Plus Jakarta Sans"],
+          "label-lg": ["Plus Jakarta Sans"],
+          "display": ["Plus Jakarta Sans"]
+        },
+        "fontSize": {
+          "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+          "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+          "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+          "numeric-stat": ["24px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+          "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+          "headline-md": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+          "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+          "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+          "label-lg": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+          "display": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+        }
+      }
+    }
+  };</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-4 top-4 bottom-4 w-64 bg-surface-container-low/95 backdrop-blur-xl z-50 flex flex-col justify-between py-space-xl px-space-md rounded-2xl shadow-[0_8px_20px_rgba(112,78,253,0.22)] ring-1 ring-outline-variant/30"><div class="flex flex-col gap-space-2xl"><div class="flex items-center justify-between px-space-xs"><div class="flex items-center gap-space-sm"><img alt="icon.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1W3SBSBnnq4mFccBwAuWVBBt4WgHFi3y8jZazhnno-FU0FMKFg-_Pysjouf4a6pG77ht-37TdjjuV-apCelHy9ee58-5YIQwHc4cY_nFPYG28Rvl8753maw5uCfb_12ejGXMSXR7ccmYttL5fljt2gunEDDDhgBzpFtgDf7WvrzNO4cDgkc0SZFzWGjne56Iu5Nk_7drznfCgWCI7CDnHI-D23CDuF2toqMth34k0n-_18zaH7fpXdFy0RLdD5QPqip0ZZJeKHwug"><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface leading-tight">HabitApp</span><span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Salud Mental &amp; Hábitos</span></div></div><button class="relative p-1.5 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="Notificaciones" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-tertiary-container ring-2 ring-surface"></span></button></div><nav class="flex flex-col gap-space-2xs" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-xl"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl bg-primary-container text-on-primary-container font-semibold transition-colors" data-path="habitos" href="#"><span class="material-symbols-outlined text-[20px]">check_circle</span><span class="font-label-lg text-label-lg">Hábitos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="retos-y-desafios" href="#"><span class="material-symbols-outlined text-[20px]">emoji_events</span><span class="font-label-lg text-label-lg">Retos y Desafíos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="comunidad" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-label-lg text-label-lg">Comunidad</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="progreso-y-metricas" href="#"><span class="material-symbols-outlined text-[20px]">bar_chart</span><span class="font-label-lg text-label-lg">Progreso y Métricas</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="ajustes" href="#"><span class="material-symbols-outlined text-[20px]">settings</span><span class="font-label-lg text-label-lg">Ajustes</span></a></nav></div><div class="bg-surface-container-lowest p-space-md rounded-xl flex items-center justify-between shadow-[0_1px_3px_rgba(121,117,130,0.04),0_4px_12px_rgba(121,117,130,0.03)]"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-headline-sm text-headline-sm">MS</div><div class="flex flex-col"><span class="font-label-md text-label-md text-on-surface truncate max-w-[100px]">Marina Soler</span><span class="font-label-sm text-label-sm text-secondary truncate max-w-[100px]">Usuario</span></div></div><div class="flex items-center gap-space-2xs text-on-surface-variant"><button class="p-1 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Ayuda" type="button"><span class="material-symbols-outlined text-[18px]">help</span></button><button class="p-1 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Cerrar sesión" type="button"><span class="material-symbols-outlined text-[18px]">logout</span></button></div></div></aside><div class="pl-72 flex flex-col"><main class="w-full px-space-2xl flex-1 py-space-xl"><div class="flex flex-col w-full"><!-- Top Hero & Calendar Banner -->
+<div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0_1px_3px_rgba(121,117,130,0.05),0_4px_16px_rgba(121,117,130,0.04)] mb-space-lg">
+<!-- Hero Panoramic Artwork Background with soft gradient blend -->
+<div class="relative w-full overflow-hidden bg-gradient-to-r from-primary-fixed/30 via-tertiary-fixed/20 to-surface-container-low h-44">
+<img alt="Calma Matutina Paisaje" class="w-full h-full object-cover object-center opacity-85 mix-blend-multiply" src="https://lh3.googleusercontent.com/aida/AEtjO1XefTq2MGI-AF-5RGBghZfdRTJh94bYBgtKV3w0dfc-zEBhwCOrZyamSLlPCm7p4SO8jHTSJ2iD31oD-G4rZVZB__ulxDz6thAzc3hSh8s9zpkJtNpZpKbIjlPS6Zuzs-O_cV9PZQke9Js3SB0oM-5E_BizZfqsYOWOjvoTpH7zrOQ9A63p7pTTNjpam2oElldXOf5H4wdmhidIgl3qud8XQ2l4tZ3SQGqdLSJ0t1ANIIgzZFw62hcmG5I">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/60 to-transparent"></div>
+<!-- Content overlay inside Hero -->
+<div class="absolute inset-0 p-space-xl sm:p-space-2xl flex flex-col justify-between"><div class="w-full h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto px-space-md"><blockquote class="font-display text-headline-lg sm:text-display text-on-surface tracking-tight leading-tight mb-space-xs italic font-medium">"Una mente en calma construye grandes logros."</blockquote><span class="font-label-lg text-label-lg text-primary font-semibold tracking-wide uppercase">— Marco Aurelio</span></div></div>
+</div>
+<!-- Weekly Interactive Calendar Bar -->
+<div class="px-space-xl py-space-sm bg-surface-container-lowest flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md w-full md:w-auto md:flex-1"><div class="flex flex-col gap-1 min-w-[200px] flex-1"><div class="flex items-center justify-between gap-space-sm"><span class="font-label-md text-label-md text-on-surface font-semibold">4 de 6 hábitos completados</span><span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-primary font-label-sm text-label-sm font-semibold">67%</span></div><div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden"><div class="h-full bg-primary rounded-full" style="width: 67%;"></div></div></div></div><div class="flex items-center gap-2 sm:gap-space-sm w-full md:w-auto justify-between overflow-x-auto py-0.5"><button class="hidden md:flex p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Semana anterior" type="button"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button><div class="flex flex-col items-center justify-center w-11 sm:w-12 h-14 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group"><span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface">Lun</span><span class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-tight">15</span><span class="w-1.5 h-1.5 rounded-full bg-primary mt-0.5"></span></div><div class="flex flex-col items-center justify-center w-11 sm:w-12 h-14 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group"><span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface">Mar</span><span class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-tight">16</span><span class="w-1.5 h-1.5 rounded-full bg-primary mt-0.5"></span></div><div class="flex flex-col items-center justify-center w-11 sm:w-12 h-14 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group"><span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface">Mié</span><span class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-tight">17</span><span class="w-1.5 h-1.5 rounded-full bg-primary mt-0.5"></span></div><div class="flex flex-col items-center justify-center w-12 sm:w-14 h-14 rounded-2xl bg-primary text-on-primary shadow-[0_4px_12px_rgba(87,45,228,0.25)] cursor-pointer scale-105 transition-transform"><span class="font-label-sm text-label-sm text-on-primary/80">Jue</span><span class="font-headline-sm text-headline-sm text-on-primary font-bold leading-tight">18</span><span class="w-1.5 h-1.5 rounded-full bg-on-primary ring-2 ring-primary mt-0.5"></span></div><div class="flex flex-col items-center justify-center w-11 sm:w-12 h-14 rounded-2xl bg-surface-container-lowest hover:bg-surface-container transition-colors cursor-pointer group"><span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface">Vie</span><span class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-tight">19</span><span class="w-1.5 h-1.5 rounded-full bg-outline-variant mt-0.5"></span></div><div class="flex flex-col items-center justify-center w-11 sm:w-12 h-14 rounded-2xl bg-surface-container-lowest hover:bg-surface-container transition-colors cursor-pointer group"><span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface">Sáb</span><span class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-tight">20</span><span class="w-1.5 h-1.5 rounded-full bg-outline-variant mt-0.5"></span></div><div class="flex flex-col items-center justify-center w-11 sm:w-12 h-14 rounded-2xl bg-surface-container-lowest hover:bg-surface-container transition-colors cursor-pointer group"><span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface">Dom</span><span class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-tight">21</span><span class="w-1.5 h-1.5 rounded-full bg-outline-variant mt-0.5"></span></div><button class="hidden md:flex p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Semana siguiente" type="button"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button></div></div>
+</div>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl items-start">
+<!-- Left / Main Wide Column: Hábitos de Hoy -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface">Hábitos de hoy</h2>
+<span class="px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+            2 tareas pendientes
+          </span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="text-primary hover:text-primary-container font-label-md text-label-md transition-colors flex items-center gap-1" type="button">
+<span class="">Ver todos los hábitos</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Habit Cards River -->
+<div class="flex flex-col gap-space-sm" id="habit-list">
+<!-- 1. Hacer ejercicio (Pending) -->
+<div class="group relative flex items-center justify-between p-space-md sm:p-space-lg rounded-2xl bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-200 shadow-[0_1px_3px_rgba(121,117,130,0.04),0_4px_12px_rgba(121,117,130,0.03)] hover:shadow-[0_6px_20px_rgba(121,117,130,0.07)]">
+<div class="flex items-center gap-space-md min-w-0">
+<!-- Icon container -->
+<div class="w-12 h-12 rounded-2xl bg-secondary-fixed/50 flex items-center justify-center text-primary flex-shrink-0 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">fitness_center</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Hacer ejercicio</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-tertiary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] leading-none" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                  5d racha
+                </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium px-2 py-0.5 rounded-md bg-surface-container">
+                  15/20 min
+                </span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant truncate mt-0.5">¡Vamos a movernos!</span>
+</div>
+</div>
+<!-- Pending checkbox button -->
+<button class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high ring-1 ring-outline-variant/30 text-outline flex items-center justify-center hover:text-primary transition-all flex-shrink-0 ml-space-sm group/btn" onclick="toggleHabit(this)" title="Marcar como completado" type="button"><span class="material-symbols-outlined text-[20px] opacity-85 group-hover/btn:scale-110 transition-transform">check</span></button>
+</div>
+<!-- 2. Beber agua (Completed) -->
+<div class="group relative flex items-center justify-between p-space-md sm:p-space-lg rounded-2xl bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-200 shadow-[0_1px_3px_rgba(121,117,130,0.04),0_4px_12px_rgba(121,117,130,0.03)]">
+<div class="flex items-center gap-space-md min-w-0">
+<!-- Icon container -->
+<div class="w-12 h-12 rounded-2xl bg-primary-fixed/40 flex items-center justify-center text-primary flex-shrink-0 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">water_drop</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Beber agua</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-tertiary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] leading-none" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                  8d racha
+                </span>
+<span class="font-label-sm text-label-sm text-primary font-medium px-2 py-0.5 rounded-md bg-primary-fixed/40">
+                  5/8 vasos
+                </span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant truncate mt-0.5">Hidratación consciente</span>
+</div>
+</div>
+<!-- Completed check button -->
+<button class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_4px_12px_rgba(87,45,228,0.25)] transition-all flex-shrink-0 ml-space-sm hover:scale-105" onclick="toggleHabit(this)" title="Completado" type="button">
+<span class="material-symbols-outlined text-[22px]">check</span>
+</button>
+</div>
+<!-- 3. Alimentación sana (Completed) -->
+<div class="group relative flex items-center justify-between p-space-md sm:p-space-lg rounded-2xl bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-200 shadow-[0_1px_3px_rgba(121,117,130,0.04),0_4px_12px_rgba(121,117,130,0.03)]">
+<div class="flex items-center gap-space-md min-w-0">
+<!-- Icon container -->
+<div class="w-12 h-12 rounded-2xl bg-tertiary-fixed/60 flex items-center justify-center text-tertiary-container flex-shrink-0 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">restaurant</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Alimentación sana</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">
+                  Nuevo
+                </span>
+<span class="font-label-sm text-label-sm text-primary font-medium px-2 py-0.5 rounded-md bg-primary-fixed/40">
+                  1/1 hecho
+                </span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant truncate mt-0.5">Batido verde energizante</span>
+</div>
+</div>
+<!-- Completed check button -->
+<button class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_4px_12px_rgba(87,45,228,0.25)] transition-all flex-shrink-0 ml-space-sm hover:scale-105" onclick="toggleHabit(this)" title="Completado" type="button">
+<span class="material-symbols-outlined text-[22px]">check</span>
+</button>
+</div>
+<!-- 4. Diario de Gratitud (Completed) -->
+<div class="group relative flex items-center justify-between p-space-md sm:p-space-lg rounded-2xl bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-200 shadow-[0_1px_3px_rgba(121,117,130,0.04),0_4px_12px_rgba(121,117,130,0.03)]">
+<div class="flex items-center gap-space-md min-w-0">
+<!-- Icon container -->
+<div class="w-12 h-12 rounded-2xl bg-secondary-fixed/50 flex items-center justify-center text-secondary flex-shrink-0 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">menu_book</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Diario de Gratitud</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-tertiary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] leading-none" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                  14d racha
+                </span>
+<span class="font-label-sm text-label-sm text-primary font-medium px-2 py-0.5 rounded-md bg-primary-fixed/40">
+                  5 min
+                </span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant truncate mt-0.5">Escribe 3 cosas sencillas que agradeces hoy</span>
+</div>
+</div>
+<!-- Completed check button -->
+<button class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_4px_12px_rgba(87,45,228,0.25)] transition-all flex-shrink-0 ml-space-sm hover:scale-105" onclick="toggleHabit(this)" title="Completado" type="button">
+<span class="material-symbols-outlined text-[22px]">check</span>
+</button>
+</div>
+<!-- 5. Respiración 4-7-8 al despertar (Completed) -->
+<div class="group relative flex items-center justify-between p-space-md sm:p-space-lg rounded-2xl bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-200 shadow-[0_1px_3px_rgba(121,117,130,0.04),0_4px_12px_rgba(121,117,130,0.03)]">
+<div class="flex items-center gap-space-md min-w-0">
+<!-- Icon container -->
+<div class="w-12 h-12 rounded-2xl bg-primary-fixed/30 flex items-center justify-center text-primary flex-shrink-0 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">mood</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Respiración 4-7-8 al despertar</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-tertiary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] leading-none" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                  3d racha
+                </span>
+<span class="font-label-sm text-label-sm text-primary font-medium px-2 py-0.5 rounded-md bg-primary-fixed/40">
+                  3 ciclos
+                </span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant truncate mt-0.5">Inhala en 4s, retén 7s y exhala en 8s</span>
+</div>
+</div>
+<!-- Completed check button -->
+<button class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_4px_12px_rgba(87,45,228,0.25)] transition-all flex-shrink-0 ml-space-sm hover:scale-105" onclick="toggleHabit(this)" title="Completado" type="button">
+<span class="material-symbols-outlined text-[22px]">check</span>
+</button>
+</div>
+</div>
+<!-- Quick Add Habit Strip -->
+<div class="flex items-center justify-between p-space-md rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group" onclick="alert('Modal: Crear nuevo hábito')">
+<div class="flex items-center gap-space-sm text-on-surface-variant group-hover:text-primary transition-colors">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</div>
+<span class="font-label-md text-label-md">Añadir un nuevo hábito para tu rutina...</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-semibold group-hover:underline">Configurar hábito</span>
+</div>
+</div>
+<!-- Right Column (Sidebar Widgets & Challenges Integrated Cohesively) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- Widget 1: Tus Retos Activos -->
+<div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-[0_1px_3px_rgba(121,117,130,0.04),0_4px_12px_rgba(121,117,130,0.03)] flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">emoji_events</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Tus Retos Activos</h3>
+</div>
+<button class="text-primary hover:text-primary-container font-label-md text-label-md transition-colors" type="button">
+            Ver todos
+          </button>
+</div>
+<div class="flex flex-col gap-space-xs">
+<!-- Challenge 1: Sin Azúcar -->
+<div class="flex flex-col gap-1.5 p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Sin Azúcar</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+                7 Días
+              </span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Detox energy dip</span>
+<div class="flex items-center gap-space-sm mt-1">
+<div class="flex-1 h-2 rounded-full bg-surface-container-high overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 20%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">20%</span>
+</div>
+</div>
+<!-- Challenge 2: Meditación Diaria -->
+<div class="flex flex-col gap-1.5 p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Meditación Diaria</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-semibold">
+                14 Días
+              </span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mindful presence</span>
+<div class="flex items-center gap-space-sm mt-1">
+<div class="flex-1 h-2 rounded-full bg-surface-container-high overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 45%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">45%</span>
+</div>
+</div>
+<!-- Challenge 3: 7 Días de Detox Nocturno -->
+<div class="flex flex-col gap-1.5 p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">7 Días de Detox Nocturno</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold">
+                En curso
+              </span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Cero pantallas 45 min antes de dormir</span>
+<div class="flex items-center gap-space-sm mt-1">
+<div class="flex-1 h-2 rounded-full bg-surface-container-high overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 70%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">70%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Widget 2: Resumen de Racha Semanal (Reorganizado e integrado) -->
+<div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-[0_1px_3px_rgba(121,117,130,0.04),0_4px_12px_rgba(121,117,130,0.03)] flex flex-col gap-space-md">
+<div class="flex items-center justify-between"><span class="font-headline-sm text-headline-sm text-on-surface whitespace-nowrap">Racha actual</span><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-tertiary-fixed text-tertiary font-label-sm text-label-sm font-bold whitespace-nowrap"><span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>4 días de racha</span></div>
+<div class="w-full flex items-center justify-between gap-1 px-space-md py-space-sm rounded-xl bg-surface-container-low overflow-hidden"><div class="flex flex-col items-center gap-1 flex-1 min-w-0"><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">L</span><div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_2px_8px_rgba(87,45,228,0.2)]"><span class="material-symbols-outlined text-[16px]">check</span></div></div><div class="flex flex-col items-center gap-1 flex-1 min-w-0"><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">M</span><div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_2px_8px_rgba(87,45,228,0.2)]"><span class="material-symbols-outlined text-[16px]">check</span></div></div><div class="flex flex-col items-center gap-1 flex-1 min-w-0"><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">X</span><div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_2px_8px_rgba(87,45,228,0.2)]"><span class="material-symbols-outlined text-[16px]">check</span></div></div><div class="flex flex-col items-center gap-1 flex-1 min-w-0"><span class="font-label-sm text-label-sm text-primary font-bold">J</span><div class="w-8 h-8 rounded-full bg-primary text-on-primary ring-2 ring-primary-fixed flex items-center justify-center shadow-[0_4px_12px_rgba(87,45,228,0.25)]"><span class="material-symbols-outlined text-[16px]">check</span></div></div><div class="flex flex-col items-center gap-1 flex-1 min-w-0"><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">V</span><div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center"><span class="w-2 h-2 rounded-full bg-outline-variant"></span></div></div><div class="flex flex-col items-center gap-1 flex-1 min-w-0"><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">S</span><div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center"><span class="w-2 h-2 rounded-full bg-outline-variant"></span></div></div><div class="flex flex-col items-center gap-1 flex-1 min-w-0"><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">D</span><div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center"><span class="w-2 h-2 rounded-full bg-outline-variant"></span></div></div></div>
+<!-- Weekly visual sparkline dots -->
+</div><div class="group p-space-md rounded-2xl bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-200 shadow-[0_1px_3px_rgba(121,117,130,0.04),0_4px_12px_rgba(121,117,130,0.03)] hover:shadow-[0_6px_20px_rgba(121,117,130,0.07)] flex items-center justify-between cursor-pointer"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:text-primary group-hover:bg-primary-fixed/40 transition-colors"><span class="material-symbols-outlined text-[20px]">archive</span></div><div class="flex flex-col"><span class="font-label-lg text-label-lg text-on-surface font-semibold group-hover:text-primary transition-colors">Hábitos archivados</span><span class="font-body-sm text-body-sm text-on-surface-variant">3 hábitos guardados</span></div></div><div class="flex items-center gap-1 text-on-surface-variant group-hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">chevron_right</span></div></div>
+<!-- Widget 3: Frase de Bienestar y Motivación -->
+</div>
+</div></div></main></div>
+<div class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm" id="modal-crear-habito"><div class="relative w-full max-w-2xl bg-surface-container-lowest rounded-3xl shadow-[0_20px_50px_rgba(87,45,228,0.2)] ring-1 ring-outline-variant/30 overflow-hidden flex flex-col max-h-[90vh]"><div class="flex items-start justify-between px-space-xl pt-space-xl pb-space-md border-b border-surface-container-high/60"><div class="flex flex-col gap-1"><div class="flex items-center gap-2"><div class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[20px]">add_circle</span></div><h3 class="font-headline-md text-headline-md text-on-surface font-bold">Crear nuevo hábito</h3></div><p class="font-body-md text-body-md text-on-surface-variant">Define una rutina para cuidar tu bienestar y constancia</p></div><button class="w-9 h-9 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" onclick="document.getElementById('modal-crear-habito').remove()" title="Cerrar" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button></div><div class="flex-1 overflow-y-auto px-space-xl py-space-lg flex flex-col gap-space-lg"><div class="flex flex-col gap-1.5"><label class="font-label-md text-label-md text-on-surface font-semibold">Nombre del hábito</label><input class="w-full px-space-md py-2.5 rounded-xl bg-surface-container-low ring-1 ring-outline-variant/30 text-on-surface font-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary transition-all" placeholder="p. ej., Meditación guiada matutina, Beber 2L de agua..." type="text" value="Meditación de gratitud matutina"></div><div class="flex flex-col gap-1.5"><label class="font-label-md text-label-md text-on-surface font-semibold">Icono y Categoría</label><div class="grid grid-cols-2 sm:grid-cols-3 gap-2"><button class="flex items-center gap-2 p-2.5 rounded-xl bg-primary-fixed/40 ring-2 ring-primary text-primary transition-all font-label-sm text-left" type="button"><span class="material-symbols-outlined text-[20px] text-primary">fitness_center</span><span class="font-semibold text-on-surface">Ejercicio</span></button><button class="flex items-center gap-2 p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container ring-1 ring-outline-variant/20 text-on-surface-variant hover:text-on-surface transition-all font-label-sm text-left" type="button"><span class="material-symbols-outlined text-[20px] text-primary">bolt</span><span class="font-medium">Productividad</span></button><button class="flex items-center gap-2 p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container ring-1 ring-outline-variant/20 text-on-surface-variant hover:text-on-surface transition-all font-label-sm text-left" type="button"><span class="material-symbols-outlined text-[20px] text-primary">restaurant</span><span class="font-medium">Nutrición</span></button><button class="flex items-center gap-2 p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container ring-1 ring-outline-variant/20 text-on-surface-variant hover:text-on-surface transition-all font-label-sm text-left" type="button"><span class="material-symbols-outlined text-[20px] text-primary">bedtime</span><span class="font-medium">Sueño</span></button><button class="flex items-center gap-2 p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container ring-1 ring-outline-variant/20 text-on-surface-variant hover:text-on-surface transition-all font-label-sm text-left" type="button"><span class="material-symbols-outlined text-[20px] text-primary">self_improvement</span><span class="font-medium">Salud Mental</span></button><button class="flex items-center gap-2 p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container ring-1 ring-outline-variant/20 text-on-surface-variant hover:text-on-surface transition-all font-label-sm text-left" type="button"><span class="material-symbols-outlined text-[20px] text-primary">water_drop</span><span class="font-medium">Hidratación</span></button></div></div><div class="flex flex-col gap-1.5"><label class="font-label-md text-label-md text-on-surface font-semibold">Propósito y motivación</label><textarea class="w-full px-space-md py-2.5 rounded-xl bg-surface-container-low ring-1 ring-outline-variant/30 text-on-surface font-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary transition-all resize-none" placeholder="¿Por qué es importante para ti este hábito? (Opcional)" rows="2">Comenzar el día con claridad mental, reducir estrés y reconectar con el presente.</textarea></div><div class="flex flex-col gap-2.5"><div class="flex items-center justify-between"><label class="font-label-md text-label-md text-on-surface font-semibold">Frecuencia y Días</label><div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-xl ring-1 ring-outline-variant/20"><button class="px-2.5 py-1 rounded-lg text-label-sm font-semibold bg-surface-container-lowest text-primary shadow-[0_1px_3px_rgba(121,117,130,0.06)]" type="button">Todos los días</button><button class="px-2.5 py-1 rounded-lg text-label-sm font-medium text-on-surface-variant hover:text-on-surface" type="button">Laborales</button><button class="px-2.5 py-1 rounded-lg text-label-sm font-medium text-on-surface-variant hover:text-on-surface" type="button">Personalizado</button></div></div><div class="flex items-center justify-between gap-1 pt-1"><button class="w-10 h-10 rounded-full bg-primary text-on-primary font-label-md font-bold shadow-[0_2px_8px_rgba(87,45,228,0.25)] flex items-center justify-center" type="button">L</button><button class="w-10 h-10 rounded-full bg-primary text-on-primary font-label-md font-bold shadow-[0_2px_8px_rgba(87,45,228,0.25)] flex items-center justify-center" type="button">M</button><button class="w-10 h-10 rounded-full bg-primary text-on-primary font-label-md font-bold shadow-[0_2px_8px_rgba(87,45,228,0.25)] flex items-center justify-center" type="button">M</button><button class="w-10 h-10 rounded-full bg-primary text-on-primary font-label-md font-bold shadow-[0_2px_8px_rgba(87,45,228,0.25)] flex items-center justify-center" type="button">J</button><button class="w-10 h-10 rounded-full bg-primary text-on-primary font-label-md font-bold shadow-[0_2px_8px_rgba(87,45,228,0.25)] flex items-center justify-center" type="button">V</button><button class="w-10 h-10 rounded-full bg-primary text-on-primary font-label-md font-bold shadow-[0_2px_8px_rgba(87,45,228,0.25)] flex items-center justify-center" type="button">S</button><button class="w-10 h-10 rounded-full bg-primary text-on-primary font-label-md font-bold shadow-[0_2px_8px_rgba(87,45,228,0.25)] flex items-center justify-center" type="button">D</button></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md"><div class="flex flex-col gap-1.5"><label class="font-label-md text-label-md text-on-surface font-semibold">Meta diaria</label><div class="flex items-center gap-2"><input class="w-20 px-space-md py-2 rounded-xl bg-surface-container-low ring-1 ring-outline-variant/30 text-on-surface font-bold text-center focus:outline-none focus:ring-2 focus:ring-primary" min="1" type="number" value="15"><select class="flex-1 px-space-md py-2 rounded-xl bg-surface-container-low ring-1 ring-outline-variant/30 text-on-surface font-body-md focus:outline-none focus:ring-2 focus:ring-primary"><option>minutos</option><option>veces</option><option>páginas</option><option>vasos</option></select></div></div><div class="flex flex-col gap-1.5"><div class="flex items-center justify-between"><label class="font-label-md text-label-md text-on-surface font-semibold">Recordatorio</label><span class="font-label-sm text-label-sm text-primary font-medium">Activado</span></div><div class="flex items-center gap-2"><div class="flex-1 flex items-center gap-2 px-space-md py-2 rounded-xl bg-surface-container-low ring-1 ring-outline-variant/30 text-on-surface"><span class="material-symbols-outlined text-[18px] text-on-surface-variant">schedule</span><input class="bg-transparent font-medium w-full focus:outline-none text-on-surface" type="text" value="08:00 AM"></div><button class="w-11 h-6 rounded-full bg-primary flex items-center justify-end px-0.5 transition-colors" type="button"><span class="w-5 h-5 rounded-full bg-on-primary shadow-sm"></span></button></div></div></div></div><div class="flex items-center justify-between px-space-xl py-space-md bg-surface-container-low border-t border-surface-container-high/60"><button class="px-space-lg py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" onclick="document.getElementById('modal-crear-habito').remove()" type="button">Cancelar</button><div class="flex items-center gap-2"><button class="px-space-xl py-2.5 rounded-xl bg-primary text-on-primary font-label-lg text-label-lg font-semibold hover:bg-primary-container shadow-[0_4px_16px_rgba(87,45,228,0.3)] hover:shadow-[0_6px_20px_rgba(87,45,228,0.4)] flex items-center gap-2 transition-all hover:scale-105" onclick="document.getElementById('modal-crear-habito').remove()" type="button"><span class="material-symbols-outlined text-[20px]">add</span><span class="">Crear Hábito</span></button></div></div></div></div>
+
+</body></html>

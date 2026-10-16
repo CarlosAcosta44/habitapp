@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary-fixed": "#1b0063", "tertiary-container": "#bc4c22", "on-primary-fixed-variant": "#4608d4", "on-secondary": "#ffffff", "surface-container-high": "#ece6f5", "on-primary-container": "#f7f2ff", "surface-container": "#eff6ff", "surface-tint": "#2563eb", "background": "#f8fafc", "tertiary-fixed-dim": "#ffb59d", "secondary-fixed-dim": "#c9beff", "error": "#ba1a1a", "secondary-fixed": "#e6deff", "tertiary-fixed": "#ffdbd0", "inverse-on-surface": "#f4eefd", "surface-container-lowest": "#ffffff", "outline": "#797587", "on-secondary-container": "#463987", "primary-container": "#2563eb", "on-error-container": "#93000a", "on-secondary-fixed-variant": "#483b88", "on-background": "#1e293b", "secondary": "#6053a2", "secondary-container": "#b6a8fe", "on-tertiary": "#ffffff", "surface-bright": "#ffffff", "surface-dim": "#f1f5f9", "on-surface": "#1e293b", "on-error": "#ffffff", "primary": "#2563eb", "on-tertiary-fixed": "#390c00", "tertiary": "#d97706", "on-tertiary-fixed-variant": "#832600", "inverse-primary": "#bfdbfe", "surface-variant": "#f1f5f9", "error-container": "#fee2e2", "outline-variant": "#e2e8f0", "surface-container-low": "#f8fafc", "inverse-surface": "#1e293b", "on-tertiary-container": "#fff1ed", "on-secondary-fixed": "#1b065c", "surface": "#ffffff", "on-surface-variant": "#64748b", "surface-container-highest": "#e2e8f0", "primary-fixed": "#dbeafe", "on-primary": "#ffffff", "primary-fixed-dim": "#bfdbfe" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" }, "spacing": { "gutter-default": "0.75rem", "space-sm": "0.75rem", "screen-edge": "1.25rem", "space-2xs": "0.25rem", "card-padding": "1.25rem", "space-3xl": "2.5rem", "space-xs": "0.5rem", "space-md": "1rem", "space-2xl": "2rem", "space-xl": "1.5rem", "space-lg": "1.25rem" }, "fontFamily": { "numeric-stat": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "display": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"] }, "fontSize": { "numeric-stat": ["24px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-md": ["13px", { "lineHeight": "18px", "fontWeight": "600" }], "label-lg": ["15px", { "lineHeight": "20px", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "display": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }] } } } };</script></head><body class="bg-[#f8fafc] font-body-md text-on-surface antialiased min-h-screen">
+<div class="flex min-h-screen p-space-lg gap-space-xl max-w-[1600px] mx-auto">
+<!-- Floating Sidebar Navigation -->
+<aside class="sticky top-space-lg h-[calc(100vh-2.5rem)] w-64 shrink-0 flex flex-col justify-between bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-slate-100 p-space-lg">
+<div class="flex flex-col gap-space-xl">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<img alt="icon.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WeaIN6MaV52iRFmo3ihGkGy3dJfAxfKliiyfiokFz0-_nMyWl0Nd9u9GMjBTkv18Juq8m360OwiC5eI3iCnyNjOWpqixJgbqSqiK8P-G4lOYYQH50lYOufgJw2mcD8j2i2sSTUf8zgVmlYD2g5r3M9hRAxwQEFoBlsLYg8PBDDDr4qHRTSxv5Dd5z1d9YFDUp5wcK-DUjI1YCmgddDjxeg9FrWatNKPRujX7b5YRRkmSLEUCWTJbWAhOnZOEOW0qoSUNuO6jTeRQ"/>
+<div class="flex flex-col">
+<span class="font-headline-sm text-[17px] text-on-surface leading-tight font-bold">HabitApp</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Salud Mental &amp; Hábitos</span>
+</div>
+</div>
+<button class="relative p-space-xs rounded-full hover:bg-slate-100 hover:text-on-surface text-on-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary"></span>
+</button>
+</div>
+<nav class="flex flex-col gap-1.5">
+<a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-slate-50 hover:text-on-surface font-label-md text-label-md transition-all" data-path="habitos" href="#">
+<span class="material-symbols-outlined text-[20px]">task_alt</span>
+<span>Hábitos</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-slate-50 hover:text-on-surface font-label-md text-label-md transition-all" data-path="retos-y-desafios" href="#">
+<span class="material-symbols-outlined text-[20px]">emoji_events</span>
+<span>Retos y Desafíos</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-slate-50 hover:text-on-surface font-label-md text-label-md transition-all" data-path="comunidad" href="#">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+<span>Comunidad</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-xl text-on-surface-variant hover:bg-slate-50 hover:text-on-surface font-label-md text-label-md transition-all" data-path="progreso-y-metricas" href="#">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+<span>Progreso y Métricas</span>
+</a>
+<a aria-current="page" class="flex items-center gap-space-sm px-space-md py-2.5 transition-all bg-primary text-white font-semibold rounded-xl shadow-[0_4px_14px_rgba(37,99,235,0.22)]" data-path="ajustes" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Ajustes</span>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-space-sm pt-space-md border-t border-slate-100">
+<div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-white text-[18px]">person</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate font-semibold">Marina Soler</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Usuario</span>
+</div>
+</div>
+<div class="flex items-center">
+<button class="p-1 text-on-surface-variant hover:text-on-surface hover:bg-slate-200/60 rounded-full transition-colors" title="Ayuda" type="button">
+<span class="material-symbols-outlined text-[18px]">help_outline</span>
+</button>
+<button class="p-1 text-on-surface-variant hover:text-error hover:bg-red-50 rounded-full transition-colors" title="Cerrar sesión" type="button">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 min-w-0">
+<div class="flex flex-col w-full">
+<!-- Top Breadcrumb & Header Title Area (No redundant top bar) -->
+<header class="flex flex-col gap-space-xs mb-space-xl">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm tracking-wider uppercase">
+<span class="inline-block w-2 h-2 rounded-full bg-primary"></span>
+<span>CONFIGURACIÓN DEL SISTEMA</span>
+<span class="text-outline-variant">•</span>
+<span class="text-primary font-semibold">HABITAPP V2.4.1</span>
+</div>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md mt-space-2xs">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Ajustes de la Cuenta</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Personaliza tu experiencia, preferencias de bienestar, privacidad y acompañamiento profesional.</p>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-lowest border border-slate-100 shadow-sm px-space-md py-space-xs rounded-full self-start md:self-auto shrink-0">
+<span class="material-symbols-outlined text-[18px] text-emerald-600" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-md text-label-md text-on-surface">Sincronizado hace 3 min</span>
+</div>
+</div>
+</header>
+<!-- User Profile Summary Banner / Card -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-xl shadow-[0_1px_3px_rgba(15,23,42,0.03),0_4px_16px_rgba(15,23,42,0.03)] border border-slate-100 relative overflow-hidden mb-space-xl">
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-blue-100/60 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-lg relative z-10">
+<div class="flex items-center gap-space-md">
+<div class="relative shrink-0">
+<div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white font-headline-md text-headline-md shadow-md font-bold">
+                  MS
+                </div>
+<span class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 rounded-full ring-2 ring-white" title="Estado: En línea"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Marina Soler</h2>
+<span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: 'FILL' 1;" title="Cuenta verificada">verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Nivel 4 • Serenidad Consciente</p>
+<div class="mt-space-xs inline-flex items-center gap-space-2xs bg-amber-50 border border-amber-200/60 px-space-sm py-0.5 rounded-full w-max">
+<span class="material-symbols-outlined text-[15px] text-amber-600" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-sm text-label-sm text-amber-900 font-bold">24 días de racha activa</span>
+</div>
+</div>
+</div>
+<div class="flex sm:flex-row gap-space-xs shrink-0">
+<button class="inline-flex items-center justify-center gap-space-2xs px-space-md py-2 bg-primary text-white rounded-xl font-label-md text-label-md shadow-[0_4px_14px_rgba(37,99,235,0.22)] hover:bg-blue-700 transition-all font-semibold" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Editar perfil</span>
+</button>
+<button class="inline-flex items-center justify-center gap-space-2xs px-space-md py-2 bg-slate-50 border border-slate-200/80 text-on-surface hover:bg-slate-100 rounded-xl font-label-md text-label-md transition-all font-semibold" type="button">
+<span class="material-symbols-outlined text-[16px]">share</span>
+<span>Compartir</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Balanced 2-Column Desktop Grid Layout (Equal 50% width and matching vertical weights) -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-space-xl items-start">
+<!-- LEFT COLUMN: Preferencias de la App + Soporte y Cuenta -->
+<section class="flex flex-col gap-space-xl">
+<!-- 1. Preferencias de la App -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-space-2xs">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Preferencias de la App</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Ajustes visuales</span>
+</div>
+<!-- Tema y Apariencia -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-[0_1px_3px_rgba(15,23,42,0.03),0_4px_16px_rgba(15,23,42,0.02)] border border-slate-100 flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold">Tema y Apariencia</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Personaliza el contraste visual y la estética de la interfaz según tu entorno.</p>
+</div>
+<div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-primary shrink-0 ml-space-sm border border-blue-100">
+<span class="material-symbols-outlined text-[20px]">palette</span>
+</div>
+</div>
+<!-- Segmented control pills -->
+<div class="grid grid-cols-3 gap-1 bg-slate-100/80 p-1 rounded-xl" id="theme-selector">
+<button class="flex items-center justify-center gap-space-xs py-2 px-space-xs rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">dark_mode</span>
+<span>Oscuro</span>
+</button>
+<button class="flex items-center justify-center gap-space-xs py-2 px-space-xs rounded-lg font-label-md text-label-md bg-white text-primary font-bold shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">light_mode</span>
+<span>Claro</span>
+</button>
+<button class="flex items-center justify-center gap-space-xs py-2 px-space-xs rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">settings_brightness</span>
+<span>Automático</span>
+</button>
+</div>
+</article>
+<!-- Notificaciones (Toggle) -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-[0_1px_3px_rgba(15,23,42,0.03),0_4px_16px_rgba(15,23,42,0.02)] border border-slate-100 flex items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary shrink-0 mt-0.5 border border-blue-100">
+<span class="material-symbols-outlined text-[22px]">notifications_active</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold">Activar notificaciones</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Recibir avisos diarios, recordatorios de hábitos y alertas del sistema</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" id="toggle-notifications" type="checkbox"/>
+<div class="w-12 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-[24px] after:w-[24px] after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+</label>
+</article>
+<!-- Sonidos de Bienestar -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-[0_1px_3px_rgba(15,23,42,0.03),0_4px_16px_rgba(15,23,42,0.02)] border border-slate-100 flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary shrink-0 mt-0.5 border border-blue-100">
+<span class="material-symbols-outlined text-[22px]">spatial_audio_off</span>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold">Sonidos de Bienestar</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Tono de confirmación y campana sonora al completar hábitos conscientes.</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-space-sm pt-space-xs" id="sound-options">
+<!-- Campanas (Selected) -->
+<button class="flex flex-col items-center justify-center p-3 rounded-xl bg-blue-50 border border-blue-200 text-primary font-semibold transition-all" type="button">
+<svg class="w-6 h-6 mb-1 text-primary" fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"></path>
+</svg>
+<span class="font-label-md text-label-md font-bold">Campanas</span>
+<span class="font-label-sm text-[11px] text-primary/80 mt-0.5">Frecuencia 432Hz</span>
+</button>
+<!-- Naturaleza -->
+<button class="flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 border border-slate-100 text-on-surface-variant hover:bg-slate-100 hover:text-on-surface transition-all" type="button">
+<span class="material-symbols-outlined text-[24px] mb-1 text-slate-500">forest</span>
+<span class="font-label-md text-label-md">Naturaleza</span>
+<span class="font-label-sm text-[11px] text-slate-400 mt-0.5">Brisa de pinar</span>
+</button>
+<!-- Silencio -->
+<button class="flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 border border-slate-100 text-on-surface-variant hover:bg-slate-100 hover:text-on-surface transition-all" type="button">
+<span class="material-symbols-outlined text-[24px] mb-1 text-slate-500">volume_off</span>
+<span class="font-label-md text-label-md">Silencio</span>
+<span class="font-label-sm text-[11px] text-slate-400 mt-0.5">Modo vibración</span>
+</button>
+</div>
+</article>
+</div>
+<!-- 2. Soporte y Cuenta (Balanced in Col 1 for equal height) -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-space-2xs">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Soporte y Cuenta</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Centro de ayuda</span>
+</div>
+<article class="bg-surface-container-lowest rounded-2xl p-space-md shadow-[0_1px_3px_rgba(15,23,42,0.03),0_4px_16px_rgba(15,23,42,0.02)] border border-slate-100 flex flex-col gap-space-xs">
+<a class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors group" href="#">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary shrink-0 group-hover:scale-105 transition-transform border border-blue-100">
+<span class="material-symbols-outlined text-[22px]">help_outline</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold group-hover:text-primary transition-colors">Centro de Ayuda y Preguntas frecuentes</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Guías rápidas, tutoriales, soporte técnico y FAQs</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all text-[20px]">chevron_right</span>
+</a>
+<div class="h-px bg-slate-100 mx-2"></div>
+<a class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors group" href="#">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-on-surface-variant shrink-0 group-hover:scale-105 transition-transform border border-slate-200/60">
+<span class="material-symbols-outlined text-[22px]">shield</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold group-hover:text-primary transition-colors">Términos de servicio y Privacidad</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Protección de datos RGPD y políticas de bienestar</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all text-[20px]">chevron_right</span>
+</a>
+</article>
+</div>
+</section>
+<!-- RIGHT COLUMN: Bienestar y Privacidad + Acompañamiento Profesional + Botón Cerrar Sesión -->
+<section class="flex flex-col gap-space-xl">
+<!-- 1. Bienestar y Privacidad -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-space-2xs">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Bienestar y Privacidad</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Seguridad y datos</span>
+</div>
+<article class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-[0_1px_3px_rgba(15,23,42,0.03),0_4px_16px_rgba(15,23,42,0.02)] border border-slate-100 flex flex-col gap-space-md">
+<!-- Health Integration -->
+<div class="flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary shrink-0 border border-blue-100">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold truncate">Apple Health / Google Fit</h4>
+<div class="flex items-center gap-space-2xs mt-0.5">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Conectado • Pasos y sueño sincronizados</span>
+</div>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-12 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-[24px] after:w-[24px] after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="h-px bg-slate-100"></div>
+<!-- Private Mode in Community -->
+<div class="flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary shrink-0 border border-blue-100">
+<span class="material-symbols-outlined text-[22px]">visibility_off</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold truncate">Modo Privado en Comunidad</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Compartir hábitos y logros en foros de forma anónima</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-12 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-[24px] after:w-[24px] after:transition-all after:shadow-sm peer-checked:bg-primary"></div>
+</label>
+</div>
+</article>
+</div>
+<!-- 2. Acompañamiento Profesional -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-space-2xs">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Acompañamiento Profesional</h3>
+<span class="font-label-sm text-label-sm text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold">1 Sesión Activa</span>
+</div>
+<article class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-[0_1px_3px_rgba(15,23,42,0.03),0_4px_16px_rgba(15,23,42,0.02)] border border-slate-100 relative overflow-hidden flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-space-2xs bg-blue-50 border border-blue-100 px-space-sm py-1 rounded-full font-label-sm text-label-sm text-primary font-bold">
+<span class="material-symbols-outlined text-[15px]">event_available</span>
+<span>Próxima sesión • En 2 días</span>
+</span>
+<span class="text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold">Confirmada</span>
+</div>
+<div class="flex items-start gap-space-md">
+<div class="relative shrink-0">
+<img class="w-14 h-14 rounded-full object-cover ring-2 ring-blue-100" data-alt="Close up professional portrait of Dra. Elena Vidal, a compassionate female psychologist with warm lighting, soft neutral background, wearing an elegant smart blazer, conveying serenity, trust and mental health guidance with crisp high detail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxEL83P88EuQFFnZm4ErWY9t70LyGW2dNTRbmkmMhoEoqVeHEJHG23373m8AAnk9g5ErV6BcWBpzkHHMi7ajgrapXNWUv66LEp3aYSmrO3-2bTZ0keC3gfYAsVHAR0kVx46XlztK9r-QLHqwKkBuMqFpo4-wRhi_TQTXP3UTUI6XXk9lPrHlMiidFUI-Nl9q2YRIl_nlvATa9aoU-Be6CZeGb84UqidoSsAHe_Ka220UAeCUhtbb6M"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full ring-2 ring-white" title="Acompañante asignada"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<h4 class="font-headline-sm text-[17px] text-on-surface font-bold leading-tight">Dra. Elena Vidal</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Especialista en hábitos y Mindfulness • Colegiada Nº 31.045</p>
+<div class="flex flex-wrap items-center gap-space-md mt-space-sm">
+<div class="flex items-center gap-1.5 text-on-surface font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-[18px] text-primary">calendar_today</span>
+<span>Jueves, 18:00 hrs (45 min)</span>
+</div>
+<button class="inline-flex items-center gap-1 text-primary font-label-md text-label-md font-semibold hover:underline" type="button">
+<span class="material-symbols-outlined text-[18px]">videocam</span>
+<span>Ver enlace de videollamada</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- 3. Botón de Cerrar Sesión (Aligned at bottom of Column 2) -->
+<div class="flex flex-col gap-2 pt-1">
+<button class="w-full flex items-center justify-center gap-space-sm p-3.5 rounded-2xl bg-white border border-red-200/80 text-rose-600 hover:bg-rose-50/70 shadow-[0_1px_3px_rgba(15,23,42,0.03)] font-label-lg text-label-lg transition-all font-semibold" type="button">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span>Cerrar sesión en este dispositivo</span>
+</button>
+</div>
+</section>
+</div>
+<!-- Harmonious Footer Note -->
+<footer class="text-center mt-space-xl py-space-sm text-slate-400 font-label-sm text-label-sm">
+          HabitApp versión 2.4.1 (Build 418) • © 2025 HabitApp Inc. Hecho con serenidad.
+        </footer>
+</div>
+</main>
+</div>
+<script>
+    // Simple interactive state demo for segmented sound and theme buttons
+    document.querySelectorAll('#sound-options button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('#sound-options button').forEach(b => {
+          b.className = 'flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 border border-slate-100 text-on-surface-variant hover:bg-slate-100 hover:text-on-surface transition-all';
+          const icon = b.querySelector('.material-symbols-outlined');
+          if (icon) icon.className = 'material-symbols-outlined text-[24px] mb-1 text-slate-500';
+          const svg = b.querySelector('svg');
+          if (svg) svg.className = 'w-6 h-6 mb-1 text-slate-500';
+          const title = b.querySelector('.font-label-md');
+          if (title) title.className = 'font-label-md text-label-md';
+        });
+        button.className = 'flex flex-col items-center justify-center p-3 rounded-xl bg-blue-50 border border-blue-200 text-primary font-semibold transition-all';
+        const activeIcon = button.querySelector('.material-symbols-outlined');
+        if (activeIcon) activeIcon.className = 'material-symbols-outlined text-[24px] mb-1 text-primary';
+        const activeSvg = button.querySelector('svg');
+        if (activeSvg) activeSvg.className = 'w-6 h-6 mb-1 text-primary';
+        const activeTitle = button.querySelector('.font-label-md');
+        if (activeTitle) activeTitle.className = 'font-label-md text-label-md font-bold';
+      });
+    });
+
+    document.querySelectorAll('#theme-selector button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('#theme-selector button').forEach(b => {
+          b.className = 'flex items-center justify-center gap-space-xs py-2 px-space-xs rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all';
+        });
+        button.className = 'flex items-center justify-center gap-space-xs py-2 px-space-xs rounded-lg font-label-md text-label-md bg-white text-primary font-bold shadow-sm transition-all';
+      });
+    });
+  </script>
+</body></html>
