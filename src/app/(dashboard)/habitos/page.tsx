@@ -1,203 +1,149 @@
-// Página principal del dashboard — Mis Hábitos
-// Esta es una página placeholder para la Fase 2.
-// La implementación completa (lista de hábitos, toggle, rachas) se realiza en la Fase 3.
-
 /**
  * @file src/app/(dashboard)/habitos/page.tsx
- * @description Página principal de hábitos — Dashboard diario.
- * Server Component: obtiene datos directamente sin useEffect.
- *
- * Consume:
- * - HabitoService.getDashboard()   → Fase 4
- * - RegistroService.getRacha()     → Fase 4
+ * @description Dashboard Diario de Hábitos — Pantalla principal.
+ * Server Component: obtiene datos de forma paralela y limpia usando Clean Architecture.
  */
 
-import Link                from "next/link";
 import { requireUserStrict as requireUser } from "@/lib/auth/require-user";
-import { HabitoService }   from "@/services/habito.service";
+import { HabitoService } from "@/services/habito.service";
 import { RegistroService } from "@/services/registro.service";
+import { quoteService } from "@/services/quote.service";
+import { ComunidadService } from "@/services/comunidad.service";
+import { getLocalDateString } from "@/lib/date-utils";
+import { DashboardInteractiveView } from "@/components/dashboard/DashboardInteractiveView";
 
-import { HabitCard }       from "@/components/habitos/HabitCard";
-import { DailyProgress }   from "@/components/registros/DailyProgress";
-import { CalendarDays, Target, Trophy, Zap } from "lucide-react";
+export const metadata = { 
+  title: "Dashboard Diario | HabitApp — Salud Mental & Hábitos",
+  description: "Monitorea tus hábitos diarios, mantén tu racha activa y participa en retos de la comunidad."
+};
 
-export const metadata = { title: "Mis Hábitos | HabitApp" };
-
-const habitoService  = new HabitoService();
+const habitoService = new HabitoService();
 const registroService = new RegistroService();
+const comunidadService = new ComunidadService();
 
-export default async function HabitosPage() {
-  // ── Verificar sesión ────────────────────────────────────────────────────────
-  const user = await requireUser();
-  const usuarioId = user.id;
+/**
+ * Calcula la racha real del usuario en días consecutivos finalizando hoy o ayer.
+ */
+function calculateRealStreak(
+  registros: { fecha: string; completado: boolean }[],
+  todayStr: string
+): number {
+  const completedDates = new Set(
+    registros.filter((r) => r.completado).map((r) => r.fecha)
+  );
 
-  // ── Obtener hábitos con progreso del día ────────────────────────────────────
-  const habitosResult = await habitoService.getDashboard();
-  const habitos = habitosResult.success ? habitosResult.data : [];
+  if (completedDates.size === 0) return 0;
 
-  // ── Calcular rachas en paralelo ─────────────────────────────────────────────
+  const [year, month, day] = todayStr.split("-").map(Number);
+  const todayDate = new Date(year, month - 1, day);
+  const ayerDate = new Date(todayDate);
+  ayerDate.setDate(todayDate.getDate() - 1);
+  const ayerStr = getLocalDateString(ayerDate);
+
+  const hasToday = completedDates.has(todayStr);
+  const hasYesterday = completedDates.has(ayerStr);
+
+  if (!hasToday && !hasYesterday) {
+    return 0;
+  }
+
+  const currentCheck = hasToday ? new Date(todayDate) : ayerDate;
+  let streak = 0;
+
+  while (true) {
+    const iso = getLocalDateString(currentCheck);
+    if (completedDates.has(iso)) {
+      streak++;
+      currentCheck.setDate(currentCheck.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+export default async function HabitosDashboardPage() {
+  // ── 1. Verificar sesión ─────────────────────────────────────────────────────
+  await requireUser();
+
+  // ── 2. Obtener datos en paralelo para máxima velocidad ───────────────────────
+  const [
+    habitosResult,
+    quoteResult,
+    retosResult,
+    historialResult,
+    archivadosResult,
+  ] = await Promise.all([
+    habitoService.getDashboard(),
+    quoteService.getDailyQuote(),
+    comunidadService.getRetos(),
+    registroService.getHistorialUsuario(),
+    habitoService.getAll("Inactivo"),
+  ]);
+
+  const habitos = habitosResult.success && Array.isArray(habitosResult.data) ? habitosResult.data : [];
+  const quote = quoteResult.success && quoteResult.data
+    ? quoteResult.data
+    : { phrase: "Transforma tus metas en hábitos y tus hábitos en realidad.", author: "HabitApp" };
+  const retos = retosResult.success && Array.isArray(retosResult.data) ? retosResult.data : [];
+  const registrosReales = historialResult.success && Array.isArray(historialResult.data) ? historialResult.data : [];
+  const archivados = archivadosResult.success && Array.isArray(archivadosResult.data) ? archivadosResult.data : [];
+  const totalArchivados = archivados.length;
+  const allHabitos = [...habitos, ...archivados];
+
+  // ── 3. Calcular rachas reales para cada hábito individual ────────────────────
   const rachasMap: Record<string, number> = {};
   await Promise.all(
     habitos.map(async (h) => {
-      const rachaResult = await registroService.getRacha(h.idHabito);
-      rachasMap[h.idHabito] = rachaResult.success
-        ? rachaResult.data.rachaActual
-        : 0;
+      const id = h.idHabito || h.idhabito;
+      if (id) {
+        const rachaRes = await registroService.getRacha(id);
+        rachasMap[id] = rachaRes.success && typeof rachaRes.data?.rachaActual === 'number'
+          ? rachaRes.data.rachaActual
+          : (h.rachaActual ?? 0);
+      }
     })
   );
 
-  // ── Métricas del día ────────────────────────────────────────────────────────
-  const completados = habitos.filter((h) => h.registroHoy?.completado).length;
-  const porcentaje = habitos.length === 0 ? 0 : Math.round((completados / habitos.length) * 100);
-  const rachaMaxima = Math.max(0, ...Object.values(rachasMap));
-  const nombreReal = user.nombre && user.apellido 
-    ? `${user.nombre} ${user.apellido}` 
-    : (user.email?.split("@")[0] || "Campeón");
+  // ── 4. Calcular racha global real del usuario ───────────────────────────────
+  const hoyStr = getLocalDateString(new Date());
+  const rachaGlobalReal = calculateRealStreak(registrosReales, hoyStr);
 
-  // ── Obtener últimos 7 días para el panel semanal ──────────────────────────
-  const historialResult = await registroService.getHistorialUsuario();
-  const registrosReales = historialResult.success ? historialResult.data : [];
-  
-  const diasCompletados = new Set(registrosReales.filter(r => r.completado).map(r => r.fecha));
-  
-  const hoyStr = new Date().toISOString().split("T")[0];
-  const fechaActual = new Date();
-  
-  const trackerSemanal = Array.from({ length: 7 }).map((_, i) => {
-    const d = new Date(fechaActual);
-    d.setDate(fechaActual.getDate() - (6 - i));
-    const isostring = d.toISOString().split("T")[0];
-    const nombreDia = d.toLocaleDateString("es-CO", { weekday: 'short' });
+  // ── 5. Checks de la semana actual (Lunes a Domingo) ─────────────────────────
+  const diasCompletados = new Set(
+    registrosReales.filter((r) => r.completado).map((r) => r.fecha)
+  );
+
+  const now = new Date();
+  const currentDay = now.getDay();
+  const distToMonday = currentDay === 0 ? -6 : 1 - currentDay;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + distToMonday);
+
+  const dayLabels = ["L", "M", "X", "J", "V", "S", "D"];
+  const semanaChecks = dayLabels.map((diaLabel, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const iso = getLocalDateString(d);
     return {
-      diaStr: nombreDia.charAt(0).toUpperCase() + nombreDia.slice(1),
-      activo: diasCompletados.has(isostring),
-      esHoy: isostring === hoyStr
+      dia: diaLabel,
+      activo: diasCompletados.has(iso),
+      esHoy: iso === hoyStr,
     };
   });
 
   return (
-    <div className="space-y-7">
-      <section className="rounded-3xl border border-indigo-200/40 dark:border-indigo-900 bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 p-6 text-white shadow-2xl">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-indigo-100/80">
-              Panel diario
-            </p>
-            <h1 className="mt-2 text-3xl md:text-4xl font-black">
-              Hola, {nombreReal} 👋
-            </h1>
-            <p className="mt-2 text-sm md:text-base text-indigo-100/90">
-              Construyamos hábitos sólidos, un check a la vez.
-            </p>
-          </div>
-          {/* Botón removido */}
-        </div>
-
-        <div className="mt-5 flex items-center gap-2 text-indigo-100">
-          <CalendarDays className="h-4 w-4" />
-          <span className="text-sm capitalize">
-            {new Date().toLocaleDateString("es-CO", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-            })}
-          </span>
-        </div>
-      </section>
-
-      <section className="grid grid-cols-1 xl:grid-cols-[1.15fr_1fr] gap-5">
-        <DailyProgress completados={completados} total={habitos.length} />
-
-        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-4 shadow-sm">
-          <h2 className="font-bold text-slate-900 dark:text-slate-100">Últimos 7 días</h2>
-          <div className="grid grid-cols-7 gap-2">
-            {trackerSemanal.map((tracker, index) => {
-              return (
-                <div
-                  key={index}
-                  className={`rounded-xl border px-2 py-2 text-center ${
-                    tracker.activo
-                      ? "border-indigo-300 bg-indigo-50 dark:border-indigo-700 dark:bg-indigo-950/40"
-                      : (tracker.esHoy 
-                          ? "border-amber-300 bg-amber-50 dark:border-amber-800/50 dark:bg-amber-900/10"
-                          : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950")
-                  }`}
-                >
-                  <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400">{tracker.diaStr}</p>
-                  <div className={`mx-auto mt-2 h-6 w-6 rounded-full ${tracker.activo ? "bg-indigo-500" : (tracker.esHoy ? "bg-amber-300 dark:bg-amber-700/50" : "bg-slate-300 dark:bg-slate-700")}`} />
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="grid grid-cols-3 gap-3 pt-1">
-            <div className="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3">
-              <p className="text-xs text-slate-500 dark:text-slate-400">Habitos activos</p>
-              <p className="text-xl font-bold text-slate-900 dark:text-slate-100">{habitos.length}</p>
-            </div>
-            <div className="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3">
-              <p className="text-xs text-slate-500 dark:text-slate-400">Completados</p>
-              <p className="text-xl font-bold text-slate-900 dark:text-slate-100">{completados}</p>
-            </div>
-            <div className="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3">
-              <p className="text-xs text-slate-500 dark:text-slate-400">Racha top</p>
-              <p className="text-xl font-bold text-slate-900 dark:text-slate-100">{rachaMaxima}d</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Error si falla el servicio */}
-      {!habitosResult.success && (
-        <div className="rounded-xl bg-red-50 dark:bg-red-950 border border-red-200 p-4">
-          <p className="text-sm text-red-600 dark:text-red-400">
-            {habitosResult.error}
-          </p>
-        </div>
-      )}
-
-      {/* Lista de hábitos */}
-      <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100">
-            Tus habitos
-          </h2>
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-800 px-3 py-1 text-xs font-semibold text-indigo-600 dark:text-indigo-300">
-            <Target className="h-3.5 w-3.5" />
-            {porcentaje}% logrado
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          {habitos.length === 0 ? (
-            <div className="text-center py-16 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
-              <p className="text-4xl mb-3">🌱</p>
-              <p className="text-slate-500 dark:text-slate-400 font-medium">
-                No tienes hábitos activos
-              </p>
-              <p className="text-slate-400 dark:text-slate-500 text-sm mt-1">
-                ¡Crea tu primer hábito para empezar!
-              </p>
-              <Link
-                href="/habitos/crear"
-                className="inline-block mt-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2 transition-colors"
-              >
-                Crear hábito ✨
-              </Link>
-            </div>
-          ) : (
-            <div className="grid gap-3 md:grid-cols-2">
-              {habitos.map((habito) => (
-                <HabitCard
-                  key={habito.idHabito}
-                  habito={habito}
-                  rachaActual={rachasMap[habito.idHabito] ?? 0}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-    </div>
+    <DashboardInteractiveView
+      quote={quote}
+      initialHabitos={habitos}
+      allHabitos={allHabitos}
+      registros={registrosReales}
+      retos={retos}
+      totalArchivados={totalArchivados}
+      rachasMap={rachasMap}
+      rachaGlobalReal={rachaGlobalReal}
+      semanaChecks={semanaChecks}
+    />
   );
 }

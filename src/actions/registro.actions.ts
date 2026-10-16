@@ -24,7 +24,7 @@ const MarcarCompletadoSchema = z.object({
 const AvanzarProgresoSchema = z.object({
   idHabito:   z.string().uuid("Hábito inválido"),
   fecha:      z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida"),
-  cantidadAsumar: z.coerce.number().min(1),
+  cantidadAsumar: z.coerce.number().refine((val) => val !== 0, "No puede ser cero"),
   metaDiaria: z.coerce.number().min(1),
   observacion: z.string().max(200).optional(),
 });

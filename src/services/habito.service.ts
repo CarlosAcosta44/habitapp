@@ -12,23 +12,23 @@ import type { Result } from "@/lib/result";
 export class HabitoService {
   // ─── getDashboard ──────────────────────────────────────────────────────────
   async getDashboard(): Promise<Result<any[]>> {
-    return habitoRepository.get<any[]>("habits/dashboard");
+    return habitoRepository.get<any[]>("users/habits/dashboard");
   }
 
   // ─── getCategorias ─────────────────────────────────────────────────────────
   async getCategorias(): Promise<Result<any[]>> {
-    return habitoRepository.get<any[]>("habits/categorias");
+    return habitoRepository.get<any[]>("users/habits/categorias");
   }
 
   // ─── getAll ────────────────────────────────────────────────────────────────
   async getAll(estado?: string): Promise<Result<any[]>> {
-    const url = estado ? `habits?estado=${estado}` : "habits";
+    const url = estado ? `users/habits?estado=${estado}` : "users/habits";
     return habitoRepository.get<any[]>(url);
   }
 
   // ─── getById ───────────────────────────────────────────────────────────────
   async getById(id: string): Promise<Result<any>> {
-    return habitoRepository.get<any>(`habits/${id}`);
+    return habitoRepository.get<any>(`users/habits/${id}`);
   }
 
   // ─── create ────────────────────────────────────────────────────────────────
@@ -41,8 +41,9 @@ export class HabitoService {
     metaDiaria?: number;
     unidadMedida?: string;
     idCategoria: string;
+    diasSemana?: number[];
   }): Promise<Result<any>> {
-    return habitoRepository.post<any>("habits", dto);
+    return habitoRepository.post<any>("users/habits", dto);
   }
 
   // ─── update ────────────────────────────────────────────────────────────────
@@ -53,17 +54,19 @@ export class HabitoService {
     estado?: string;
     puntos?: number;
     idCategoria?: string;
+    metaDiaria?: number;
+    unidadMedida?: string;
   }): Promise<Result<any>> {
-    return habitoRepository.patch<any>(`habits/${id}`, updates);
+    return habitoRepository.patch<any>(`users/habits/${id}`, updates);
   }
 
   // ─── completar ─────────────────────────────────────────────────────────────
   async completar(id: string): Promise<Result<any>> {
-    return habitoRepository.patch<any>(`habits/${id}/completar`, {});
+    return habitoRepository.patch<any>(`users/habits/${id}/completar`, {});
   }
 
   // ─── delete ────────────────────────────────────────────────────────────────
   async delete(id: string): Promise<Result<any>> {
-    return habitoRepository.delete<any>(`habits/${id}`);
+    return habitoRepository.delete<any>(`users/habits/${id}`);
   }
 }

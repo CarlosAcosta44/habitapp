@@ -11,12 +11,12 @@ import type { Result } from "@/lib/result";
 export class RegistroService {
   // ─── getByHabito ───────────────────────────────────────────────────────────
   async getByHabito(habitoId: string): Promise<Result<any[]>> {
-    return registroRepository.get<any[]>(`records/habito/${habitoId}`);
+    return registroRepository.get<any[]>(`users/records/habito/${habitoId}`);
   }
 
   // ─── getHistorialUsuario ───────────────────────────────────────────────────
   async getHistorialUsuario(): Promise<Result<any[]>> {
-    return registroRepository.get<any[]>("records/historial");
+    return registroRepository.get<any[]>("users/records/historial");
   }
 
   // ─── marcarCompletado ──────────────────────────────────────────────────────
@@ -24,12 +24,12 @@ export class RegistroService {
     idHabito: string;
     observacion?: string;
   }): Promise<Result<any>> {
-    return registroRepository.post<any>("records/completar", dto);
+    return registroRepository.post<any>("users/records/completar", dto);
   }
 
   // ─── desmarcarCompletado ───────────────────────────────────────────────────
   async desmarcarCompletado(habitoId: string): Promise<Result<any>> {
-    return registroRepository.delete<any>(`records/desmarcar/${habitoId}`);
+    return registroRepository.delete<any>(`users/records/desmarcar/${habitoId}`);
   }
 
   // ─── avanzarProgreso ───────────────────────────────────────────────────────
@@ -38,11 +38,11 @@ export class RegistroService {
     cantidadASumar: number;
     observacion?: string;
   }): Promise<Result<any>> {
-    return registroRepository.patch<any>("records/progreso", dto);
+    return registroRepository.patch<any>("users/records/progreso", dto);
   }
 
   // ─── getRacha ──────────────────────────────────────────────────────────────
   async getRacha(habitoId: string): Promise<Result<any>> {
-    return registroRepository.get<any>(`records/racha/${habitoId}`);
+    return registroRepository.get<any>(`users/records/racha/${habitoId}`);
   }
 }
