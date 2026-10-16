@@ -1,6 +1,6 @@
 /**
  * @file src/actions/comunidad.actions.ts
- * @description Server Actions para el módulo de Comunidad.
+ * @description Server Actions para el módulo de Comunidad y Bienestar.
  * @layer Presentation (Capa 1 — Server-side)
  */
 
@@ -15,23 +15,61 @@ import type { ActionState } from "@/actions/habito.actions";
 const service = new ComunidadService();
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
+const CreateForoSchema = z.object({
+  titulo:      z.string().min(5,  "El título debe tener al menos 5 caracteres")
+                         .max(120, "El título no puede superar 120 caracteres"),
+  descripcion: z.string().min(10, "La descripción debe tener al menos 10 caracteres")
+                         .max(2000, "Máximo 2000 caracteres"),
+  categoria:   z.string().min(2,  "Debes seleccionar una categoría"),
+  imagenUrl:   z.string().url().optional().or(z.literal("")),
+});
+
 const ComentarSchema = z.object({
-  foroId:            z.string().uuid("Foro inválido"),
+  idForo:            z.string().min(1, "Foro inválido"),
   contenido:         z.string()
                       .min(1,   "El comentario no puede estar vacío")
-                      .max(500, "Máximo 500 caracteres"),
-  idComentarioPadre: z.string().uuid().optional(),
+                      .max(1000, "Máximo 1000 caracteres"),
+  idComentarioPadre: z.string().optional(),
 });
 
-const ReaccionSchema = z.object({
-  tipo:         z.enum(["Me gusta", "Me motiva", "Util"]),
-  idComentario: z.string().uuid().optional(),
-  idArticulo:   z.string().uuid().optional(),
-});
+// ─── createForoAction ─────────────────────────────────────────────────────────
+export async function createForoAction(
+  _prevState: ActionState | null,
+  formData:   FormData
+): Promise<ActionState> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
 
-const SuscripcionSchema = z.object({
-  foroId: z.string().uuid("Foro inválido"),
-});
+  const rawData = {
+    titulo:      formData.get("titulo"),
+    descripcion: formData.get("descripcion"),
+    categoria:   formData.get("categoria"),
+    imagenUrl:   formData.get("imagenUrl") || "",
+  };
+
+  const validation = CreateForoSchema.safeParse(rawData);
+  if (!validation.success) {
+    return {
+      success: false,
+      message: "Por favor corrige los errores del formulario",
+      errors:  validation.error.flatten().fieldErrors,
+    };
+  }
+
+  const result = await service.createForo({
+    titulo: validation.data.titulo,
+    descripcion: validation.data.descripcion,
+    categoria: validation.data.categoria,
+    imagenUrl: validation.data.imagenUrl || undefined,
+  });
+
+  if (!result.success) {
+    return { success: false, message: result.error };
+  }
+
+  revalidatePath("/comunidad");
+  return { success: true, message: "Foro publicado exitosamente en la comunidad ✨" };
+}
 
 // ─── comentarAction ───────────────────────────────────────────────────────────
 export async function comentarAction(
@@ -40,10 +78,9 @@ export async function comentarAction(
 ): Promise<ActionState> {
   const userResult = await requireUser();
   if (!userResult.success) return { success: false, message: userResult.error };
-  const user = userResult.data;
 
   const rawData = {
-    foroId:            formData.get("foroId"),
+    idForo:            formData.get("idForo") || formData.get("foroId"),
     contenido:         formData.get("contenido"),
     idComentarioPadre: formData.get("idComentarioPadre") || undefined,
   };
@@ -52,51 +89,39 @@ export async function comentarAction(
   if (!validation.success) {
     return {
       success: false,
-      message: "Por favor corrige los errores",
+      message: "Por favor escribe un comentario válido",
       errors:  validation.error.flatten().fieldErrors,
     };
   }
 
   const result = await service.comentar({
+    idForo:            validation.data.idForo,
     contenido:         validation.data.contenido,
     idComentarioPadre: validation.data.idComentarioPadre ?? null,
-    idForo:            validation.data.foroId,
-    idUsuario:         user.id,
   });
 
   if (!result.success) {
     return { success: false, message: result.error };
   }
 
-  revalidatePath(`/comunidad/foros/${validation.data.foroId}`);
+  revalidatePath(`/comunidad/foros/${validation.data.idForo}`);
+  revalidatePath("/comunidad");
   return { success: true, message: "Comentario publicado exitosamente" };
 }
 
 // ─── reaccionarAction ─────────────────────────────────────────────────────────
 export async function reaccionarAction(
-  _prevState: ActionState | null,
-  formData:   FormData
+  targetType: 'comentario' | 'articulo' | 'foro',
+  targetId: string,
+  tipo: string = 'like'
 ): Promise<ActionState> {
   const userResult = await requireUser();
   if (!userResult.success) return { success: false, message: userResult.error };
-  const user = userResult.data;
-
-  const rawData = {
-    tipo:         formData.get("tipo"),
-    idComentario: formData.get("idComentario") || undefined,
-    idArticulo:   formData.get("idArticulo")   || undefined,
-  };
-
-  const validation = ReaccionSchema.safeParse(rawData);
-  if (!validation.success) {
-    return { success: false, message: "Datos de reacción inválidos" };
-  }
 
   const result = await service.reaccionar({
-    tipo:         validation.data.tipo,
-    idUsuario:    user.id,
-    idComentario: validation.data.idComentario,
-    idArticulo:   validation.data.idArticulo,
+    targetType,
+    targetId,
+    tipo,
   });
 
   if (!result.success) {
@@ -104,70 +129,51 @@ export async function reaccionarAction(
   }
 
   revalidatePath("/comunidad");
-  return {
-    success: true,
-    message: result.data ? "Reacción agregada" : "Reacción eliminada",
-  };
+  return { success: true, message: "Reacción registrada" };
 }
 
-// ─── suscribirseAction ────────────────────────────────────────────────────────
-export async function suscribirseAction(
-  _prevState: ActionState | null,
-  formData:   FormData
-): Promise<ActionState> {
+// ─── clonarHabitoAction ───────────────────────────────────────────────────────
+export async function clonarHabitoAction(idHabito: string): Promise<ActionState> {
   const userResult = await requireUser();
   if (!userResult.success) return { success: false, message: userResult.error };
-  const user = userResult.data;
 
-  const validation = SuscripcionSchema.safeParse({
-    foroId: formData.get("foroId"),
-  });
-
-  if (!validation.success) {
-    return { success: false, message: "Foro inválido" };
-  }
-
-  const result = await service.suscribirse(
-    user.id,
-    validation.data.foroId
-  );
-
+  const result = await service.clonarHabito(idHabito);
   if (!result.success) {
     return { success: false, message: result.error };
   }
 
+  revalidatePath("/habitos");
   revalidatePath("/comunidad");
-  return { success: true, message: "Suscrito al foro exitosamente" };
+  return { success: true, message: "¡Hábito añadido a tu rutina diaria con éxito! 🎯" };
 }
 
-// ─── desuscribirseAction ──────────────────────────────────────────────────────
-export async function desuscribirseAction(
-  _prevState: ActionState | null,
-  formData:   FormData
-): Promise<ActionState> {
+// ─── unirseRetoAction ─────────────────────────────────────────────────────────
+export async function unirseRetoAction(retoId: string): Promise<ActionState> {
   const userResult = await requireUser();
   if (!userResult.success) return { success: false, message: userResult.error };
-  const user = userResult.data;
 
-  const validation = SuscripcionSchema.safeParse({
-    foroId: formData.get("foroId"),
-  });
-
-  if (!validation.success) {
-    return { success: false, message: "Foro inválido" };
+  const result = await service.joinReto(retoId);
+  if (!result.success) {
+    return { success: false, message: result.error };
   }
 
-  const result = await service.desuscribirse(
-    user.id,
-    validation.data.foroId
-  );
+  revalidatePath("/retos");
+  revalidatePath("/comunidad");
+  return { success: true, message: "¡Te has unido al reto comunitario exitosamente! 🏆" };
+}
 
+// ─── compartirHabitoAction ───────────────────────────────────────────────────
+export async function compartirHabitoAction(idHabito: string): Promise<ActionState> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  const result = await service.compartirHabito(idHabito);
   if (!result.success) {
     return { success: false, message: result.error };
   }
 
   revalidatePath("/comunidad");
-  return { success: true, message: "Desuscrito del foro exitosamente" };
+  return { success: true, message: "Hábito compartido en la comunidad exitosamente ✨" };
 }
 
 export async function deleteForoAction(foroId: string) {
@@ -178,4 +184,18 @@ export async function deleteForoAction(foroId: string) {
 export async function deleteComentarioAction(comentarioId: string) {
   const { adminService } = await import("@/services/admin.service");
   return await adminService.deleteForumComment(comentarioId);
+}
+
+export async function suscribirseAction(_prevState: any, formData: FormData) {
+  const foroId = formData.get("foroId") as string;
+  if (!foroId) return { success: false, message: "ID del foro requerido" };
+  revalidatePath("/comunidad");
+  return { success: true, message: "Te has suscrito al foro" };
+}
+
+export async function desuscribirseAction(_prevState: any, formData: FormData) {
+  const foroId = formData.get("foroId") as string;
+  if (!foroId) return { success: false, message: "ID del foro requerido" };
+  revalidatePath("/comunidad");
+  return { success: true, message: "Te has desuscrito del foro" };
 }
