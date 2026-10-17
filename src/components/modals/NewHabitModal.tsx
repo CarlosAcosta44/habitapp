@@ -75,11 +75,15 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
   // Cargar categorías reales de la base de datos
   useEffect(() => {
     if (isOpen) {
-      getCategoriasAction().then((cats) => {
-        if (cats && cats.length > 0) {
-          setDbCategorias(cats);
-        }
-      });
+      void getCategoriasAction()
+        .then((cats) => {
+          if (cats && cats.length > 0) {
+            setDbCategorias(cats);
+          }
+        })
+        .catch(() => {
+          // Si falla, se usan las categorías predefinidas por defecto
+        });
     }
   }, [isOpen]);
 

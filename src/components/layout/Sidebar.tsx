@@ -24,7 +24,36 @@ import { User } from '@/domain/user.types';
 import { NotificationBell } from '../notifications/NotificationBell';
 
 interface SidebarProps {
-  user: User;
+  readonly user: User;
+}
+
+function getSidebarNavLinks(user: User) {
+  const links = [
+    { name: 'Hábitos', href: '/habitos', icon: CheckCircle2 },
+    { name: 'Retos y Desafíos', href: '/retos', icon: Trophy },
+    { name: 'Comunidad', href: '/comunidad', icon: Users },
+    { name: 'Progreso y Métricas', href: '/reportes', icon: BarChart3 },
+    { name: 'Ajustes', href: '/ajustes', icon: Settings },
+  ];
+
+  const roleUpper = (user?.role || user?.nombrerol || '').toUpperCase();
+  if (roleUpper === 'ADMIN' || roleUpper === 'ADMINISTRADOR') {
+    links.push({ name: 'Administrador', href: '/admin', icon: Shield });
+  } else if (roleUpper === 'TRAINER' || roleUpper === 'ENTRENADOR') {
+    links.push({ name: 'Entrenador', href: '/entrenador', icon: Shield });
+  }
+
+  return links;
+}
+
+function getUserDisplayInfo(user: User) {
+  const avatarUrl = user?.fotoperfil || user?.avatar_url;
+  const initial = user?.nombre?.[0] || user?.full_name?.[0] || 'U';
+  let displayName = user?.full_name || 'Usuario';
+  if (user?.nombre) {
+    displayName = user.apellido ? `${user.nombre} ${user.apellido}` : user.nombre;
+  }
+  return { avatarUrl, initial, displayName };
 }
 
 export function Sidebar({ user }: SidebarProps) {
@@ -71,39 +100,8 @@ export function Sidebar({ user }: SidebarProps) {
     localStorage.setItem('sidebar_collapsed', String(next));
   };
 
-  const navLinks = [
-    { name: 'Hábitos', href: '/habitos', icon: CheckCircle2 },
-    { name: 'Retos y Desafíos', href: '/retos', icon: Trophy },
-    { name: 'Comunidad', href: '/comunidad', icon: Users },
-    { name: 'Progreso y Métricas', href: '/reportes', icon: BarChart3 },
-    { name: 'Ajustes', href: '/ajustes', icon: Settings },
-  ];
-
-  if (
-    user?.role === 'admin' ||
-    user?.role?.toUpperCase() === 'ADMIN' ||
-    user?.nombrerol?.toUpperCase() === 'ADMIN' ||
-    user?.nombrerol?.toUpperCase() === 'ADMINISTRADOR'
-  ) {
-    navLinks.push({ name: 'Administrador', href: '/admin', icon: Shield });
-  }
-
-  if (
-    user?.role === 'trainer' ||
-    user?.role?.toUpperCase() === 'TRAINER' ||
-    user?.nombrerol?.toUpperCase() === 'TRAINER' ||
-    user?.nombrerol?.toUpperCase() === 'ENTRENADOR'
-  ) {
-    navLinks.push({ name: 'Entrenador', href: '/entrenador', icon: Shield });
-  }
-
-  const avatarUrl = user?.fotoperfil || user?.avatar_url;
-  const initial = user?.nombre?.[0] || user?.full_name?.[0] || 'U';
-  const displayName = user?.nombre
-    ? user.apellido
-      ? `${user.nombre} ${user.apellido}`
-      : user.nombre
-    : user?.full_name || 'Usuario';
+  const navLinks = getSidebarNavLinks(user);
+  const { avatarUrl, initial, displayName } = getUserDisplayInfo(user);
 
   return (
     <>

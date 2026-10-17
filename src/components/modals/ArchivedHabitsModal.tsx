@@ -63,7 +63,8 @@ export function ArchivedHabitsModal({
     try {
       const data = await getArchivadosAction();
       setHabitos(Array.isArray(data) ? data : []);
-    } catch (err: any) {
+    } catch (_err: unknown) {
+      // Notificar al usuario amigablemente en caso de error de red
       setErrorMsg('No se pudieron cargar los hábitos archivados.');
     } finally {
       setIsLoading(false);
@@ -72,7 +73,7 @@ export function ArchivedHabitsModal({
 
   useEffect(() => {
     if (isOpen) {
-      fetchArchivados();
+      void fetchArchivados();
       setSuccessMsg(null);
       setErrorMsg(null);
     }
@@ -171,13 +172,18 @@ export function ArchivedHabitsModal({
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
+      }}
+      role="presentation"
     >
       <div
         className="relative w-full max-w-2xl bg-white dark:bg-[#111827] rounded-3xl shadow-[0_20px_50px_rgba(87,45,228,0.2)] border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[88vh] animate-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
       >
         {/* ── Encabezado del Modal ── */}
         <div className="px-5 sm:px-6 pt-5 pb-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">

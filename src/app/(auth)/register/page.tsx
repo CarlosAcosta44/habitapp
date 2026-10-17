@@ -12,30 +12,30 @@ import {
 
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-5 h-5">
+    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-5 h-5">
       <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
       <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
   ) : (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-5 h-5">
+    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-5 h-5">
       <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
     </svg>
   )
 
 const GoogleIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
     <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.761H12.545z"/>
   </svg>
 )
 
 const FacebookIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
     <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z" />
   </svg>
 )
 
 const MicrosoftIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" fill="currentColor" className="w-5 h-5">
+  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" fill="currentColor" className="w-5 h-5">
     <path fill="#f25022" d="M0 0h11v11H0z"/>
     <path fill="#00a4ef" d="M0 12h11v11H0z"/>
     <path fill="#7fba00" d="M12 0h11v11H12z"/>
@@ -46,10 +46,7 @@ const MicrosoftIcon = () => (
 const initialRegisterState: RegisterActionState = {}
 
 export default function RegisterPage() {
-  const [oauthLoading, setOauthLoading] = useState<string | null>(null)
-
-  const handleOAuth = async (provider: 'google' | 'facebook' | 'azure') => {
-    // TODO: Implementar SDKs nativos para Custom Auth
+  const handleOAuth = (provider: 'google' | 'facebook' | 'azure') => {
     alert(`El registro con ${provider} está en migración hacia el nuevo sistema Custom Auth.`);
   }
   const formRef = useRef<HTMLFormElement>(null)
@@ -216,7 +213,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => handleOAuth('google')}
-              disabled={!!oauthLoading}
+              disabled={isPending}
               className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium disabled:opacity-60"
             >
               <GoogleIcon />
@@ -226,7 +223,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => handleOAuth('facebook')}
-              disabled={!!oauthLoading}
+              disabled={isPending}
               className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium disabled:opacity-60"
             >
               <FacebookIcon />
@@ -236,7 +233,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => handleOAuth('azure')}
-              disabled={!!oauthLoading}
+              disabled={isPending}
               className="w-full flex items-center justify-center py-3 bg-[#1e2536] hover:bg-slate-700 transition-colors rounded-[1rem] text-slate-300 gap-3 font-medium disabled:opacity-60"
             >
               <MicrosoftIcon />

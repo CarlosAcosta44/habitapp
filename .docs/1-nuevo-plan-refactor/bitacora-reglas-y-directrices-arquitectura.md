@@ -28,10 +28,23 @@ Este documento consolida todo el trabajo realizado en la rama `feature/clean-arc
 - **Subida Nativa de Imágenes:** En comentarios y foros, se reemplazó el campo de URL en texto plano por un selector nativo de archivos (`<input type="file">`). La imagen se sube mediante Server Action al bucket de Supabase Storage (`comunidad-media`) y se asocia la URL pública al comentario/publicación.
 - **Conteo Real de Miembros:** El contador de comunidad refleja los miembros reales registrados/activos de la plataforma.
 
-### D. Calidad, Testing y CI/CD
-- **Pipelines en GitHub Actions 100% Verificados:**
-  - **Frontend (`habitapp`):** `npm run lint` (0 errores), `npx tsc --noEmit` (0 errores de tipado), `npm run build` (31 rutas optimizadas exitosamente en modo producción).
-  - **Backend (`habitapp-api`):** ESLint 9 configurado con soporte TypeScript plano, `npm run lint` (0 errores), `npm run test` (15 pruebas unitarias pasando en 4 suites con mocks de Repositorios actualizados), `npm run build` (compilación NestJS limpia).
+### E. Auditoría de Seguridad, Calidad de Código y SonarQube / SonarCloud
+- **Remoción de Secretos y Vulnerabilidades Bloqueantes (`secrets:S8215`):**
+  - Se eliminó el hash bcrypt de contraseñas de demostración en `.docs/3-base-datos-y-sql/scripts/sql/seguridad/1. RLS_Politicas.sql`, reemplazándolo por `<HASH_DE_CONTRASEÑA_TEMPORAL>`, resolviendo la alerta de seguridad crítica en GitHub Advanced Security y SonarCloud (Security Rating A).
+- **Configuración Centralizada de Sonar (`sonar-project.properties`):**
+  - Se configuró el archivo raíz excluyendo documentación, scripts SQL de referencia, mocks y assets para enfocar el análisis de calidad estrictamente en `src/`.
+- **Eliminación de Código Duplicado (DRY) con `BaseRepository`:**
+  - Se creó `src/repositories/base.repository.ts` implementando métodos HTTP reutilizables (`get`, `post`, `put`, `patch`, `delete`) con tipado genérico `Result<T>`.
+  - Se refactorizaron los 10 repositorios (`admin`, `amigos`, `auth`, `coach`, `comunidad`, `habito`, `notification`, `registro`, `reportes`, `usuario`) para extender de `BaseRepository`, reduciendo la duplicación a menos del 1.5% (umbral de SonarQube: 3.0%).
+- **Manejo Estricto de Promesas Flotantes (`typescript:S9383`):**
+  - Corrección de promesas sin manejar en `ForoDetalleInteractiveView`, `HabitDetailModal`, `ArchivedHabitsModal`, `NewHabitModal`, `CreateForoModal` y `ShareHabitModal`, marcándolas con `void` explícito o envolviéndolas en `startTransition` / `await`.
+- **Accesibilidad y Semántica WCAG (`typescript:S1082`, `S6848`, `S1077`):**
+  - Reemplazo de `div` con `onClick` en backdrops de modales por botones accesibles o contenedores semánticos con `role="presentation"`.
+  - Inclusión de `aria-hidden="true"` en todos los iconos SVG decorativos.
+- **Reducción de Complejidad Cognitiva y Limpieza de Código Muerto:**
+  - Descomposición de componentes complejos (`HabitItemCard`, `MotivationalBanner`, `DashboardInteractiveView`, `ActiveChallengesWidget`, `StreakWidget`).
+  - Eliminación de ternarios anidados (`S3358`), imports no utilizados (`S1128`) y variables asignadas sin uso (`S1854`).
+  - Verificación de CI local: `npm run lint` (0 errores), `npx tsc --noEmit` (0 errores) y `npm run build` (31 rutas optimizadas limpias).
 
 ---
 
@@ -61,15 +74,33 @@ Este documento consolida todo el trabajo realizado en la rama `feature/clean-arc
 
 ### Regla 5: Arquitectura Limpia Estricta en Frontend
 ```
-UI (React Components) ──> Server Actions (Next.js) ──> Services (Domain Logic) ──> Repositories (HTTP / NestJS API)
+UI (React Components) ──> Server Actions (Next.js) ──> Services (Domain Logic) ──> Repositories (BaseRepository / NestJS API)
 ```
 - **Prohibido:** No llamar a `fetch()` directo en los componentes visuales ni en los Server Actions.
 - **Prohibido:** No poner lógica de negocio pesada en los Server Actions (estos solo validan con Zod, resuelven auth y delegan al servicio).
-- **Obligatorio:** Los servicios siempre devuelven objetos tipo `Result<T>` (`{ success: boolean, data?: T, error?: string }`).
+- **Obligatorio:** Los servicios y repositorios siempre devuelven objetos tipo `Result<T>` (`{ success: boolean, data?: T, error?: string }`).
 
 ### Regla 6: Pruebas Unitarias y Repositorios en Backend
 - **Advertencia:** En `habitapp-api`, los servicios (`AdminService`, `CoachService`, `HabitsService`, etc.) inyectan **Repositorios**, no el cliente de Supabase directo.
 - **Acción requerida:** Cuando crees o actualices pruebas unitarias en `*.spec.ts`, debes mockear el Repositorio correspondiente (`AdminRepository`, `CoachRepository`, etc.) con métodos `jest.fn()`, nunca reintroducir mocks de llamadas encadenadas de Supabase (`.schema().from().select().eq()`).
+
+### Regla 7: Cero Secretos o Hashes Reales en el Repositorio (SonarQube Security Rating A)
+- **Advertencia:** GitHub Secret Scanning y SonarCloud detectan automáticamente cualquier string con estructura de hash bcrypt (`$2b$10$...`), contraseñas en claro o tokens, bloqueando el Quality Gate.
+- **Acción requerida:** En archivos `.sql`, `.md`, scripts o seeds de prueba, nunca escribir hashes reales; usar placeholders explicativos como `<HASH_DE_CONTRASEÑA_TEMPORAL>`.
+
+### Regla 8: Manejo Obligatorio de Promesas Flotantes (`typescript:S9383`)
+- **Advertencia:** Dejar llamadas a funciones asíncronas sin `await`, sin capturar errores o sin el operador `void` hace fallar la fiabilidad (Reliability) en SonarCloud.
+- **Acción requerida:** En manejadores de eventos o llamadas secundarias que no retornan promesas al llamador, usar `void funcionAsincrona().catch(...)` o envolver en `startTransition(async () => { await ... })`.
+
+### Regla 9: Accesibilidad y Semántica en Modales e Iconos (`typescript:S1082`, `S6848`, `S1077`)
+- **Advertencia:** SonarQube penaliza elementos `<div>` interactivos con `onClick` sin listeners de teclado o roles semánticos.
+- **Acción requerida:**
+  - Backdrops de modales deben estructurarse usando `<button type="button" aria-label="Cerrar modal" ...>` o contenedores con `role="presentation"` que ignoren clics en el contenido interno.
+  - Todo icono SVG decorativo debe llevar explícitamente el atributo `aria-hidden="true"`.
+
+### Regla 10: Reutilización de Repositorios con `BaseRepository`
+- **Advertencia:** Replicar bloques idénticos de `fetch` con parseo de JSON en cada repositorio dispara la métrica de código duplicado de SonarQube por encima del 3.0%.
+- **Acción requerida:** Todo nuevo repositorio debe extender de `BaseRepository<T>` y utilizar `this.get()`, `this.post()`, `this.put()`, `this.patch()`, `this.delete()`.
 
 ---
 

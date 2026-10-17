@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { motion } from 'framer-motion'
 
 interface AuthSplitContainerProps {
@@ -19,12 +19,6 @@ export function AuthSplitContainer({
   reverseImage = false,
   formMaxWidth = 'sm',
 }: AuthSplitContainerProps) {
-  const [userCount, setUserCount] = useState<number | null>(null)
-
-  useEffect(() => {
-    // TODO: Llamar al endpoint de métricas públicas de NestJS cuando esté disponible
-    // Por ahora usamos un valor fijo o null (que mostrará "+ 12k usuarios")
-  }, [])
 
   return (
     <div className={`w-full min-h-screen flex flex-col ${reverseImage ? 'md:flex-row-reverse' : 'md:flex-row'} items-stretch`}>
@@ -76,11 +70,7 @@ export function AuthSplitContainer({
               </div>
             </div>
             <p className="text-sm font-medium text-white drop-shadow-lg">
-              {userCount !== null ? (
-                <span className="font-bold">+ {userCount} usuarios</span>
-              ) : (
-                <span className="font-bold">+ 12k usuarios</span>
-              )}
+              <span className="font-bold">+ 12k usuarios</span>
               <br />
               <span className="italic opacity-80">escribiendo su historia hoy</span>
             </p>

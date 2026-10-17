@@ -5,9 +5,9 @@ import { Archive, ChevronRight } from 'lucide-react';
 import { ArchivedHabitsModal } from '@/components/modals/ArchivedHabitsModal';
 
 interface ArchivedHabitsWidgetProps {
-  totalArchivados?: number;
-  onHabitReactivated?: (idHabito: string) => void;
-  onHabitDeleted?: (idHabito: string) => void;
+  readonly totalArchivados?: number;
+  readonly onHabitReactivated?: (idHabito: string) => void;
+  readonly onHabitDeleted?: (idHabito: string) => void;
 }
 
 export function ArchivedHabitsWidget({

@@ -12,19 +12,110 @@ import { StreakWidget } from './StreakWidget';
 import { ArchivedHabitsWidget } from './ArchivedHabitsWidget';
 
 interface DashboardInteractiveViewProps {
-  quote: DailyQuote;
-  initialHabitos: any[];
-  allHabitos?: any[];
-  registros: any[];
-  retos: Reto[];
-  totalArchivados: number;
-  rachasMap: Record<string, number>;
-  rachaGlobalReal: number;
-  semanaChecks: {
-    dia: string;
-    activo: boolean;
-    esHoy: boolean;
+  readonly quote: DailyQuote;
+  readonly initialHabitos: any[];
+  readonly allHabitos?: any[];
+  readonly registros: any[];
+  readonly retos: Reto[];
+  readonly totalArchivados: number;
+  readonly rachasMap: Record<string, number>;
+  readonly rachaGlobalReal: number;
+  readonly semanaChecks: {
+    readonly dia: string;
+    readonly activo: boolean;
+    readonly esHoy: boolean;
   }[];
+}
+
+function filterHabitosForSelectedDate(
+  selectedDate: string,
+  todayStr: string,
+  habitos: any[],
+  allHabitosList: any[],
+  registros: any[]
+): any[] {
+  if (selectedDate === todayStr) {
+    return habitos;
+  }
+
+  const pool = allHabitosList && allHabitosList.length > 0 ? allHabitosList : habitos;
+  const seenIds = new Set<string>();
+  const list: any[] = [];
+
+  const findRecord = (habitId: string) => {
+    return registros.find((r) => {
+      const id = r.idHabito || r.idhabito || r.id_habito;
+      const regFecha = typeof r.fecha === 'string' ? r.fecha.slice(0, 10) : r.fecha;
+      return id === habitId && regFecha === selectedDate;
+    });
+  };
+
+  // 1. Hábitos del pool (activos, archivados, inactivos) que existían en esa fecha
+  for (const h of pool) {
+    const id = h.idHabito || h.idhabito;
+    if (!id || seenIds.has(id)) continue;
+
+    const fInicio = (h.fechaInicio || h.fechainicio || '').slice(0, 10);
+    const fFin = (h.fechaFin || h.fechafin || '').slice(0, 10);
+    const record = findRecord(id);
+
+    const existedOnDate = record !== undefined || (!fInicio || fInicio <= selectedDate);
+    const notExpired = !fFin || fFin >= selectedDate;
+
+    if (existedOnDate && notExpired) {
+      seenIds.add(id);
+      if (record) {
+        list.push({
+          ...h,
+          registroHoy: {
+            idRegistro: record.idRegistro || record.idregistro,
+            completado: Boolean(record.completado),
+            progresoActual: record.progresoActual || 0,
+            puntosGanados: record.puntosGanados,
+            observacion: record.observacion,
+          },
+        });
+      } else {
+        list.push({
+          ...h,
+          registroHoy: {
+            completado: false,
+            progresoActual: 0,
+          },
+        });
+      }
+    }
+  }
+
+  // 2. Si hay algún registro histórico de un hábito que ya no esté en el pool (respaldo de integridad)
+  for (const r of registros) {
+    const regFecha = typeof r.fecha === 'string' ? r.fecha.slice(0, 10) : r.fecha;
+    if (regFecha === selectedDate) {
+      const id = r.idHabito || r.idhabito || r.id_habito;
+      if (id && !seenIds.has(id)) {
+        seenIds.add(id);
+        list.push({
+          idHabito: id,
+          idhabito: id,
+          nombre: r.habito?.nombre || 'Hábito en historial',
+          descripcion: r.observacion || '',
+          puntos: r.habito?.puntos || r.puntosGanados || 10,
+          estado: 'Inactivo',
+          metaDiaria: r.progresoActual || 1,
+          unidadMedida: 'veces',
+          registroHoy: {
+            idRegistro: r.idRegistro || r.idregistro,
+            completado: Boolean(r.completado),
+            progresoActual: r.progresoActual || 0,
+            puntosGanados: r.puntosGanados,
+            observacion: r.observacion,
+          },
+        });
+      }
+    }
+  }
+
+  return list;
 }
 
 export function DashboardInteractiveView({
@@ -76,7 +167,7 @@ export function DashboardInteractiveView({
           return {
             ...h,
             registroHoy: {
-              ...(h.registroHoy || {}),
+              ...h.registroHoy,
               progresoActual: newCompleted ? meta : 0,
               completado: newCompleted,
             },
@@ -96,7 +187,7 @@ export function DashboardInteractiveView({
           return {
             ...h,
             registroHoy: {
-              ...(h.registroHoy || {}),
+              ...h.registroHoy,
               progresoActual: newProgress,
               completado: isCompleted,
             },
@@ -171,92 +262,10 @@ export function DashboardInteractiveView({
   // - Si es hoy: muestra los hábitos activos actuales.
   // - Si es un día pasado: muestra el historial completo de hábitos que estuvieron vigentes ese día
   //   (incluyendo hábitos archivados o borrados) con su estado de completitud real de esa fecha.
-  const displayedHabitos = useMemo(() => {
-    if (selectedDate === todayStr) {
-      return habitos;
-    }
-
-    const pool = (allHabitosList && allHabitosList.length > 0) ? allHabitosList : habitos;
-    const seenIds = new Set<string>();
-    const list: any[] = [];
-
-    // Función auxiliar para buscar el registro histórico de un hábito en la fecha seleccionada
-    const findRecord = (habitId: string) => {
-      return registros.find((r) => {
-        const id = r.idHabito || r.idhabito || r.id_habito;
-        const regFecha = typeof r.fecha === 'string' ? r.fecha.slice(0, 10) : r.fecha;
-        return id === habitId && regFecha === selectedDate;
-      });
-    };
-
-    // 1. Hábitos del pool (activos, archivados, inactivos) que existían en esa fecha
-    for (const h of pool) {
-      const id = h.idHabito || h.idhabito;
-      if (!id || seenIds.has(id)) continue;
-
-      const fInicio = (h.fechaInicio || h.fechainicio || '').slice(0, 10);
-      const fFin = (h.fechaFin || h.fechafin || '').slice(0, 10);
-      const record = findRecord(id);
-
-      // El hábito existía si tiene registro histórico ese día O si su fecha de inicio es <= selectedDate
-      const existedOnDate = record !== undefined || (!fInicio || fInicio <= selectedDate);
-      const notExpired = !fFin || fFin >= selectedDate;
-
-      if (existedOnDate && notExpired) {
-        seenIds.add(id);
-        if (record) {
-          list.push({
-            ...h,
-            registroHoy: {
-              idRegistro: record.idRegistro || record.idregistro,
-              completado: Boolean(record.completado),
-              progresoActual: record.progresoActual || 0,
-              puntosGanados: record.puntosGanados,
-              observacion: record.observacion,
-            },
-          });
-        } else {
-          list.push({
-            ...h,
-            registroHoy: {
-              completado: false,
-              progresoActual: 0,
-            },
-          });
-        }
-      }
-    }
-
-    // 2. Si hay algún registro histórico de un hábito que ya no esté en el pool (respaldo de integridad)
-    for (const r of registros) {
-      const regFecha = typeof r.fecha === 'string' ? r.fecha.slice(0, 10) : r.fecha;
-      if (regFecha === selectedDate) {
-        const id = r.idHabito || r.idhabito || r.id_habito;
-        if (id && !seenIds.has(id)) {
-          seenIds.add(id);
-          list.push({
-            idHabito: id,
-            idhabito: id,
-            nombre: r.habito?.nombre || 'Hábito en historial',
-            descripcion: r.observacion || '',
-            puntos: r.habito?.puntos || r.puntosGanados || 10,
-            estado: 'Inactivo',
-            metaDiaria: r.progresoActual || 1,
-            unidadMedida: 'veces',
-            registroHoy: {
-              idRegistro: r.idRegistro || r.idregistro,
-              completado: Boolean(r.completado),
-              progresoActual: r.progresoActual || 0,
-              puntosGanados: r.puntosGanados,
-              observacion: r.observacion,
-            },
-          });
-        }
-      }
-    }
-
-    return list;
-  }, [selectedDate, todayStr, habitos, allHabitosList, registros]);
+  const displayedHabitos = useMemo(
+    () => filterHabitosForSelectedDate(selectedDate, todayStr, habitos, allHabitosList, registros),
+    [selectedDate, todayStr, habitos, allHabitosList, registros]
+  );
 
   // Lista de todas las fechas con algún hábito completado para los dots del calendario
   const diasConRegistro = useMemo(() => {

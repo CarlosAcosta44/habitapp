@@ -1,33 +1,11 @@
 /**
  * @file src/repositories/registro.repository.ts
  * @description Capa de Acceso a Datos (Repository) para el módulo registro.
- * Aísla las llamadas HTTP de la lógica de negocio.
+ * Hereda los métodos HTTP de BaseRepository.
  */
 
-import { apiClient } from "@/lib/api/client";
-import type { Result } from "@/lib/result";
+import { BaseRepository } from "./base.repository";
 
-// Tipos requeridos
-export class RegistroRepository {
-  async get<T = any>(url: string, options?: any): Promise<Result<T>> {
-    return apiClient.get<T>(url, options);
-  }
-  
-  async post<T = any>(url: string, body?: any, options?: any): Promise<Result<T>> {
-    return apiClient.post<T>(url, body, options);
-  }
-  
-  async put<T = any>(url: string, body?: any): Promise<Result<T>> {
-    return apiClient.put<T>(url, body);
-  }
-  
-  async patch<T = any>(url: string, body?: any): Promise<Result<T>> {
-    return apiClient.patch<T>(url, body);
-  }
-  
-  async delete<T = any>(url: string): Promise<Result<T>> {
-    return apiClient.delete<T>(url);
-  }
-}
+export class RegistroRepository extends BaseRepository {}
 
 export const registroRepository = new RegistroRepository();

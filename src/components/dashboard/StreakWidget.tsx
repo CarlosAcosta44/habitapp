@@ -10,6 +10,16 @@ interface StreakWidgetProps {
   }[];
 }
 
+function getDayCircleClass(activo: boolean, esHoy: boolean): string {
+  if (activo) {
+    return 'bg-[#572de4] text-white shadow-[0_2px_8px_rgba(87,45,228,0.3)]';
+  }
+  if (esHoy) {
+    return 'bg-[#e6deff] dark:bg-indigo-950 text-[#572de4] ring-2 ring-[#572de4]/30';
+  }
+  return 'bg-slate-200/70 dark:bg-slate-700/60 text-slate-400';
+}
+
 export function StreakWidget({ rachaActual, diasSemana }: StreakWidgetProps) {
   return (
     <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#111827] shadow-[0_1px_3px_rgba(121,117,130,0.04),0_4px_12px_rgba(121,117,130,0.03)] border border-slate-200/80 dark:border-slate-800 flex flex-col gap-4">
@@ -26,8 +36,8 @@ export function StreakWidget({ rachaActual, diasSemana }: StreakWidgetProps) {
 
       {/* Week Day Checks */}
       <div className="w-full flex items-center justify-between gap-1 px-3 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-        {diasSemana.map((d, index) => (
-          <div key={index} className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
+        {diasSemana.map((d) => (
+          <div key={d.dia} className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
             <span
               className={`text-[11px] font-bold ${
                 d.esHoy ? 'text-[#572de4] dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'
@@ -36,16 +46,7 @@ export function StreakWidget({ rachaActual, diasSemana }: StreakWidgetProps) {
               {d.dia}
             </span>
             <div
-              className={`
-                w-8 h-8 rounded-full flex items-center justify-center transition-all
-                ${
-                  d.activo
-                    ? 'bg-[#572de4] text-white shadow-[0_2px_8px_rgba(87,45,228,0.3)]'
-                    : d.esHoy
-                    ? 'bg-[#e6deff] dark:bg-indigo-950 text-[#572de4] ring-2 ring-[#572de4]/30'
-                    : 'bg-slate-200/70 dark:bg-slate-700/60 text-slate-400'
-                }
-              `}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${getDayCircleClass(d.activo, d.esHoy)}`}
             >
               {d.activo ? (
                 <Check className="w-4 h-4 stroke-[3]" />

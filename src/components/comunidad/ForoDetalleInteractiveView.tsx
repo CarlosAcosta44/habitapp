@@ -16,7 +16,6 @@ import {
   ChevronDown,
   ChevronUp,
   Smile,
-  ShieldCheck,
   CheckCircle2,
   Loader2,
   Trash2,
@@ -363,7 +362,7 @@ export function ForoDetalleInteractiveView({
             type="button"
             onClick={() => {
               if (navigator.clipboard) {
-                navigator.clipboard.writeText(window.location.href);
+                void navigator.clipboard.writeText(window.location.href);
                 showToast('Enlace copiado al portapapeles 📋');
               }
             }}

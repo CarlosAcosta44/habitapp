@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password']
 const PROTECTED_PREFIX = ['/habitos', '/comunidad', '/perfil', '/admin', '/entrenador']
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const token = request.cookies.get('access_token')?.value
   const user = !!token
 

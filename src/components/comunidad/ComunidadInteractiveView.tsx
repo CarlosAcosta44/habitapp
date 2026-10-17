@@ -43,15 +43,15 @@ import { CreateForoModal } from '@/components/modals/CreateForoModal';
 import { ShareHabitModal } from '@/components/modals/ShareHabitModal';
 
 interface ComunidadInteractiveViewProps {
-  initialForos: any[];
-  initialHabitosComunidad: any[];
-  initialArticulos: any[];
-  initialEspecialistas: any[];
-  initialRetos: Reto[];
-  userHabitos?: any[];
-  userId?: string;
-  isAdmin?: boolean;
-  totalMiembros?: number;
+  readonly initialForos: any[];
+  readonly initialHabitosComunidad: any[];
+  readonly initialArticulos: any[];
+  readonly initialEspecialistas: any[];
+  readonly initialRetos: Reto[];
+  readonly userHabitos?: any[];
+  readonly userId?: string;
+  readonly isAdmin?: boolean;
+  readonly totalMiembros?: number;
 }
 
 type TabType = 'todo' | 'foros' | 'habitos' | 'articulos' | 'especialistas' | 'retos';
@@ -1162,7 +1162,15 @@ export function ComunidadInteractiveView({
                     return (
                       <article
                         key={id}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => setSelectedRetoModal(reto)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setSelectedRetoModal(reto);
+                          }
+                        }}
                         className="bg-white dark:bg-[#111827] rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5 cursor-pointer group hover:border-[#572de4]/40"
                       >
                         <div className="flex flex-col gap-3">
@@ -1363,7 +1371,15 @@ export function ComunidadInteractiveView({
               return (
                 <div
                   key={id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setSelectedRetoModal(reto)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedRetoModal(reto);
+                    }
+                  }}
                   className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800 flex flex-col gap-3.5 cursor-pointer hover:border-[#572de4]/40 transition-all"
                 >
                   <div className="flex items-start justify-between">
@@ -1446,11 +1462,18 @@ export function ComunidadInteractiveView({
       {selectedSpecialist && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in"
-          onClick={() => setSelectedSpecialist(null)}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedSpecialist(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setSelectedSpecialist(null);
+          }}
+          role="presentation"
         >
           <div
             className="w-full max-w-md bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col gap-4 animate-in zoom-in-95"
-            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#572de4] uppercase tracking-wider">
@@ -1511,11 +1534,18 @@ export function ComunidadInteractiveView({
         return (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200"
-            onClick={() => setSelectedRetoModal(null)}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setSelectedRetoModal(null);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') setSelectedRetoModal(null);
+            }}
+            role="presentation"
           >
             <div
               className="relative w-full max-w-lg bg-white dark:bg-[#111827] rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col gap-5 animate-in zoom-in-95 duration-200"
-              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
             >
               {/* Header */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">

@@ -6,16 +6,22 @@ import { HabitItemCard } from './HabitItemCard';
 import { NewHabitModal } from '@/components/modals/NewHabitModal';
 
 interface TodayHabitsListProps {
-  habitos: any[];
-  rachasMap: Record<string, number>;
-  selectedDate: string;
-  todayStr: string;
-  recordsMapByHabitId: Record<string, boolean>; // idHabito -> completado
-  completedDatesByHabitId?: Record<string, string[]>;
-  onToggleTodayHabit?: (idHabito: string, newCompleted: boolean) => void;
-  onProgressUpdate?: (idHabito: string, newProgress: number, isCompleted: boolean) => void;
-  onArchive?: (idHabito: string) => void;
-  onDelete?: (idHabito: string) => void;
+  readonly habitos: any[];
+  readonly rachasMap: Record<string, number>;
+  readonly selectedDate: string;
+  readonly todayStr: string;
+  readonly recordsMapByHabitId: Record<string, boolean>; // idHabito -> completado
+  readonly completedDatesByHabitId?: Record<string, string[]>;
+  readonly onToggleTodayHabit?: (idHabito: string, newCompleted: boolean) => void;
+  readonly onProgressUpdate?: (idHabito: string, newProgress: number, isCompleted: boolean) => void;
+  readonly onArchive?: (idHabito: string) => void;
+  readonly onDelete?: (idHabito: string) => void;
+}
+
+function getTodayBadgeText(total: number, pendientes: number): string {
+  if (total === 0) return '0 hábitos';
+  if (pendientes === 0) return '¡Todo completado! 🎉';
+  return `${pendientes} ${pendientes === 1 ? 'tarea pendiente' : 'tareas pendientes'}`;
 }
 
 export function TodayHabitsList({
@@ -80,11 +86,7 @@ export function TodayHabitsList({
                   }
                 `}
               >
-                {habitos.length === 0
-                  ? '0 hábitos'
-                  : pendientesHoy === 0
-                  ? '¡Todo completado! 🎉'
-                  : `${pendientesHoy} ${pendientesHoy === 1 ? 'tarea pendiente' : 'tareas pendientes'}`}
+                {getTodayBadgeText(habitos.length, pendientesHoy)}
               </span>
             ) : isPast ? (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
@@ -182,9 +184,10 @@ export function TodayHabitsList({
 
         {/* Botón rápido "+ Añadir un nuevo hábito para tu rutina..." */}
         {habitos.length > 0 && (
-          <div
+          <button
+            type="button"
             onClick={() => setIsNewHabitModalOpen(true)}
-            className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-[#111827] hover:bg-slate-50 dark:hover:bg-[#161f33] transition-colors border border-dashed border-slate-300 dark:border-slate-700 cursor-pointer group"
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-[#111827] hover:bg-slate-50 dark:hover:bg-[#161f33] transition-colors border border-dashed border-slate-300 dark:border-slate-700 cursor-pointer group text-left"
           >
             <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 group-hover:text-[#572de4] dark:group-hover:text-indigo-300 transition-colors">
               <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 group-hover:bg-[#e6deff] dark:group-hover:bg-indigo-950 transition-colors">
@@ -197,7 +200,7 @@ export function TodayHabitsList({
             <span className="text-xs font-bold text-[#572de4] dark:text-indigo-400 group-hover:underline hidden sm:inline-block">
               Configurar hábito
             </span>
-          </div>
+          </button>
         )}
       </div>
 

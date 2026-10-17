@@ -346,7 +346,7 @@ export function HabitDetailModal({
     if (navigator.share) {
       navigator.share({ title: 'Mi Hábito en HabitApp', text }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(text);
+      void navigator.clipboard.writeText(text);
       alert('¡Copiado al portapapeles!');
     }
   };
@@ -484,10 +484,11 @@ export function HabitDetailModal({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                  <label htmlFor="edit_meta_diaria" className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                     Meta diaria
                   </label>
                   <input
+                    id="edit_meta_diaria"
                     type="number"
                     min={1}
                     max={999}

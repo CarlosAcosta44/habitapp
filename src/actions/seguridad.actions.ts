@@ -14,7 +14,6 @@
 
 import { z }              from "zod";
 import { revalidatePath } from "next/cache";
-import { headers }        from "next/headers";
 
 import { UsuarioService } from "@/services/usuario.service";
 
@@ -91,6 +90,7 @@ export async function updateEmailAction(
   _prev: ActionState | null,
   formData: FormData
 ): Promise<ActionState> {
+  await Promise.resolve();
   const parsed = UpdateEmailSchema.safeParse({
     email: formData.get("email"),
   });
@@ -112,6 +112,7 @@ export async function updatePasswordAction(
   _prev: ActionState | null,
   formData: FormData
 ): Promise<ActionState> {
+  await Promise.resolve();
   const parsed = UpdatePasswordSchema.safeParse({
     newPassword:     formData.get("newPassword"),
     confirmPassword: formData.get("confirmPassword"),

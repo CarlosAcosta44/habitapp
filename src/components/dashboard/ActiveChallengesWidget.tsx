@@ -46,14 +46,10 @@ export function ActiveChallengesWidget({ retos }: ActiveChallengesWidgetProps) {
           </div>
         ) : (
           displayRetos.map((reto, index) => {
-            // Progreso simulado o calculado si no existe en backend
-            const progress = reto.progreso ?? (index === 0 ? 35 : index === 1 ? 60 : 20);
-            const color =
-              index === 0
-                ? 'bg-[#572de4]'
-                : index === 1
-                ? 'bg-[#796cbd]'
-                : 'bg-emerald-500';
+            const defaultProgress = [35, 60, 20];
+            const progressColors = ['bg-[#572de4]', 'bg-[#796cbd]', 'bg-emerald-500'];
+            const progress = reto.progreso ?? defaultProgress[index % defaultProgress.length];
+            const color = progressColors[index % progressColors.length];
 
             return (
               <Link

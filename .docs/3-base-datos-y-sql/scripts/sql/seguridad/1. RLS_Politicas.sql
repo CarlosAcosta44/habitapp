@@ -17,9 +17,9 @@ DELETE FROM auth.users;
 DROP TRIGGER IF EXISTS trigger_sync_rol_auth ON gestion.usuarios;
 DROP FUNCTION IF EXISTS gestion.sync_rol_a_auth() CASCADE;
 
--- Asignar contraseñas a los usuarios existentes en la tabla nativa (Contraseña: HabitApp2026)
+-- Asignar contraseñas a los usuarios existentes en la tabla nativa (Reemplazar por el hash generado en producción)
 UPDATE gestion.usuarios 
-SET password_hash = '$2b$10$KeXsORoygZ.5ZHDEt4lmwu6Ul3Ur/3mmS4fi8BRVQjxtJfahrPCHO' 
+SET password_hash = '<HASH_DE_CONTRASEÑA_TEMPORAL>' 
 WHERE password_hash IS NULL;
 
 -- =========================================================================

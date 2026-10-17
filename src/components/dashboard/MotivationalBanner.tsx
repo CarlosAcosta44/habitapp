@@ -14,12 +14,28 @@ interface DayItem {
 }
 
 interface MotivationalBannerProps {
-  quote: DailyQuote;
-  completados: number;
-  total: number;
-  selectedDate: string;
-  onSelectDate: (dateStr: string) => void;
-  diasConRegistro?: string[]; // array de YYYY-MM-DD
+  readonly quote: DailyQuote;
+  readonly completados: number;
+  readonly total: number;
+  readonly selectedDate: string;
+  readonly onSelectDate: (dateStr: string) => void;
+  readonly diasConRegistro?: string[]; // array de YYYY-MM-DD
+}
+
+function getWeekDayCardClass(isSelected: boolean, isCurrentToday: boolean): string {
+  if (isSelected) {
+    return 'bg-[#572de4] text-white shadow-[0_4px_14px_rgba(87,45,228,0.4)] scale-105';
+  }
+  if (isCurrentToday) {
+    return 'bg-[#572de4]/15 dark:bg-[#572de4]/30 text-[#572de4] dark:text-indigo-300 font-bold border border-[#572de4]/30';
+  }
+  return 'bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/70 dark:border-slate-700/60';
+}
+
+function getDotIndicatorClass(isSelected: boolean, hasActivity: boolean): string {
+  if (isSelected) return 'bg-white';
+  if (hasActivity) return 'bg-[#572de4] dark:bg-indigo-400';
+  return 'bg-slate-400/50 dark:bg-slate-600';
 }
 
 export function MotivationalBanner({
@@ -172,20 +188,14 @@ export function MotivationalBanner({
             const isCurrentToday = day.isToday;
 
             return (
-              <div
+              <button
                 key={day.dateStr}
+                type="button"
                 onClick={() => onSelectDate(day.dateStr)}
-                className={`
-                  flex flex-col items-center justify-center w-11 sm:w-12 h-14 rounded-2xl
-                  cursor-pointer transition-all duration-200 select-none
-                  ${
-                    isSelected
-                      ? 'bg-[#572de4] text-white shadow-[0_4px_14px_rgba(87,45,228,0.4)] scale-105'
-                      : isCurrentToday
-                      ? 'bg-[#572de4]/15 dark:bg-[#572de4]/30 text-[#572de4] dark:text-indigo-300 font-bold border border-[#572de4]/30'
-                      : 'bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/70 dark:border-slate-700/60'
-                  }
-                `}
+                className={`flex flex-col items-center justify-center w-11 sm:w-12 h-14 rounded-2xl cursor-pointer transition-all duration-200 select-none ${getWeekDayCardClass(
+                  isSelected,
+                  isCurrentToday
+                )}`}
               >
                 <span
                   className={`text-[11px] font-semibold ${
@@ -199,15 +209,12 @@ export function MotivationalBanner({
                 </span>
                 {/* Dot indicator de actividad o racha */}
                 <span
-                  className={`w-1.5 h-1.5 rounded-full mt-1 ${
-                    isSelected
-                      ? 'bg-white'
-                      : day.hasActivity
-                      ? 'bg-[#572de4] dark:bg-indigo-400'
-                      : 'bg-slate-400/50 dark:bg-slate-600'
-                  }`}
+                  className={`w-1.5 h-1.5 rounded-full mt-1 ${getDotIndicatorClass(
+                    isSelected,
+                    day.hasActivity
+                  )}`}
                 />
-              </div>
+              </button>
             );
           })}
 

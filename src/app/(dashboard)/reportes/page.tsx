@@ -174,7 +174,7 @@ export default async function ReportesPage() {
 
         {/* Chart placeholder con CSS */}
         <div className="relative h-48 mb-4">
-          <svg viewBox="0 0 700 200" className="w-full h-full" preserveAspectRatio="none">
+          <svg aria-hidden="true" viewBox="0 0 700 200" className="w-full h-full" preserveAspectRatio="none">
             {/* Grid lines */}
             {[0, 50, 100, 150, 200].map((y) => (
               <line key={y} x1="0" y1={y} x2="700" y2={y} stroke="#1e293b" strokeWidth="1" />
