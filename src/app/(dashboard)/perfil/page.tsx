@@ -4,7 +4,7 @@
  * @layer Presentation (Capa 1)
  */
 
-import { requireUser } from "@/lib/supabase/server";
+import { requireUserStrict as requireUser } from "@/lib/auth/require-user";
 import { UsuarioService } from "@/services/usuario.service";
 import { PerfilHeader } from "@/components/perfil/PerfilHeader";
 import { PerfilSidebar } from "@/components/perfil/PerfilSidebar";

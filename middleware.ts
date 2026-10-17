@@ -1,11 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
 
 const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password']
 const PROTECTED_PREFIX = ['/habitos', '/comunidad', '/perfil', '/admin', '/entrenador']
 
-export async function middleware(request: NextRequest) {
-  const { supabaseResponse, user } = await updateSession(request)
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('access_token')?.value
+  const user = !!token
+
   const pathname = request.nextUrl.pathname
 
   const isPublicRoute = PUBLIC_ROUTES.some(r => pathname.startsWith(r))
@@ -25,7 +26,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  return supabaseResponse
+  return NextResponse.next()
 }
 
 export const config = {

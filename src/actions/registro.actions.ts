@@ -24,7 +24,7 @@ const MarcarCompletadoSchema = z.object({
 const AvanzarProgresoSchema = z.object({
   idHabito:   z.string().uuid("Hábito inválido"),
   fecha:      z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida"),
-  cantidadAsumar: z.coerce.number().min(1),
+  cantidadAsumar: z.coerce.number().refine((val) => val !== 0, "No puede ser cero"),
   metaDiaria: z.coerce.number().min(1),
   observacion: z.string().max(200).optional(),
 });
@@ -55,6 +55,7 @@ export async function marcarCompletadoAction(
 
   const result = await service.marcarCompletado({
     idHabito:    validation.data.idHabito,
+    fecha:       validation.data.fecha,
     observacion: validation.data.observacion,
   });
 
@@ -118,6 +119,7 @@ export async function avanzarProgresoAction(
   const result = await service.avanzarProgreso({
     idHabito:       validation.data.idHabito,
     cantidadASumar: validation.data.cantidadAsumar,
+    fecha:          validation.data.fecha,
     observacion:    validation.data.observacion,
   });
 

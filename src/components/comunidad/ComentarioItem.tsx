@@ -10,7 +10,7 @@ import { useState, useTransition } from "react";
 import { reaccionarAction }        from "@/actions/comunidad.actions";
 import { ComentarioForm }          from "./ComentarioForm";
 import { DeleteCommentButton }     from "./DeleteCommentButton";
-import type { ComentarioConAutor } from "@/types/domain/comunidad.types";
+import type { ComentarioConAutor } from "@/domain/comunidad.types";
 
 interface ComentarioItemProps {
   comentario: ComentarioConAutor;
@@ -30,10 +30,7 @@ export function ComentarioItem({
 
   function handleReaccion(tipo: "Me gusta" | "Me motiva" | "Util") {
     startTransition(async () => {
-      const formData = new FormData();
-      formData.set("tipo",         tipo);
-      formData.set("idComentario", comentario.idComentario);
-      await reaccionarAction(null, formData);
+      await reaccionarAction("comentario", comentario.idComentario, tipo);
     });
   }
 

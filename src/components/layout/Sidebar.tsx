@@ -1,48 +1,84 @@
 'use client';
 
-/* eslint-disable react-hooks/set-state-in-effect */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  CheckSquare, 
+  CheckCircle2, 
   Users, 
   Settings, 
-  LifeBuoy, 
+  HelpCircle, 
   Moon,
+  Sun,
   Trophy,
   BarChart3,
-  Sparkles,
-  HeartPulse,
-  Power,
-  Shield
+  LogOut,
+  Shield,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Plus
 } from 'lucide-react';
 import { NewHabitModal } from '../modals/NewHabitModal';
 import { logoutAction } from '@/actions/auth.actions';
-import { User } from '@/types/domain/user.types';
+import { User } from '@/domain/user.types';
 import { NotificationBell } from '../notifications/NotificationBell';
 
 interface SidebarProps {
-  user: User;
+  readonly user: User;
+}
+
+function getSidebarNavLinks(user: User) {
+  const links = [
+    { name: 'Hábitos', href: '/habitos', icon: CheckCircle2 },
+    { name: 'Retos y Desafíos', href: '/retos', icon: Trophy },
+    { name: 'Comunidad', href: '/comunidad', icon: Users },
+    { name: 'Progreso y Métricas', href: '/reportes', icon: BarChart3 },
+    { name: 'Ajustes', href: '/ajustes', icon: Settings },
+  ];
+
+  const roleUpper = (user?.role || user?.nombrerol || '').toUpperCase();
+  if (roleUpper === 'ADMIN' || roleUpper === 'ADMINISTRADOR') {
+    links.push({ name: 'Administrador', href: '/admin', icon: Shield });
+  } else if (roleUpper === 'TRAINER' || roleUpper === 'ENTRENADOR') {
+    links.push({ name: 'Entrenador', href: '/entrenador', icon: Shield });
+  }
+
+  return links;
+}
+
+function getUserDisplayInfo(user: User) {
+  const avatarUrl = user?.fotoperfil || user?.avatar_url;
+  const initial = user?.nombre?.[0] || user?.full_name?.[0] || 'U';
+  let displayName = user?.full_name || 'Usuario';
+  if (user?.nombre) {
+    displayName = user.apellido ? `${user.nombre} ${user.apellido}` : user.nombre;
+  }
+  return { avatarUrl, initial, displayName };
 }
 
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
-    if (saved) return saved === 'dark';
-    return typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false;
-  });
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const handleThemeChange = () => {
+    setMounted(true);
+    // Dark mode sync
+    const checkDark = () => {
       setIsDarkMode(document.documentElement.classList.contains('dark'));
     };
-    window.addEventListener('theme-change', handleThemeChange);
-    return () => window.removeEventListener('theme-change', handleThemeChange);
+    checkDark();
+
+    // Collapsed state from storage
+    const savedCollapsed = localStorage.getItem('sidebar_collapsed');
+    if (savedCollapsed === 'true') {
+      setIsCollapsed(true);
+    }
+
+    window.addEventListener('theme-change', checkDark);
+    return () => window.removeEventListener('theme-change', checkDark);
   }, []);
 
   const toggleDarkMode = () => {
@@ -55,144 +91,258 @@ export function Sidebar({ user }: SidebarProps) {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
-    window.dispatchEvent(new Event('theme-change')); // Notificar a los demás
+    window.dispatchEvent(new Event('theme-change'));
   };
 
-  const navLinks = [
-    { name: 'Hábitos', href: '/habitos', icon: CheckSquare },
-    { name: 'Retos', href: '/retos', icon: Trophy },
-    { name: 'Comunidad', href: '/comunidad', icon: Users },
-    { name: 'Reportes', href: '/reportes', icon: BarChart3 },
-    { name: 'Ajustes', href: '/ajustes', icon: Settings },
-  ];
+  const toggleCollapsed = () => {
+    const next = !isCollapsed;
+    setIsCollapsed(next);
+    localStorage.setItem('sidebar_collapsed', String(next));
+  };
 
-  if (user?.role === 'admin' || user?.role?.toUpperCase() === 'ADMIN' || user?.nombrerol?.toUpperCase() === 'ADMIN' || user?.nombrerol?.toUpperCase() === 'ADMINISTRADOR') {
-    navLinks.push({ name: 'Panel de Administrador', href: '/admin', icon: Shield });
-  }
-
-  if (user?.role === 'trainer' || user?.role?.toUpperCase() === 'TRAINER' || user?.nombrerol?.toUpperCase() === 'TRAINER' || user?.nombrerol?.toUpperCase() === 'ENTRENADOR') {
-    navLinks.push({ name: 'Panel de Entrenador', href: '/entrenador', icon: Shield });
-  }
+  const navLinks = getSidebarNavLinks(user);
+  const { avatarUrl, initial, displayName } = getUserDisplayInfo(user);
 
   return (
-    <aside className="w-64 h-full bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-800 dark:text-slate-300 transition-colors border-r border-slate-200 dark:border-slate-800">
-      {/* Brand & User Profile Area */}
-      <div className="p-6 flex flex-col space-y-6 mb-5 ">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-wide text-indigo-300">
-            HabitApp
-          </h2>
-          <NotificationBell />
-        </div>
-        
-        <Link
-          href="/perfil"
-          className="flex items-center space-x-4 rounded-xl p-1 -m-1 transition-colors hover:bg-slate-100 dark:hover:bg-slate-900/60 mb-6 "
-          aria-label="Ir al perfil"
-        >
-          <div className="relative">
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
-              {user?.fotoperfil || user?.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={user.fotoperfil || user.avatar_url} alt="User Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-xl font-bold text-indigo-700 dark:text-white bg-indigo-100 dark:bg-indigo-600">
-                  {user?.nombre?.[0] || user?.full_name?.[0] || 'U'}
+    <>
+      <aside
+        className={`
+          h-[calc(100vh-2rem)] sticky top-4
+          bg-white/95 dark:bg-[#111827]/95 backdrop-blur-xl
+          rounded-3xl border border-slate-200/80 dark:border-slate-800
+          shadow-[0_8px_24px_rgba(112,78,253,0.06)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.3)]
+          flex flex-col justify-between p-4 shrink-0 z-30
+          transition-all duration-300 ease-in-out
+          ${isCollapsed ? 'w-20' : 'w-64'}
+        `}
+      >
+        <div className="flex flex-col gap-5">
+          {/* Header Logo + Notificaciones + Minimizar */}
+          <div className="flex items-center justify-between pb-1">
+            <Link
+              href="/habitos"
+              className={`flex items-center gap-3 overflow-hidden transition-all ${
+                isCollapsed ? 'justify-center w-full' : ''
+              }`}
+              title="HabitApp"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt="HabitApp Logo"
+                className="h-9 w-9 object-contain flex-shrink-0"
+                src="/images/logo-habitapp.png"
+              />
+              {!isCollapsed && (
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[17px] font-bold text-slate-900 dark:text-white leading-tight truncate">
+                    HabitApp
+                  </span>
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">
+                    Salud Mental &amp; Hábitos
+                  </span>
                 </div>
               )}
-            </div>
-            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-indigo-500 dark:bg-indigo-300 rounded-full border-2 border-white dark:border-slate-900" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-indigo-900 dark:text-indigo-200 truncate uppercase tracking-wider leading-tight pb-1">
-              {user?.nombre ? (user.apellido ? `${user.nombre} ${user.apellido}` : user.nombre) : (user?.full_name || 'Usuario')}
-            </p>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate uppercase tracking-widest">
-              Rol: {user?.nombrerol || 'USUARIO'}
-            </p>
-          </div>
-        </Link>
-
-        <button 
-          onClick={() => setIsNewHabitModalOpen(true)}
-          className="w-full bg-[#9da8ff] hover:bg-indigo-300 text-slate-950 font-bold text-sm py-3 px-4 rounded-[2rem] transition-colors shadow-lg active:scale-95 uppercase tracking-wide inline-flex items-center justify-center gap-2"
-        >
-          <Sparkles className="w-4 h-4" />
-          Nuevo Hábito
-        </button>
-      </div>
-
-      {/* Navigation Links */}
-      <nav className="flex-1 px-4 mt-4 space-y-1 overflow-y-auto">
-        {navLinks.map((link) => {
-          const Icon = link.icon;
-          const isActive = pathname === link.href || (pathname?.startsWith(link.href) && link.href !== '/');
-          
-          return (
-            <Link 
-              key={link.name} 
-              href={link.href}
-              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-colors group ${
-                isActive 
-                  ? 'bg-indigo-100 dark:bg-indigo-600/10 text-indigo-600 dark:text-indigo-400' 
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white text-slate-600 dark:text-slate-400'
-              }`}
-            >
-              <Icon className={`w-5 h-5 ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:group-hover:text-white group-hover:text-slate-900 transition-colors'}`} />
-              <span className={`text-sm font-medium ${isActive ? 'text-indigo-600 dark:text-indigo-400' : ''}`}>
-                {link.name}
-              </span>
             </Link>
-          );
-        })}
 
-        <div className="mb-6 mt-8 rounded-2xl border border-indigo-200/20 bg-indigo-500/5 px-4 py-5 text-center">
-          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-300">
-            <HeartPulse className="h-5 w-5" />
+            {!isCollapsed && (
+              <div className="flex items-center gap-1">
+                <NotificationBell />
+                <button
+                  onClick={toggleCollapsed}
+                  className="p-1.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  title="Minimizar barra lateral"
+                  type="button"
+                >
+                  <PanelLeftClose className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
-          <p className="mt-3 text-xs uppercase tracking-[0.14em] text-indigo-300/80">
-            Bienestar diario
-          </p>
-          <p className="mt-1 text-[11px] text-slate-400">
-            Cada pequeño avance suma.
-          </p>
-        </div>
-      </nav>
 
-      {/* Bottom Footer Area */}
-      <div className="px-4 pb-6 mt-auto flex flex-col space-y-1 border-t border-slate-200 dark:border-slate-800 pt-4">
-        <div className="flex items-center justify-between px-3 py-2.5 mt-2">
-          <div className="flex items-center space-x-3 text-slate-600 dark:text-slate-400">
-            <Moon className="w-5 h-5 text-slate-400" />
-            <span className="text-sm font-medium">Modo nocturno</span>
-          </div>
-          
-          <button 
-            onClick={toggleDarkMode}
-            className={`p-0.5 relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${isDarkMode ? 'bg-indigo-500' : 'bg-slate-300'}`}
+          {/* Si está colapsado, botón para expandir y campana */}
+          {isCollapsed && (
+            <div className="flex flex-col items-center gap-2 pt-1">
+              <NotificationBell />
+              <button
+                onClick={toggleCollapsed}
+                className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                title="Expandir barra lateral"
+                type="button"
+              >
+                <PanelLeftOpen className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* Botón Acción Crear Hábito */}
+          <button
+            onClick={() => setIsNewHabitModalOpen(true)}
+            className={`
+              w-full bg-[#572de4] hover:bg-[#4823c9] text-white
+              font-semibold text-sm rounded-2xl transition-all duration-200
+              shadow-[0_4px_14px_rgba(87,45,228,0.3)] hover:shadow-[0_6px_20px_rgba(87,45,228,0.4)]
+              active:scale-95 flex items-center justify-center gap-2
+              ${isCollapsed ? 'p-3' : 'py-3 px-4'}
+            `}
+            title="Crear Hábito"
+            type="button"
           >
-            <span className="sr-only">Toggle Dark Mode</span>
-            <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isDarkMode ? 'translate-x-4' : 'translate-x-1'}`} />
+            <Plus className="w-5 h-5 flex-shrink-0" />
+            {!isCollapsed && <span>Nuevo Hábito</span>}
           </button>
+
+          {/* Navigation Links */}
+          <nav className="flex flex-col gap-1.5">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive =
+                pathname === link.href ||
+                (pathname?.startsWith(link.href) && link.href !== '/');
+
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  title={isCollapsed ? link.name : undefined}
+                  className={`
+                    flex items-center gap-3 rounded-2xl transition-all duration-200 text-[14px] font-medium
+                    ${isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'}
+                    ${
+                      isActive
+                        ? 'bg-[#572de4] text-white font-semibold shadow-[0_4px_12px_rgba(87,45,228,0.25)]'
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white'
+                    }
+                  `}
+                >
+                  <Icon
+                    className={`w-5 h-5 flex-shrink-0 ${
+                      isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400'
+                    }`}
+                  />
+                  {!isCollapsed && <span className="truncate">{link.name}</span>}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        <button className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors text-slate-600 dark:text-slate-400 group w-full text-left">
-          <LifeBuoy className="w-5 h-5 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-slate-400" />
-          <span className="text-sm font-medium">Centro de ayuda</span>
-        </button>
-        
-        <form action={logoutAction} className="w-full">
-          <button className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors text-slate-600 dark:text-slate-400 group w-full text-left">
-            <Power className="w-5 h-5 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-slate-400" />
-            <span className="text-sm font-medium">Cerrar sesión</span>
-          </button>
-        </form>
-      </div>
+        {/* Footer Area: Dark Mode Switch + User Profile */}
+        <div className="flex flex-col gap-3 pt-3 border-t border-slate-200/80 dark:border-slate-800">
+          {/* Switch Modo Oscuro / Claro */}
+          <div
+            className={`
+              flex items-center justify-between rounded-2xl p-2 bg-slate-50 dark:bg-slate-800/50
+              ${isCollapsed ? 'justify-center' : 'px-3 py-2'}
+            `}
+          >
+            {!isCollapsed && (
+              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                {isDarkMode ? (
+                  <Moon className="w-4 h-4 text-indigo-400" />
+                ) : (
+                  <Sun className="w-4 h-4 text-amber-500" />
+                )}
+                <span className="text-xs font-semibold">
+                  {isDarkMode ? 'Modo Oscuro' : 'Modo Claro'}
+                </span>
+              </div>
+            )}
 
-      <NewHabitModal 
-        isOpen={isNewHabitModalOpen} 
-        onClose={() => setIsNewHabitModalOpen(false)} 
+            <button
+              onClick={toggleDarkMode}
+              className={`
+                relative inline-flex items-center rounded-full transition-colors focus:outline-none
+                ${isCollapsed ? 'p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700' : 'h-6 w-11 p-0.5'}
+                ${!isCollapsed && (isDarkMode ? 'bg-[#572de4]' : 'bg-slate-300')}
+              `}
+              title={isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+              type="button"
+            >
+              {isCollapsed ? (
+                isDarkMode ? (
+                  <Moon className="w-5 h-5 text-indigo-400" />
+                ) : (
+                  <Sun className="w-5 h-5 text-amber-500" />
+                )
+              ) : (
+                <>
+                  <span className="sr-only">Toggle Dark Mode</span>
+                  <span
+                    className={`
+                      inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform
+                      ${isDarkMode ? 'translate-x-5' : 'translate-x-0'}
+                    `}
+                  />
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* User Profile Card */}
+          <div
+            className={`
+              rounded-2xl bg-slate-50 dark:bg-slate-800/60 p-2.5 flex items-center justify-between
+              border border-slate-200/60 dark:border-slate-800
+              ${isCollapsed ? 'justify-center p-2' : ''}
+            `}
+          >
+            <Link
+              href="/perfil"
+              className={`flex items-center gap-2.5 min-w-0 ${isCollapsed ? 'justify-center' : ''}`}
+              title="Ver perfil"
+            >
+              <div className="relative flex-shrink-0">
+                <div className="w-9 h-9 rounded-full overflow-hidden bg-[#e6deff] dark:bg-indigo-950 flex items-center justify-center text-[#1b065c] dark:text-indigo-200 font-bold text-sm">
+                  {avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{initial}</span>
+                  )}
+                </div>
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
+              </div>
+
+              {!isCollapsed && (
+                <div className="flex flex-col min-w-0">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                    {displayName}
+                  </span>
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">
+                    {user?.nombrerol || 'Usuario'}
+                  </span>
+                </div>
+              )}
+            </Link>
+
+            {!isCollapsed && (
+              <div className="flex items-center gap-0.5 text-slate-400 dark:text-slate-500">
+                <Link
+                  href="/ajustes/soporte"
+                  className="p-1.5 rounded-lg hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors"
+                  title="Ayuda y Soporte"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </Link>
+                <form action={logoutAction}>
+                  <button
+                    type="submit"
+                    className="p-1.5 rounded-lg hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                    title="Cerrar sesión"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      </aside>
+
+      <NewHabitModal
+        isOpen={isNewHabitModalOpen}
+        onClose={() => setIsNewHabitModalOpen(false)}
       />
-    </aside>
+    </>
   );
 }

@@ -4,7 +4,7 @@
  * descripción, badge de estado y conteo de miembros.
  */
 
-import type { ForoConMetricas } from "@/types/domain/comunidad.types";
+import type { ForoConMetricas } from "@/domain/comunidad.types";
 import Link from "next/link";
 import { DeleteForumButton } from "./DeleteForumButton";
 
@@ -59,7 +59,7 @@ export function ForoComunidadCard({ foro, isAdmin = false }: ForoComunidadCardPr
 
       {/* Miembros */}
       <div className="flex items-center gap-2 text-xs text-slate-500">
-        <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <svg aria-hidden="true" className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75Z" />
         </svg>
         <span className="text-slate-500 dark:text-slate-400">{foro.totalSuscriptores.toLocaleString()} miembros</span>

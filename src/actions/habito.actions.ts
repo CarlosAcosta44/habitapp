@@ -15,10 +15,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect }       from "next/navigation";
 import { z }              from "zod";
 import { requireUser }    from "@/lib/auth/require-user";
 import { HabitoService }  from "@/services/habito.service";
+import type { CategoriaHabito } from "@/domain/habito.types";
 
 const service = new HabitoService();
 
@@ -36,7 +36,7 @@ const CreateHabitoSchema = z.object({
 });
 
 const UpdateHabitoSchema = CreateHabitoSchema.partial().extend({
-  estado: z.enum(["Activo", "Inactivo", "Completado"]).optional(),
+  estado: z.enum(["Activo", "Inactivo", "Completado", "Archivado", "Pausado", "Cancelado"]).optional(),
 });
 
 // ─── Tipo de retorno estándar para useActionState ─────────────────────────────
@@ -112,7 +112,6 @@ export async function createHabitoAction(
   }
 
   revalidatePath("/habitos");
-  redirect("/habitos");
   return { success: true, message: "Hábito creado exitosamente" };
 }
 
@@ -129,12 +128,14 @@ export async function updateHabitoAction(
   if (!id) return { success: false, message: "ID del hábito requerido" };
 
   const rawData = {
-    nombre:      formData.get("nombre"),
-    descripcion: formData.get("descripcion"),
+    nombre:      formData.get("nombre") || undefined,
+    descripcion: formData.get("descripcion") || undefined,
     fechaFin:    formData.get("fechaFin") || undefined,
-    puntos:      formData.get("puntos"),
-    idCategoria: formData.get("idCategoria"),
-    estado:      formData.get("estado"),
+    puntos:      formData.get("puntos") || undefined,
+    idCategoria: formData.get("idCategoria") || undefined,
+    estado:      formData.get("estado") || undefined,
+    metaDiaria:  formData.get("metaDiaria") || undefined,
+    unidadMedida:formData.get("unidadMedida") || undefined,
   };
 
   const validation = UpdateHabitoSchema.safeParse(rawData);
@@ -149,6 +150,8 @@ export async function updateHabitoAction(
   const result = await service.update(id, {
     ...validation.data,
     fechaFin: validation.data.fechaFin ?? undefined,
+    metaDiaria: validation.data.metaDiaria ?? undefined,
+    unidadMedida: validation.data.unidadMedida ?? undefined,
   });
 
   if (!result.success) {
@@ -166,18 +169,19 @@ export async function deleteHabitoAction(
 ): Promise<ActionState> {
   const userResult = await requireUser();
   if (!userResult.success) return { success: false, message: userResult.error };
-  const user = userResult.data;
 
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
 
-  const result = await service.delete(id);
+  // Soft-delete: marcamos como 'Inactivo' para que se retire de la rutina
+  // pero NUNCA se destruyan los registros históricos de días anteriores.
+  const result = await service.update(id, { estado: "Inactivo" });
   if (!result.success) {
     return { success: false, message: result.error };
   }
 
   revalidatePath("/habitos");
-  return { success: true, message: "Hábito eliminado exitosamente" };
+  return { success: true, message: "Hábito retirado de tu rutina (historial preservado) ✨" };
 }
 
 // ─── completarHabitoAction ────────────────────────────────────────────────────
@@ -199,4 +203,55 @@ export async function completarHabitoAction(
 
   revalidatePath("/habitos");
   return { success: true, message: "¡Hábito completado! 🎉" };
+}
+
+// ─── getCategoriasAction ──────────────────────────────────────────────────────
+export async function getCategoriasAction(): Promise<CategoriaHabito[]> {
+  const result = await service.getCategorias();
+  if (result.success && Array.isArray(result.data)) {
+    return result.data;
+  }
+  return [];
+}
+
+// ─── getArchivadosAction ──────────────────────────────────────────────────────
+export async function getArchivadosAction(): Promise<any[]> {
+  const result = await service.getAll("Inactivo");
+  if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+    return result.data;
+  }
+  const resultArchivados = await service.getAll("Archivado");
+  if (resultArchivados.success && Array.isArray(resultArchivados.data)) {
+    return resultArchivados.data;
+  }
+  return [];
+}
+
+// ─── reactivarHabitoAction ────────────────────────────────────────────────────
+export async function reactivarHabitoAction(idHabito: string): Promise<ActionState> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  const result = await service.update(idHabito, { estado: "Activo" });
+  if (!result.success) {
+    return { success: false, message: result.error };
+  }
+
+  revalidatePath("/habitos");
+  return { success: true, message: "Hábito reactivado exitosamente ✨" };
+}
+
+// ─── archivarHabitoAction ─────────────────────────────────────────────────────
+export async function archivarHabitoAction(idHabito: string): Promise<ActionState> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  // En la BD el estado de hábitos pausados/archivados es 'Inactivo'
+  const result = await service.update(idHabito, { estado: "Inactivo" });
+  if (!result.success) {
+    return { success: false, message: result.error };
+  }
+
+  revalidatePath("/habitos");
+  return { success: true, message: "Hábito archivado exitosamente 📦" };
 }

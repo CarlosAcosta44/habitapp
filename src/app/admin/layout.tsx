@@ -1,27 +1,14 @@
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
+import { requireUserStrict } from '@/lib/auth/require-user';
 import Link from 'next/link';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
-import { UsuarioService } from '@/services/usuario.service';
-import type { User, Role } from '@/types/domain/user.types';
+import type { User, Role } from '@/domain/user.types';
 import { ShieldAlert, ArrowLeft, LogOut, Users } from 'lucide-react';
 import { logoutAction } from '@/actions/auth.actions';
 
 async function getCurrentAdminUser(): Promise<User | null> {
-  const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user) redirect('/login');
+  const user = await requireUserStrict();
 
-  // Obtener perfil detallado desde el backend NestJS usando UsuarioService
-  const usuarioService = new UsuarioService();
-  const profileResult = await usuarioService.getPerfilMe();
-  const profile = profileResult.success ? profileResult.data : null;
-
-  // Fallback for Admin role if the profile in gestion.usuarios is missing
-  const metaRole = user.user_metadata?.role?.toUpperCase();
-  const isFallbackAdmin = metaRole === 'ADMIN' || metaRole === 'ADMINISTRADOR';
-
-  const finalRole = profile?.nombrerol || (isFallbackAdmin ? 'Administrador' : 'Usuario');
+  const finalRole = user.nombrerol || 'Usuario';
 
   // Si no es admin, devolvemos null para gatillar la pantalla de Acceso Denegado 403
   if (finalRole?.toUpperCase() !== 'ADMINISTRADOR') {
@@ -31,15 +18,15 @@ async function getCurrentAdminUser(): Promise<User | null> {
   const domainUser: User = {
     id: user.id,
     email: user.email || '',
-    role: (finalRole as Role) || 'user',
-    created_at: user.created_at,
-    updated_at: user.updated_at || user.created_at,
-    nombre: profile?.nombre || user.user_metadata?.name || user.user_metadata?.full_name?.split(' ')[0] || undefined,
-    apellido: profile?.apellido || user.user_metadata?.last_name || user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || undefined,
+    role: 'admin',
+    created_at: new Date().toISOString(), // Mock as it's not deeply used
+    updated_at: new Date().toISOString(),
+    nombre: user.nombre,
+    apellido: user.apellido,
     nombrerol: finalRole,
-    fotoperfil: profile?.fotoperfil || user.user_metadata?.avatar_url || undefined,
-    full_name: user.user_metadata?.full_name || undefined,
-    avatar_url: user.user_metadata?.avatar_url || undefined,
+    fotoperfil: (user as any).fotoperfil,
+    full_name: `${user.nombre || ''} ${user.apellido || ''}`.trim(),
+    avatar_url: (user as any).fotoperfil,
   };
 
   return domainUser;

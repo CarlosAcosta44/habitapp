@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import React from 'react'
 import { motion } from 'framer-motion'
 
 interface AuthSplitContainerProps {
@@ -20,20 +19,6 @@ export function AuthSplitContainer({
   reverseImage = false,
   formMaxWidth = 'sm',
 }: AuthSplitContainerProps) {
-  const [userCount, setUserCount] = useState<number | null>(null)
-
-  useEffect(() => {
-    const fetchUserCount = async () => {
-      const supabase = createClient()
-      const { data, error } = await supabase.rpc('get_total_usuarios')
-      if (error) {
-        console.error('Error obteniendo usuarios:', error.message)
-      } else if (data !== null) {
-        setUserCount(Number(data))
-      }
-    }
-    fetchUserCount()
-  }, [])
 
   return (
     <div className={`w-full min-h-screen flex flex-col ${reverseImage ? 'md:flex-row-reverse' : 'md:flex-row'} items-stretch`}>
@@ -85,11 +70,7 @@ export function AuthSplitContainer({
               </div>
             </div>
             <p className="text-sm font-medium text-white drop-shadow-lg">
-              {userCount !== null ? (
-                <span className="font-bold">+ {userCount} usuarios</span>
-              ) : (
-                <span className="font-bold">+ 12k usuarios</span>
-              )}
+              <span className="font-bold">+ 12k usuarios</span>
               <br />
               <span className="italic opacity-80">escribiendo su historia hoy</span>
             </p>

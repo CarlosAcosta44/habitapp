@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<title>HabitApp - Progreso y Métricas</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#2563EB",
+            "primary-hover": "#1d4ed8",
+            "primary-container": "#3b82f6",
+            "primary-fixed": "#dbeafe",
+            "primary-fixed-dim": "#bfdbfe",
+            "on-primary": "#ffffff",
+            "secondary": "#6053a2",
+            "secondary-container": "#b6a8fe",
+            "secondary-fixed": "#e6deff",
+            "secondary-fixed-dim": "#c9beff",
+            "on-secondary": "#ffffff",
+            "tertiary": "#ea580c",
+            "tertiary-container": "#c2410c",
+            "tertiary-fixed": "#ffedd5",
+            "tertiary-fixed-dim": "#fed7aa",
+            "surface": "#fdf8ff",
+            "surface-dim": "#ddd7e6",
+            "surface-bright": "#fdf8ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f7f1ff",
+            "surface-container": "#f1ebfa",
+            "surface-container-high": "#ece6f5",
+            "surface-container-highest": "#e6e0ef",
+            "surface-variant": "#e6e0ef",
+            "on-surface": "#1c1a25",
+            "on-surface-variant": "#484556",
+            "outline": "#797587",
+            "outline-variant": "#c9c4d8",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6"
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px"
+          },
+          spacing: {
+            "space-2xs": "0.25rem",
+            "space-xs": "0.5rem",
+            "space-sm": "0.75rem",
+            "space-md": "1rem",
+            "space-lg": "1.25rem",
+            "space-xl": "1.5rem",
+            "space-2xl": "2rem",
+            "space-3xl": "2.5rem",
+            "card-padding": "1.25rem",
+            "screen-edge": "1.25rem",
+            "gutter-default": "0.75rem"
+          },
+          fontFamily: {
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "display": ["Plus Jakarta Sans"],
+            "numeric-stat": ["Plus Jakarta Sans"]
+          },
+          fontSize: {
+            "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600" }],
+            "label-md": ["13px", { lineHeight: "18px", fontWeight: "600" }],
+            "label-lg": ["15px", { lineHeight: "20px", fontWeight: "600" }],
+            "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }],
+            "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+            "headline-md": ["22px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "numeric-stat": ["24px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "700" }],
+            "display": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface font-body-md text-body-md text-on-surface min-h-screen antialiased">
+<!-- Sidebar flotante izquierdo -->
+<aside class="fixed left-space-lg top-space-lg bottom-space-lg w-72 bg-surface-container-lowest z-50 flex flex-col justify-between p-card-padding rounded-[1.75rem] shadow-[0_4px_24px_rgba(72,69,86,0.06)] border border-outline-variant/30">
+<div class="flex flex-col gap-space-xl">
+<!-- Logo y título HabitApp -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<img alt="HabitApp" class="w-10 h-10 object-contain rounded-xl shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1WeaIN6MaV52iRFmo3ihGkGy3dJfAxfKliiyfiokFz0-_nMyWl0Nd9u9GMjBTkv18Juq8m360OwiC5eI3iCnyNjOWpqixJgbqSqiK8P-G4lOYYQH50lYOufgJw2mcD8j2i2sSTUf8zgVmlYD2g5r3M9hRAxwQEFoBlsLYg8PBDDDr4qHRTSxv5Dd5z1d9YFDUp5wcK-DUjI1YCmgddDjxeg9FrWatNKPRujX7b5YRRkmSLEUCWTJbWAhOnZOEOW0qoSUNuO6jTeRQ"/>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">HabitApp</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Salud Mental &amp; Hábitos</span>
+</div>
+</div>
+<button aria-label="Notificaciones" class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+</div>
+<!-- Menú de navegación -->
+<nav class="flex flex-col gap-space-2xs">
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">check_circle</span>
+<span>Hábitos</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">emoji_events</span>
+<span>Retos y Desafíos</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">groups</span>
+<span>Comunidad</span>
+</a>
+<!-- Opción Activa: Progreso y Métricas en azul corporativo (#2563EB) -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg bg-primary text-on-primary font-semibold shadow-[0_8px_20px_rgba(37,99,235,0.25)] transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">query_stats</span>
+<span>Progreso y Métricas</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span>Ajustes</span>
+</a>
+</nav>
+</div>
+<!-- Perfil del usuario abajo -->
+<div class="p-space-sm rounded-2xl bg-surface-container flex items-center justify-between border border-outline-variant/30">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed text-primary font-bold flex items-center justify-center shrink-0 shadow-sm text-sm">
+          MS
+        </div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Marina Soler</span>
+<span class="font-body-sm text-[12px] text-on-surface-variant">Usuario</span>
+</div>
+</div>
+<div class="flex items-center gap-space-2xs shrink-0">
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" title="Ayuda" type="button">
+<span class="material-symbols-outlined text-[18px]">help</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container transition-colors" title="Cerrar sesión" type="button">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Contenedor Principal -->
+<div class="pl-[21.5rem] pr-space-lg py-space-lg min-h-screen">
+<main class="w-full min-h-[calc(100vh-2.5rem)] rounded-[1.75rem] p-space-2xl bg-surface-container-lowest/70 backdrop-blur-sm border border-outline-variant/30 shadow-[0_2px_16px_rgba(72,69,86,0.03)]">
+<div class="flex flex-col w-full gap-space-2xl">
+<!-- Cabecera principal -->
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-space-md w-full">
+<div class="flex flex-col gap-space-2xs max-w-2xl">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-semibold">Panel de Rendimiento</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Actualizado hace 15 min</span>
+</div>
+<h1 class="font-display text-display text-on-surface tracking-tight font-extrabold">Progreso y Métricas</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+              Analítica integral de tus rutinas, consistencia semanal y patrones de bienestar emocional.
+            </p>
+</div>
+<div class="flex items-center gap-space-sm self-start md:self-auto shrink-0">
+<div class="flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/30 shadow-[0_2px_8px_rgba(72,69,86,0.04)] text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px] text-primary">calendar_month</span>
+<span>Últimos 30 días</span>
+</div>
+<button class="flex items-center gap-space-xs bg-primary hover:bg-primary-hover text-on-primary font-label-lg text-label-lg px-space-xl py-2.5 rounded-xl shadow-[0_8px_20px_rgba(37,99,235,0.25)] active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span>Descargar reporte (PDF)</span>
+</button>
+</div>
+</header>
+<!-- Fila de 4 KPIs superiores equilibrados -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md w-full">
+<!-- KPI 1: Cumplimiento Global -->
+<div class="p-space-lg rounded-[1.5rem] bg-surface-container-lowest border border-outline-variant/30 shadow-[0_4px_16px_rgba(72,69,86,0.03)] flex flex-col justify-between gap-space-md hover:shadow-[0_8px_24px_rgba(72,69,86,0.06)] transition-all">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant truncate">Cumplimiento Global</span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full font-label-sm text-[11px] font-semibold bg-primary-fixed text-primary shrink-0">
+<span class="material-symbols-outlined text-[13px]">trending_up</span>+6%
+              </span>
+</div>
+<div class="flex items-baseline justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<span class="font-display text-[32px] text-on-surface font-extrabold leading-none">84%</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 truncate">42 de 50 hábitos</span>
+</div>
+<!-- Anillo visual 42/50 -->
+<div class="relative w-11 h-11 flex items-center justify-center shrink-0">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="84, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-label-sm text-[9px] text-primary font-bold">42/50</span>
+</div>
+</div>
+</div>
+<!-- KPI 2: Racha Actual -->
+<div class="p-space-lg rounded-[1.5rem] bg-surface-container-lowest border border-outline-variant/30 shadow-[0_4px_16px_rgba(72,69,86,0.03)] flex flex-col justify-between gap-space-md hover:shadow-[0_8px_24px_rgba(72,69,86,0.06)] transition-all">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant truncate">Racha Actual</span>
+<span class="inline-flex items-center gap-1 font-label-sm text-[11px] text-tertiary-container px-2 py-0.5 rounded-full bg-tertiary-fixed shrink-0">
+<span class="material-symbols-outlined text-[13px]">local_fire_department</span>
+                Activa hoy
+              </span>
+</div>
+<div class="flex items-baseline justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<span class="font-display text-[32px] text-on-surface font-extrabold leading-none">12 <span class="font-headline-sm text-headline-sm font-semibold text-on-surface-variant">días</span></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 truncate">Manteniendo ritmo</span>
+</div>
+<div class="w-11 h-11 rounded-2xl bg-tertiary-fixed flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined text-[22px]">bolt</span>
+</div>
+</div>
+</div>
+<!-- KPI 3: Racha Máxima -->
+<div class="p-space-lg rounded-[1.5rem] bg-surface-container-lowest border border-outline-variant/30 shadow-[0_4px_16px_rgba(72,69,86,0.03)] flex flex-col justify-between gap-space-md hover:shadow-[0_8px_24px_rgba(72,69,86,0.06)] transition-all">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant truncate">Racha Máxima</span>
+<span class="inline-flex items-center gap-1 font-label-sm text-[11px] text-secondary px-2 py-0.5 rounded-full bg-secondary-fixed shrink-0">
+<span class="material-symbols-outlined text-[13px]">emoji_events</span>
+                Récord
+              </span>
+</div>
+<div class="flex items-baseline justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<span class="font-display text-[32px] text-on-surface font-extrabold leading-none">28 <span class="font-headline-sm text-headline-sm font-semibold text-on-surface-variant">días</span></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 truncate">Marca histórica</span>
+</div>
+<div class="w-11 h-11 rounded-2xl bg-secondary-fixed flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[22px]">military_tech</span>
+</div>
+</div>
+</div>
+<!-- KPI 4: Consistencia Mensual -->
+<div class="p-space-lg rounded-[1.5rem] bg-surface-container-lowest border border-outline-variant/30 shadow-[0_4px_16px_rgba(72,69,86,0.03)] flex flex-col justify-between gap-space-md hover:shadow-[0_8px_24px_rgba(72,69,86,0.06)] transition-all">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant truncate">Consistencia Mensual</span>
+<span class="inline-flex items-center gap-1 font-label-sm text-[11px] text-primary px-2 py-0.5 rounded-full bg-primary-fixed shrink-0">
+<span class="material-symbols-outlined text-[13px]">verified</span>
+                Sobresaliente
+              </span>
+</div>
+<div class="flex items-baseline justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<span class="font-display text-[32px] text-on-surface font-extrabold leading-none">80%</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 truncate">+85% de usuarios</span>
+</div>
+<div class="w-11 h-11 rounded-2xl bg-primary-fixed flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[22px]">grade</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Estructura Analítica Principal (2 Columnas) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl w-full items-start">
+<!-- Columna Izquierda: Gráficos de Volumen y Consistencia -->
+<div class="lg:col-span-7 flex flex-col gap-space-xl w-full">
+<!-- Gráfico de Volumen Semanal -->
+<div class="p-space-xl rounded-[1.75rem] bg-surface-container-lowest border border-outline-variant/30 shadow-[0_4px_24px_rgba(72,69,86,0.04)] flex flex-col gap-space-lg">
+<div class="flex items-center justify-between flex-wrap gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">bar_chart</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Volumen Semanal</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Hábitos completados cada día de la semana actual</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-primary font-semibold px-space-sm py-1 rounded-full bg-primary-fixed/60 border border-primary/20">
+                  Meta diaria: 7 hábitos
+                </span>
+</div>
+<!-- Barras de Lunes a Domingo -->
+<div class="pt-space-md pb-space-xs flex flex-col gap-space-sm">
+<div class="grid grid-cols-7 gap-space-sm sm:gap-space-md items-end h-56 pt-6 px-space-xs">
+<!-- Lunes (6) -->
+<div class="flex flex-col items-center gap-space-2xs h-full justify-end group">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold transition-transform group-hover:-translate-y-1">6</span>
+<div class="w-full max-w-[42px] h-[66%] bg-blue-200 rounded-t-xl group-hover:bg-blue-300 transition-colors"></div>
+<span class="font-label-md text-label-md text-on-surface-variant pt-1 font-medium">L</span>
+</div>
+<!-- Martes (5) -->
+<div class="flex flex-col items-center gap-space-2xs h-full justify-end group">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold transition-transform group-hover:-translate-y-1">5</span>
+<div class="w-full max-w-[42px] h-[55%] bg-blue-200 rounded-t-xl group-hover:bg-blue-300 transition-colors"></div>
+<span class="font-label-md text-label-md text-on-surface-variant pt-1 font-medium">M</span>
+</div>
+<!-- Miércoles (9 - Destacado) -->
+<div class="flex flex-col items-center gap-space-2xs h-full justify-end group">
+<div class="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-[10px] font-bold shadow-[0_4px_12px_rgba(37,99,235,0.35)] animate-pulse">
+<span>9</span>
+<span class="material-symbols-outlined text-[10px]">star</span>
+</div>
+<div class="w-full max-w-[42px] h-[100%] bg-primary rounded-t-xl shadow-[0_8px_20px_rgba(37,99,235,0.3)] group-hover:brightness-110 transition-all"></div>
+<span class="font-label-md text-label-md text-primary pt-1 font-bold">M</span>
+</div>
+<!-- Jueves (7) -->
+<div class="flex flex-col items-center gap-space-2xs h-full justify-end group">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold transition-transform group-hover:-translate-y-1">7</span>
+<div class="w-full max-w-[42px] h-[77%] bg-blue-300 rounded-t-xl group-hover:bg-blue-400 transition-colors"></div>
+<span class="font-label-md text-label-md text-on-surface-variant pt-1 font-medium">J</span>
+</div>
+<!-- Viernes (6) -->
+<div class="flex flex-col items-center gap-space-2xs h-full justify-end group">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold transition-transform group-hover:-translate-y-1">6</span>
+<div class="w-full max-w-[42px] h-[66%] bg-blue-200 rounded-t-xl group-hover:bg-blue-300 transition-colors"></div>
+<span class="font-label-md text-label-md text-on-surface-variant pt-1 font-medium">V</span>
+</div>
+<!-- Sábado (4) -->
+<div class="flex flex-col items-center gap-space-2xs h-full justify-end group">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold transition-transform group-hover:-translate-y-1">4</span>
+<div class="w-full max-w-[42px] h-[44%] bg-slate-200 rounded-t-xl group-hover:bg-blue-200 transition-colors"></div>
+<span class="font-label-md text-label-md text-on-surface-variant pt-1 font-medium">S</span>
+</div>
+<!-- Domingo (5) -->
+<div class="flex flex-col items-center gap-space-2xs h-full justify-end group">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold transition-transform group-hover:-translate-y-1">5</span>
+<div class="w-full max-w-[42px] h-[55%] bg-blue-200 rounded-t-xl group-hover:bg-blue-300 transition-colors"></div>
+<span class="font-label-md text-label-md text-on-surface-variant pt-1 font-medium">D</span>
+</div>
+</div>
+</div>
+<!-- Pie de gráfico de volumen -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container font-body-sm text-body-sm text-on-surface-variant border border-outline-variant/20">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">insights</span>
+<span>Total semanal: <strong class="text-on-surface font-semibold">42 completados</strong></span>
+</div>
+<span class="font-medium text-primary">Miércoles: día de mayor productividad</span>
+</div>
+</div>
+<!-- Gráfico de Consistencia del Mes (Heatmap azul de 30 días) -->
+<div class="p-space-xl rounded-[1.75rem] bg-surface-container-lowest border border-outline-variant/30 shadow-[0_4px_24px_rgba(72,69,86,0.04)] flex flex-col gap-space-lg">
+<div class="flex items-center justify-between flex-wrap gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">calendar_view_month</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Consistencia del Mes</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Frecuencia y disciplina diaria registrada en el ciclo</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-semibold px-space-sm py-1 rounded-full bg-blue-50 border border-blue-200">
+                  24 de 30 días activos
+                </span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<!-- Días de cabecera -->
+<div class="grid grid-cols-7 gap-2 text-center font-label-sm text-label-sm text-on-surface-variant font-semibold mb-1">
+<span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+</div>
+<!-- Matriz de 30 días -->
+<div class="grid grid-cols-7 gap-2">
+<!-- Semana 1 -->
+<div class="aspect-square rounded-xl bg-blue-100 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 1: 5 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">1</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-200 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 2: 7 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">2</span>
+</div>
+<div class="aspect-square rounded-xl bg-primary flex flex-col items-center justify-center p-1 text-on-primary shadow-sm hover:scale-105 transition-transform" title="Día 3: 9 hábitos">
+<span class="font-label-sm text-[11px] font-bold">3</span>
+</div>
+<div class="aspect-square rounded-xl bg-primary flex flex-col items-center justify-center p-1 text-on-primary shadow-sm hover:scale-105 transition-transform" title="Día 4: 9 hábitos">
+<span class="font-label-sm text-[11px] font-bold">4</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-200 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 5: 6 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">5</span>
+</div>
+<div class="aspect-square rounded-xl bg-surface-container flex flex-col items-center justify-center p-1 text-on-surface-variant hover:scale-105 transition-transform" title="Día 6: 2 hábitos">
+<span class="font-label-sm text-[11px] font-medium">6</span>
+</div>
+<div class="aspect-square rounded-xl bg-surface-container-high flex flex-col items-center justify-center p-1 text-on-surface-variant hover:scale-105 transition-transform opacity-60" title="Día 7: Inactivo">
+<span class="font-label-sm text-[11px] font-medium">7</span>
+</div>
+<!-- Semana 2 -->
+<div class="aspect-square rounded-xl bg-blue-200 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 8: 6 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">8</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-100 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 9: 5 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">9</span>
+</div>
+<div class="aspect-square rounded-xl bg-primary flex flex-col items-center justify-center p-1 text-on-primary shadow-sm hover:scale-105 transition-transform" title="Día 10: 9 hábitos">
+<span class="font-label-sm text-[11px] font-bold">10</span>
+</div>
+<div class="aspect-square rounded-xl bg-primary flex flex-col items-center justify-center p-1 text-on-primary shadow-sm hover:scale-105 transition-transform" title="Día 11: 8 hábitos">
+<span class="font-label-sm text-[11px] font-bold">11</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-200 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 12: 6 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">12</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-100 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 13: 4 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">13</span>
+</div>
+<div class="aspect-square rounded-xl bg-surface-container flex flex-col items-center justify-center p-1 text-on-surface-variant hover:scale-105 transition-transform" title="Día 14: 2 hábitos">
+<span class="font-label-sm text-[11px] font-medium">14</span>
+</div>
+<!-- Semana 3 -->
+<div class="aspect-square rounded-xl bg-blue-100 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 15: 5 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">15</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-200 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 16: 6 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">16</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-300 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 17: 7 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">17</span>
+</div>
+<div class="aspect-square rounded-xl bg-primary flex flex-col items-center justify-center p-1 text-on-primary shadow-sm hover:scale-105 transition-transform" title="Día 18: 9 hábitos">
+<span class="font-label-sm text-[11px] font-bold">18</span>
+</div>
+<div class="aspect-square rounded-xl bg-primary flex flex-col items-center justify-center p-1 text-on-primary shadow-sm hover:scale-105 transition-transform" title="Día 19: 9 hábitos">
+<span class="font-label-sm text-[11px] font-bold">19</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-100 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 20: 4 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">20</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-100 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 21: 5 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">21</span>
+</div>
+<!-- Semana 4 -->
+<div class="aspect-square rounded-xl bg-blue-200 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 22: 6 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">22</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-100 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 23: 5 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">23</span>
+</div>
+<div class="aspect-square rounded-xl bg-primary flex flex-col items-center justify-center p-1 text-on-primary shadow-sm hover:scale-105 transition-transform" title="Día 24: 9 hábitos">
+<span class="font-label-sm text-[11px] font-bold">24</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-300 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 25: 7 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">25</span>
+</div>
+<div class="aspect-square rounded-xl bg-blue-200 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 26: 6 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">26</span>
+</div>
+<div class="aspect-square rounded-xl bg-surface-container flex flex-col items-center justify-center p-1 text-on-surface-variant hover:scale-105 transition-transform" title="Día 27: 3 hábitos">
+<span class="font-label-sm text-[11px] font-medium">27</span>
+</div>
+<div class="aspect-square rounded-xl bg-surface-container-high flex flex-col items-center justify-center p-1 text-on-surface-variant hover:scale-105 transition-transform opacity-60" title="Día 28: Inactivo">
+<span class="font-label-sm text-[11px] font-medium">28</span>
+</div>
+<!-- Semana 5 -->
+<div class="aspect-square rounded-xl bg-blue-200 flex flex-col items-center justify-center p-1 hover:scale-105 transition-transform" title="Día 29: 6 hábitos">
+<span class="font-label-sm text-[11px] font-bold text-on-surface">29</span>
+</div>
+<div class="aspect-square rounded-xl bg-primary flex flex-col items-center justify-center p-1 text-on-primary shadow-sm hover:scale-105 transition-transform" title="Día 30: Hoy">
+<span class="font-label-sm text-[11px] font-bold">30</span>
+</div>
+<div class="aspect-square rounded-xl bg-surface-container/40"></div>
+<div class="aspect-square rounded-xl bg-surface-container/40"></div>
+<div class="aspect-square rounded-xl bg-surface-container/40"></div>
+<div class="aspect-square rounded-xl bg-surface-container/40"></div>
+<div class="aspect-square rounded-xl bg-surface-container/40"></div>
+</div>
+</div>
+<!-- Leyenda inferior -->
+<div class="flex items-center justify-between pt-space-xs flex-wrap gap-space-sm border-t border-outline-variant/20">
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">80% tasa de efectividad mensual</span>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant">
+<span>Menos</span>
+<span class="w-3.5 h-3.5 rounded bg-surface-container-high inline-block"></span>
+<span class="w-3.5 h-3.5 rounded bg-blue-100 inline-block"></span>
+<span class="w-3.5 h-3.5 rounded bg-blue-200 inline-block"></span>
+<span class="w-3.5 h-3.5 rounded bg-blue-300 inline-block"></span>
+<span class="w-3.5 h-3.5 rounded bg-primary inline-block"></span>
+<span>Más</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Columna Derecha: Destacados, Insight IA y Hábitos Activos -->
+<div class="lg:col-span-5 flex flex-col gap-space-xl w-full">
+<!-- Destacados de Constancia -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Destacados de Constancia</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Rendimiento clave</span>
+</div>
+<!-- Más Constante -->
+<div class="p-space-lg rounded-[1.5rem] bg-surface-container-lowest border border-outline-variant/30 shadow-[0_4px_16px_rgba(72,69,86,0.03)] flex flex-col gap-space-sm hover:shadow-[0_8px_20px_rgba(72,69,86,0.06)] transition-all">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary-fixed uppercase">
+                    Más Constante
+                  </span>
+<span class="font-numeric-stat text-numeric-stat text-primary font-extrabold">96%</span>
+</div>
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-primary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[26px]">water_drop</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Beber 2.5L de agua</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Racha activa de 12 días seguidos</span>
+</div>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2 mt-1 overflow-hidden">
+<div class="bg-primary h-2 rounded-full w-[96%]"></div>
+</div>
+</div>
+<!-- Oportunidad de Mejora -->
+<div class="p-space-lg rounded-[1.5rem] bg-surface-container-lowest border border-outline-variant/30 shadow-[0_4px_16px_rgba(72,69,86,0.03)] flex flex-col gap-space-sm hover:shadow-[0_8px_20px_rgba(72,69,86,0.06)] transition-all">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-tertiary-container font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-tertiary-fixed uppercase">
+                    Oportunidad de Mejora
+                  </span>
+<span class="font-numeric-stat text-numeric-stat text-tertiary-container font-extrabold">48%</span>
+</div>
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-2xl bg-tertiary-fixed flex items-center justify-center text-tertiary-container shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[26px]">menu_book</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Lectura y calma</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Requiere atención fines de semana</span>
+</div>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2 mt-1 overflow-hidden">
+<div class="bg-tertiary h-2 rounded-full w-[48%]"></div>
+</div>
+</div>
+</div>
+<!-- Insight Inteligente (IA HabitApp) -->
+<div class="p-space-xl rounded-[1.75rem] bg-gradient-to-br from-blue-600 to-primary text-on-primary shadow-[0_8px_24px_rgba(37,99,235,0.25)] flex flex-col gap-space-md relative overflow-hidden">
+<div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10 pointer-events-none"></div>
+<div class="absolute -left-12 -bottom-12 w-36 h-36 rounded-full bg-white/5 pointer-events-none"></div>
+<div class="flex items-center justify-between relative z-10">
+<div class="flex items-center gap-space-xs px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[16px] text-on-primary">psychology</span>
+<span class="font-label-sm text-label-sm text-on-primary font-semibold">Insight Inteligente • IA HabitApp</span>
+</div>
+<span class="material-symbols-outlined text-white/70 text-[20px]">lightbulb</span>
+</div>
+<p class="font-body-lg text-body-lg text-white leading-relaxed relative z-10 font-normal">
+                «Los fines de semana tu constancia desciende un <strong>18%</strong>. Programa recordatorios matutinos antes de las <strong>10:00 AM</strong> para preservar el impulso y sostener tu racha objetivo sin esfuerzo.»
+              </p>
+<div class="pt-space-xs flex items-center justify-between relative z-10 border-t border-white/15">
+<span class="font-label-sm text-label-sm text-white/80 font-medium">Basado en tus últimos 30 días</span>
+</div>
+</div>
+<!-- Hábitos Activos con barras de progreso -->
+<div class="p-space-xl rounded-[1.75rem] bg-surface-container-lowest border border-outline-variant/30 shadow-[0_4px_24px_rgba(72,69,86,0.04)] flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Hábitos Activos</h2>
+<span class="font-label-sm text-label-sm text-primary font-semibold hover:underline cursor-pointer">Ver todos (6)</span>
+</div>
+<div class="flex flex-col gap-space-md">
+<!-- Ejercicio consciente -->
+<div class="flex flex-col gap-space-2xs">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
+                      Ejercicio consciente
+                    </span>
+<span class="text-on-surface-variant font-bold">85%</span>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
+<div class="bg-primary h-2 rounded-full w-[85%]"></div>
+</div>
+</div>
+<!-- Diario de gratitud -->
+<div class="flex flex-col gap-space-2xs">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary inline-block"></span>
+                      Diario de gratitud
+                    </span>
+<span class="text-on-surface-variant font-bold">90%</span>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
+<div class="bg-secondary h-2 rounded-full w-[90%]"></div>
+</div>
+</div>
+<!-- Respiración 4-7-8 -->
+<div class="flex flex-col gap-space-2xs">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
+                      Respiración 4-7-8
+                    </span>
+<span class="text-on-surface-variant font-bold">75%</span>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
+<div class="bg-blue-500 h-2 rounded-full w-[75%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

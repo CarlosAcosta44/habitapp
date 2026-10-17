@@ -8,7 +8,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/auth/require-user";
 import { AmigosService } from "@/services/amigos.service";
 import type { ActionState } from "@/actions/habito.actions";
 
@@ -22,12 +22,9 @@ export async function addFriendAction(
   _prevState: ActionState | null,
   formData: FormData
 ): Promise<ActionState> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return { success: false, message: "No autorizado" };
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+  const user = userResult.data;
 
   const validation = AddFriendSchema.safeParse({
     targetUserId: formData.get("targetUserId"),

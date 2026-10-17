@@ -7,9 +7,9 @@
 
 import { ok, err } from "@/lib/result";
 import type { Result } from "@/lib/result";
-import { apiClient } from "@/lib/api/client";
-import type { PerfilDashboardData, ProfileForEdit, UpdateProfileDTO } from "@/types/domain/perfil.types";
-import type { UserProfileDto, UpdateUserProfileDto } from "@/types/domain/usuario.types";
+import { usuarioRepository } from "@/repositories/usuario.repository";
+import type { PerfilDashboardData, ProfileForEdit, UpdateProfileDTO } from "@/domain/perfil.types";
+import type { UserProfileDto, UpdateUserProfileDto } from "@/domain/usuario.types";
 
 export class UsuarioService {
   /**
@@ -17,7 +17,7 @@ export class UsuarioService {
    * Llama a: GET /users/me
    */
   async getPerfilMe(): Promise<Result<UserProfileDto>> {
-    return apiClient.get<UserProfileDto>("users/me");
+    return usuarioRepository.get<UserProfileDto>("users/me");
   }
 
   /**
@@ -25,7 +25,7 @@ export class UsuarioService {
    * Llama a: PATCH /users/me
    */
   async updatePerfilMe(dto: UpdateUserProfileDto): Promise<Result<UserProfileDto>> {
-    return apiClient.patch<UserProfileDto>("users/me", dto);
+    return usuarioRepository.patch<UserProfileDto>("users/me", dto);
   }
 
   /**
@@ -44,12 +44,12 @@ export class UsuarioService {
         sugerenciasRes,
         logrosRes,
       ] = await Promise.all([
-        apiClient.get<any>("users/me/profile"),
-        apiClient.get<any[]>("records/historial"),
-        apiClient.get<any[]>("users/me/points-history?limit=5"),
-        apiClient.get<any[]>("friends"),
-        apiClient.get<any[]>("friends/suggestions?limit=12"),
-        apiClient.get<any[]>("users/me/achievements"),
+        usuarioRepository.get<any>("users/me/profile"),
+        usuarioRepository.get<any[]>("records/historial"),
+        usuarioRepository.get<any[]>("users/me/points-history?limit=5"),
+        usuarioRepository.get<any[]>("friends"),
+        usuarioRepository.get<any[]>("friends/suggestions?limit=12"),
+        usuarioRepository.get<any[]>("users/me/achievements"),
       ]);
 
       const perfil = perfilRes.success ? perfilRes.data : null;
@@ -207,7 +207,7 @@ export class UsuarioService {
 
   /**
    * Sube una nueva foto de perfil vía NestJS (endpoint /users/me/avatar).
-   * Usa fetch directamente porque multipart/form-data no puede pasar por apiClient.post JSON.
+   * Usa fetch directamente porque multipart/form-data no puede pasar por usuarioRepository.post JSON.
    */
   async updateAvatar(file: File): Promise<Result<string>> {
     try {

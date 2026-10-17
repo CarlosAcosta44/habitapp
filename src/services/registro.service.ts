@@ -5,44 +5,46 @@
  * La validación de negocio (fecha hoy, progreso, ownership) vive en el backend.
  */
 
-import { apiClient } from "@/lib/api/client";
+import { registroRepository } from "@/repositories/registro.repository";
 import type { Result } from "@/lib/result";
 
 export class RegistroService {
   // ─── getByHabito ───────────────────────────────────────────────────────────
   async getByHabito(habitoId: string): Promise<Result<any[]>> {
-    return apiClient.get<any[]>(`records/habito/${habitoId}`);
+    return registroRepository.get<any[]>(`users/records/habito/${habitoId}`);
   }
 
   // ─── getHistorialUsuario ───────────────────────────────────────────────────
   async getHistorialUsuario(): Promise<Result<any[]>> {
-    return apiClient.get<any[]>("records/historial");
+    return registroRepository.get<any[]>("users/records/historial");
   }
 
   // ─── marcarCompletado ──────────────────────────────────────────────────────
   async marcarCompletado(dto: {
     idHabito: string;
+    fecha?: string;
     observacion?: string;
   }): Promise<Result<any>> {
-    return apiClient.post<any>("records/completar", dto);
+    return registroRepository.post<any>("users/records/completar", dto);
   }
 
   // ─── desmarcarCompletado ───────────────────────────────────────────────────
   async desmarcarCompletado(habitoId: string): Promise<Result<any>> {
-    return apiClient.delete<any>(`records/desmarcar/${habitoId}`);
+    return registroRepository.delete<any>(`users/records/desmarcar/${habitoId}`);
   }
 
   // ─── avanzarProgreso ───────────────────────────────────────────────────────
   async avanzarProgreso(dto: {
     idHabito: string;
     cantidadASumar: number;
+    fecha?: string;
     observacion?: string;
   }): Promise<Result<any>> {
-    return apiClient.patch<any>("records/progreso", dto);
+    return registroRepository.patch<any>("users/records/progreso", dto);
   }
 
   // ─── getRacha ──────────────────────────────────────────────────────────────
   async getRacha(habitoId: string): Promise<Result<any>> {
-    return apiClient.get<any>(`records/racha/${habitoId}`);
+    return registroRepository.get<any>(`users/records/racha/${habitoId}`);
   }
 }

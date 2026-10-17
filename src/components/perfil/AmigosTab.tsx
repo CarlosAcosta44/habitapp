@@ -1,5 +1,5 @@
 import React from 'react';
-import type { AmigoReal, SugerenciaAmigo } from '@/types/domain/perfil.types';
+import type { AmigoReal, SugerenciaAmigo } from '@/domain/perfil.types';
 import { AddFriendForm } from './AddFriendForm';
 
 interface AmigosTabProps {

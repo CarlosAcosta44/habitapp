@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-secondary-container": "#463987", "on-tertiary-fixed-variant": "#832600", "surface-container": "#f1ebfa", "surface": "#fdf8ff", "surface-container-highest": "#e6e0ef", "surface-variant": "#e6e0ef", "tertiary-container": "#bc4c22", "on-background": "#1c1a25", "on-secondary": "#ffffff", "on-surface-variant": "#484556", "inverse-surface": "#312f3a", "outline": "#797587", "primary-container": "#704efd", "secondary-fixed": "#e6deff", "on-tertiary": "#ffffff", "on-primary": "#ffffff", "surface-container-low": "#f7f1ff", "on-secondary-fixed-variant": "#483b88", "background": "#fdf8ff", "primary-fixed-dim": "#c9beff", "on-primary-fixed-variant": "#4608d4", "on-secondary-fixed": "#1b065c", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "surface-tint": "#5e38eb", "outline-variant": "#c9c4d8", "on-primary-fixed": "#1b0063", "primary-fixed": "#e6deff", "tertiary-fixed": "#ffdbd0", "secondary-container": "#b6a8fe", "on-primary-container": "#f7f2ff", "error": "#ba1a1a", "secondary": "#6053a2", "surface-dim": "#ddd7e6", "surface-bright": "#fdf8ff", "on-error": "#ffffff", "secondary-fixed-dim": "#c9beff", "on-surface": "#1c1a25", "inverse-on-surface": "#f4eefd", "on-tertiary-container": "#fff1ed", "on-tertiary-fixed": "#390c00", "on-error-container": "#93000a", "tertiary-fixed-dim": "#ffb59d", "primary": "#572de4", "tertiary": "#9b340a", "inverse-primary": "#c9beff", "surface-container-high": "#ece6f5" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xs": "0.5rem", "space-3xl": "2.5rem", "gutter-default": "0.75rem", "space-xl": "1.5rem", "space-lg": "1.25rem", "space-md": "1rem", "space-2xl": "2rem", "space-sm": "0.75rem", "space-2xs": "0.25rem", "screen-edge": "1.25rem", "card-padding": "1.25rem" }, "fontFamily": { "body-md": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ], "display": [ "Plus Jakarta Sans" ], "label-lg": [ "Plus Jakarta Sans" ], "body-lg": [ "Plus Jakarta Sans" ], "body-sm": [ "Plus Jakarta Sans" ], "label-sm": [ "Plus Jakarta Sans" ], "headline-sm": [ "Plus Jakarta Sans" ], "label-md": [ "Plus Jakarta Sans" ], "headline-md": [ "Plus Jakarta Sans" ], "numeric-stat": [ "Plus Jakarta Sans" ] }, "fontSize": { "body-md": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "headline-lg": [ "28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "display": [ "36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "label-lg": [ "15px", { "lineHeight": "20px", "fontWeight": "600" } ], "body-lg": [ "16px", { "lineHeight": "24px", "fontWeight": "400" } ], "body-sm": [ "12px", { "lineHeight": "16px", "fontWeight": "400" } ], "label-sm": [ "11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" } ], "headline-sm": [ "18px", { "lineHeight": "24px", "fontWeight": "600" } ], "label-md": [ "13px", { "lineHeight": "18px", "fontWeight": "600" } ], "headline-md": [ "22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "numeric-stat": [ "24px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" } ] } } } };</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-4 top-4 bottom-4 w-72 bg-surface-container-lowest rounded-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between p-space-lg"><div class="flex flex-col gap-space-xl"><div class="flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="icon.png" class="h-8 w-auto object-contain rounded-lg" src="https://lh3.googleusercontent.com/aida/AEtjO1WeaIN6MaV52iRFmo3ihGkGy3dJfAxfKliiyfiokFz0-_nMyWl0Nd9u9GMjBTkv18Juq8m360OwiC5eI3iCnyNjOWpqixJgbqSqiK8P-G4lOYYQH50lYOufgJw2mcD8j2i2sSTUf8zgVmlYD2g5r3M9hRAxwQEFoBlsLYg8PBDDDr4qHRTSxv5Dd5z1d9YFDUp5wcK-DUjI1YCmgddDjxeg9FrWatNKPRujX7b5YRRkmSLEUCWTJbWAhOnZOEOW0qoSUNuO6jTeRQ"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface leading-tight">HabitApp</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Salud Mental &amp; Hábitos</span></div></div><div class="relative flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-on-surface cursor-pointer"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-tertiary-container ring-2 ring-surface-container-lowest"></span></div></div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-label-lg rounded-xl shadow-[0_8px_20px_rgba(112,78,253,0.22)]"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="habitos" href="#"><span class="material-symbols-outlined text-[20px]">check_circle</span><span>Hábitos</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="retos-y-desafios" href="#"><span class="material-symbols-outlined text-[20px]">emoji_events</span><span>Retos y Desafíos</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm transition-all bg-primary-container text-on-primary-container font-label-lg rounded-xl shadow-[0_8px_20px_rgba(112,78,253,0.22)]" data-path="comunidad" href="#"><span class="material-symbols-outlined text-[20px]">forum</span><span>Comunidad</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="progreso-y-metricas" href="#"><span class="material-symbols-outlined text-[20px]">insights</span><span>Progreso y Métricas</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="ajustes" href="#"><span class="material-symbols-outlined text-[20px]">settings</span><span>Ajustes</span></a></nav></div><div class="flex items-center justify-between p-space-xs rounded-xl bg-surface-container-low"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-label-md text-label-md">MS</div><div class="flex flex-col"><span class="font-label-md text-label-md text-on-surface leading-tight">Marina Soler</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Usuario</span></div></div><div class="flex items-center gap-space-2xs text-on-surface-variant"><button class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">help_outline</span></button><button class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">logout</span></button></div></div></aside><div class="pl-80"><header class="fixed top-0 left-80 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-2xl"><div class="flex items-center gap-space-sm"><img alt="icon.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WeaIN6MaV52iRFmo3ihGkGy3dJfAxfKliiyfiokFz0-_nMyWl0Nd9u9GMjBTkv18Juq8m360OwiC5eI3iCnyNjOWpqixJgbqSqiK8P-G4lOYYQH50lYOufgJw2mcD8j2i2sSTUf8zgVmlYD2g5r3M9hRAxwQEFoBlsLYg8PBDDDr4qHRTSxv5Dd5z1d9YFDUp5wcK-DUjI1YCmgddDjxeg9FrWatNKPRujX7b5YRRkmSLEUCWTJbWAhOnZOEOW0qoSUNuO6jTeRQ"/><span class="font-headline-sm text-headline-sm text-on-surface">HabitApp</span></div><div class="flex items-center gap-space-md"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="w-full pt-16 bg-background min-h-screen px-space-2xl pb-space-3xl"><div class="flex flex-col w-full">
+<!-- Community Header & Live Status -->
+<section class="flex flex-col gap-space-md mb-space-xl">
+<div class="flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Comunidad &amp; Bienestar</h1>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="font-label-sm text-label-sm font-semibold">4,890 miembros conectados</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">update</span>
+<span>Sincronizado en tiempo real</span>
+</div>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">
+      Espacio seguro y colaborativo para compartir rutinas, debatir y conectar con recursos de bienestar.
+    </p>
+<!-- Global Community Search Bar -->
+<div class="relative w-full mt-space-2xs">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[22px]">search</span>
+</div>
+<input class="w-full h-13 pl-12 pr-20 bg-surface-container-lowest rounded-xl shadow-sm text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Buscar foros, hábitos comunitarios, artículos o guías..." type="text"/>
+<div class="absolute inset-y-0 right-3 flex items-center">
+<kbd class="px-2.5 py-1 text-label-sm font-label-sm font-semibold text-on-surface-variant bg-surface-container-high rounded-md">⌘ K</kbd>
+</div>
+</div>
+<!-- Community Horizontal Navigation Tabs -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 mt-space-xs scrollbar-none">
+<a class="px-5 py-2.5 rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all whitespace-nowrap" href="#">
+        Todo
+      </a>
+<a class="px-5 py-2.5 rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all whitespace-nowrap" href="#">
+        Foros de Apoyo
+      </a>
+<a class="px-5 py-2.5 rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all whitespace-nowrap" href="#">
+        Hábitos Compartidos
+      </a>
+<a class="px-5 py-2.5 rounded-xl font-label-lg text-label-lg bg-[#2563EB] text-white shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition-all whitespace-nowrap flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+        Artículos y Guías
+      </a>
+<a class="px-5 py-2.5 rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all whitespace-nowrap" href="#">
+        Especialistas
+      </a>
+<a class="px-5 py-2.5 rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all whitespace-nowrap" href="#">
+        Retos
+      </a>
+</div>
+</section>
+<!-- Editorial Section Bar: Title & Meta Controls -->
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs">
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold">Artículos y Guías de Bienestar</h2>
+<span class="px-2.5 py-0.5 rounded-full bg-primary-container/15 text-primary text-label-sm font-label-sm font-semibold">
+          Actualizado hoy
+        </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+        Lecturas prácticas de 3 a 7 minutos seleccionadas de internet para optimizar tu rutina diaria.
+      </p>
+</div>
+<!-- Right Controls -->
+<div class="flex items-center gap-space-sm self-start md:self-auto">
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-lowest shadow-sm hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">bookmark</span>
+<span>Biblioteca Guardada</span>
+<span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm">8</span>
+</button>
+<div class="relative">
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-lowest shadow-sm hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface" type="button">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">tune</span>
+<span>Ordenar: <strong>Más leídos</strong></span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Interactive Topic Filters Strip -->
+<section class="flex items-center gap-space-xs overflow-x-auto pb-2 mb-space-xl scrollbar-none">
+<button class="px-4 py-2 rounded-full font-label-md text-label-md bg-[#2563EB] text-white shadow-sm font-semibold whitespace-nowrap">
+      Todos los temas
+    </button>
+<button class="px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface hover:bg-surface-container-high shadow-sm transition-all whitespace-nowrap">
+      🧠 Neurociencia práctica
+    </button>
+<button class="px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface hover:bg-surface-container-high shadow-sm transition-all whitespace-nowrap">
+      ⚡ Hábitos y Foco
+    </button>
+<button class="px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface hover:bg-surface-container-high shadow-sm transition-all whitespace-nowrap">
+      🌙 Sueño y Descanso
+    </button>
+<button class="px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface hover:bg-surface-container-high shadow-sm transition-all whitespace-nowrap">
+      🌿 Bienestar Emocional
+    </button>
+<button class="px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface hover:bg-surface-container-high shadow-sm transition-all whitespace-nowrap">
+      📵 Desconexión Digital
+    </button>
+<button class="px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface hover:bg-surface-container-high shadow-sm transition-all whitespace-nowrap">
+      🥗 Nutrición Consciente
+    </button>
+</section>
+<!-- Hero Featured Article Banner -->
+<section class="w-full mb-space-2xl">
+<div class="relative overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0_4px_24px_rgba(112,78,253,0.06)] hover:shadow-[0_8px_30px_rgba(112,78,253,0.1)] transition-all duration-300">
+<!-- Ambient Backing Glow -->
+<div class="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-gradient-to-br from-primary-container/15 via-secondary-container/20 to-transparent blur-3xl pointer-events-none"></div>
+<div class="absolute -left-16 -bottom-16 w-80 h-80 rounded-full bg-gradient-to-tr from-[#2563EB]/10 to-transparent blur-2xl pointer-events-none"></div>
+<div class="relative grid grid-cols-1 lg:grid-cols-12 gap-space-xl p-space-xl md:p-space-2xl items-center">
+<!-- Visual Cover Graphic -->
+<div class="lg:col-span-5 flex flex-col justify-between h-full min-h-[260px] rounded-xl overflow-hidden bg-gradient-to-br from-[#704EFD]/10 via-[#2563EB]/10 to-[#F1EBFA] p-space-lg relative">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-[#2563EB] font-label-sm text-label-sm font-bold shadow-sm">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+              EDICIÓN DESTACADA
+            </span>
+<span class="w-8 h-8 rounded-full bg-surface-container-lowest/80 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+</span>
+</div>
+<!-- Decorative Editorial Graphic Element -->
+<div class="my-auto py-space-md flex flex-col items-center justify-center text-center">
+<div class="w-20 h-20 rounded-2xl bg-surface-container-lowest/95 shadow-md flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[42px] text-primary">wb_sunny</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Ventana Circadiana: 07:00 - 08:30 AM</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Alineación neuroquímica de dopamina y cortisol</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span>Protocolo de Mañana</span>
+<span class="font-semibold text-primary">Micro-hábito #14</span>
+</div>
+</div>
+<!-- Editorial Content -->
+<div class="lg:col-span-7 flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex flex-wrap items-center gap-2">
+<span class="text-label-sm font-label-sm tracking-wider uppercase font-bold text-[#2563EB]">
+                DESTACADO DE LA SEMANA
+              </span>
+<span class="text-outline text-label-sm font-label-sm">•</span>
+<span class="text-label-sm font-label-sm tracking-wider uppercase font-semibold text-on-surface-variant">
+                NEUROCIENCIA
+              </span>
+<span class="text-outline text-label-sm font-label-sm">•</span>
+<span class="inline-flex items-center gap-1 text-label-sm font-label-sm text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 5 MIN DE LECTURA
+              </span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface hover:text-[#2563EB] cursor-pointer transition-colors leading-tight">
+              El cortisol matutino: cómo tu primera hora del día condiciona tu estrés
+            </h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+              Descubre cómo los picos naturales de hormonas matutinas impactan tus decisiones y qué 3 micro-hábitos de luz solar e hidratación pueden reducir la ansiedad durante todo el día.
+            </p>
+</div>
+<div class="pt-space-xs flex flex-col sm:flex-row sm:items-center justify-between gap-space-md border-t border-surface-container">
+<!-- Source & Curated By -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-primary">public</span>
+<span class="font-semibold">Curaduría HabitApp</span>
+<span class="text-on-surface-variant font-normal">• Extraído de tendencias web</span>
+</div>
+<div class="flex items-center gap-3 text-body-sm text-body-sm text-on-surface-variant">
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">visibility</span> 3,420 lecturas
+                </span>
+<span>•</span>
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">timer</span> 5 min de lectura
+                </span>
+</div>
+</div>
+<!-- Action CTAs -->
+<div class="flex items-center gap-space-xs">
+<button class="h-10 w-10 flex items-center justify-center rounded-xl bg-surface-container-high hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="Guardar lectura" type="button">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+<button class="h-10 px-5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-label-md text-label-md font-semibold shadow-[0_4px_12px_rgba(37,99,235,0.22)] flex items-center gap-2 transition-all" type="button">
+<span>Leer artículo completo</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section Title: Curated Practical Reads Grid -->
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">auto_stories</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Guías Prácticas de Hábitos</h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Mostrando 6 guías curadas</span>
+</div>
+<!-- 3-Column Magazine Card Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md mb-space-2xl">
+<!-- Card 1 -->
+<article class="flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="px-2.5 py-1 rounded-md bg-surface-container text-on-secondary-container font-label-sm text-label-sm font-semibold tracking-wide">
+            PSICOLOGÍA COTIDIANA • 4 MIN
+          </span>
+<button class="text-outline hover:text-primary transition-colors" title="Guardar" type="button">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors leading-snug mb-space-xs cursor-pointer">
+          El arte de poner límites sin culpa en el trabajo y relaciones
+        </h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-space-md leading-relaxed">
+          Técnicas sencillas para decir "no" asertivamente protegiendo tu energía sin dañar tus vínculos interpersonales.
+        </p>
+</div>
+<div class="pt-space-sm border-t border-surface-container flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">edit_note</span>
+<span class="font-medium">Equipo Editorial HabitApp</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">visibility</span>
+<span>1,512</span>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="px-2.5 py-1 rounded-md bg-amber-50 text-amber-800 font-label-sm text-label-sm font-semibold tracking-wide">
+            HÁBITOS • 7 MIN
+          </span>
+<button class="text-outline hover:text-primary transition-colors" title="Guardar" type="button">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors leading-snug mb-space-xs cursor-pointer">
+          La regla de los dos minutos aplicada a la salud emocional
+        </h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-space-md leading-relaxed">
+          Si una acción constructiva toma menos de 120 segundos, hazla ahora: el método definitivo contra la procrastinación afectiva.
+        </p>
+</div>
+<div class="pt-space-sm border-t border-surface-container flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary">newspaper</span>
+<span class="font-medium">Redacción Bienestar</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">visibility</span>
+<span>2,890</span>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 font-label-sm text-label-sm font-semibold tracking-wide">
+            DESCONEXIÓN DIGITAL • 3 MIN
+          </span>
+<button class="text-outline hover:text-primary transition-colors" title="Guardar" type="button">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors leading-snug mb-space-xs cursor-pointer">
+          Dopamina rápida vs. serenidad: el experimento de las pantallas en escala de grises
+        </h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-space-md leading-relaxed">
+          Cómo desaturar la pantalla de tu móvil reduce un 38% la necesidad impulsiva de desbloquearlo según estudios recientes.
+        </p>
+</div>
+<div class="pt-space-sm border-t border-surface-container flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-secondary">devices</span>
+<span class="font-medium">Tendencias Tech &amp; Salud</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">visibility</span>
+<span>1,940</span>
+</div>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="px-2.5 py-1 rounded-md bg-purple-50 text-purple-700 font-label-sm text-label-sm font-semibold tracking-wide">
+            FISIOLOGÍA Y SUEÑO • 6 MIN
+          </span>
+<button class="text-outline hover:text-primary transition-colors" title="Guardar" type="button">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors leading-snug mb-space-xs cursor-pointer">
+          Por qué comer 3 horas antes de dormir transforma la fase REM
+        </h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-space-md leading-relaxed">
+          Alineando el reloj circadiano digestivo para evitar despertares a las 3:00 AM y mejorar el descanso reparador.
+        </p>
+</div>
+<div class="pt-space-sm border-t border-surface-container flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">biotech</span>
+<span class="font-medium">Ciencia Cotidiana</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">visibility</span>
+<span>2,150</span>
+</div>
+</div>
+</article>
+<!-- Card 5 -->
+<article class="flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 font-label-sm text-label-sm font-semibold tracking-wide">
+            MINDFULNESS • 4 MIN
+          </span>
+<button class="text-outline hover:text-primary transition-colors" title="Guardar" type="button">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors leading-snug mb-space-xs cursor-pointer">
+          Micro-meditaciones de 60 segundos para días caóticos
+        </h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-space-md leading-relaxed">
+          Tres anclajes sensoriales que puedes aplicar en la oficina o transporte público cuando sientas saturación mental.
+        </p>
+</div>
+<div class="pt-space-sm border-t border-surface-container flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-emerald-600">spa</span>
+<span class="font-medium">Curaduría Web</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">visibility</span>
+<span>3,210</span>
+</div>
+</div>
+</article>
+<!-- Card 6 -->
+<article class="flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-label-sm text-label-sm font-semibold tracking-wide">
+            PRODUCTIVIDAD • 5 MIN
+          </span>
+<button class="text-outline hover:text-primary transition-colors" title="Guardar" type="button">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors leading-snug mb-space-xs cursor-pointer">
+          La técnica "Time-Boxing" para tener tardes libres reales
+        </h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-space-md leading-relaxed">
+          Organiza tu jornada en bloques inamovibles y apaga la culpa laboral al terminar tu horario pactado.
+        </p>
+</div>
+<div class="pt-space-sm border-t border-surface-container flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">edit_note</span>
+<span class="font-medium">Equipo Editorial HabitApp</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">visibility</span>
+<span>1,780</span>
+</div>
+</div>
+</article>
+</section>
+<!-- Bottom Fast-Paced Micro-reads: "Lecturas Rápidas para el Día" -->
+<section class="flex flex-col gap-space-md p-space-xl rounded-2xl bg-surface-container-lowest shadow-sm mb-space-xl">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">flash_on</span>
+</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Lecturas Rápidas para el Día</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Píldoras de 60-90 segundos para incorporar valor inmediato</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-primary cursor-pointer hover:underline">Ver todas (14)</span>
+</div>
+<!-- Micro-Read Cards Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm pt-space-xs">
+<!-- Pill 1 -->
+<div class="flex flex-col justify-between p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex flex-col gap-1.5 mb-3">
+<div class="flex items-center justify-between text-label-sm font-label-sm text-amber-700 font-semibold">
+<span>💡 TIP FLASH</span>
+<span class="text-on-surface-variant font-normal">1 min</span>
+</div>
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold group-hover:text-primary transition-colors">
+            La regla 20-20-20 para la fatiga visual
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Cada 20 minutos de pantalla, mira a 20 pies (6 metros) de distancia durante 20 segundos para relajar los músculos ciliares.
+          </p>
+</div>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary font-semibold">
+          Aplicar ahora <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</span>
+</div>
+<!-- Pill 2 -->
+<div class="flex flex-col justify-between p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex flex-col gap-1.5 mb-3">
+<div class="flex items-center justify-between text-label-sm font-label-sm text-blue-700 font-semibold">
+<span>💧 HIDRATACIÓN &amp; FOCO</span>
+<span class="text-on-surface-variant font-normal">1 min</span>
+</div>
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold group-hover:text-primary transition-colors">
+            Un vaso de agua antes del café activa tu cerebro
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Rehidratar el flujo sanguíneo antes de introducir cafeína previene la caída abrupta de energía a las 11:30 AM.
+          </p>
+</div>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary font-semibold">
+          Aplicar ahora <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</span>
+</div>
+<!-- Pill 3 -->
+<div class="flex flex-col justify-between p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex flex-col gap-1.5 mb-3">
+<div class="flex items-center justify-between text-label-sm font-label-sm text-emerald-700 font-semibold">
+<span>🚶 MOVIMIENTO SUAVE</span>
+<span class="text-on-surface-variant font-normal">2 min</span>
+</div>
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold group-hover:text-primary transition-colors">
+            10 minutos de caminata post-almuerzo bajan el pico de glucosa
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            La contracción muscular pasiva absorbe el excedente de azúcar en sangre, evitando la clásica pesadez y somnolencia laboral.
+          </p>
+</div>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary font-semibold">
+          Aplicar ahora <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</span>
+</div>
+</div>
+</section>
+</div>
+<script>
+  // Micro-interactions for bookmark toggles & topic buttons
+  document.addEventListener('DOMContentLoaded', () => {
+    const bookmarkButtons = document.querySelectorAll('button[title="Guardar"], button[title="Guardar lectura"]');
+    bookmarkButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const icon = btn.querySelector('.material-symbols-outlined');
+        if (icon) {
+          if (icon.textContent === 'bookmark_border') {
+            icon.textContent = 'bookmark';
+            icon.classList.add('text-primary');
+          } else {
+            icon.textContent = 'bookmark_border';
+            icon.classList.remove('text-primary');
+          }
+        }
+      });
+    });
+  });
+</script></main></div></body></html>

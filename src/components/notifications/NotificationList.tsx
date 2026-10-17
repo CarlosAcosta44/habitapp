@@ -17,7 +17,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { getNotificationsAction, marcarComoLeidaAction, marcarTodasComoLeidasAction } from '@/actions/notification.actions';
-import type { Notification, NotificationType } from '@/types/domain/notification.types';
+import type { Notification, NotificationType } from '@/domain/notification.types';
 
 export function NotificationList() {
   const [notifications, setNotifications] = useState<Notification[]>([]);

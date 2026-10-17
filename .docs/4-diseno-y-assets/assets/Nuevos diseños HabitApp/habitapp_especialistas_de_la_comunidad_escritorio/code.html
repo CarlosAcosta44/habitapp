@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin:0; padding:0; }
+      body { overscroll-behavior: none; font-family: 'Plus Jakarta Sans', sans-serif; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-[#f8f9fc] text-slate-800 antialiased min-h-screen">
+<div class="flex min-h-screen p-4 lg:p-6 gap-6 max-w-[1600px] mx-auto">
+<!-- 1. SIDEBAR FLOTANTE -->
+<aside class="w-64 shrink-0 hidden md:flex flex-col justify-between bg-white rounded-3xl p-5 shadow-sm border border-slate-100 sticky top-6 h-[calc(100vh-3rem)]">
+<div class="flex flex-col gap-6">
+<!-- Logo & Notificación -->
+<div class="flex items-center justify-between pb-2 border-b border-slate-100">
+<div class="flex items-center gap-3">
+<img alt="HabitApp" class="h-9 w-9 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WeaIN6MaV52iRFmo3ihGkGy3dJfAxfKliiyfiokFz0-_nMyWl0Nd9u9GMjBTkv18Juq8m360OwiC5eI3iCnyNjOWpqixJgbqSqiK8P-G4lOYYQH50lYOufgJw2mcD8j2i2sSTUf8zgVmlYD2g5r3M9hRAxwQEFoBlsLYg8PBDDDr4qHRTSxv5Dd5z1d9YFDUp5wcK-DUjI1YCmgddDjxeg9FrWatNKPRujX7b5YRRkmSLEUCWTJbWAhOnZOEOW0qoSUNuO6jTeRQ"/>
+<div class="flex flex-col">
+<span class="font-bold text-lg leading-tight text-slate-900 tracking-tight">HabitApp</span>
+<span class="text-[11px] font-medium text-slate-400">Salud Mental &amp; Hábitos</span>
+</div>
+</div>
+<button class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-colors" title="Notificaciones">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-blue-600 rounded-full"></span>
+</button>
+</div>
+<!-- Enlaces de navegación -->
+<nav class="flex flex-col gap-1.5">
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[22px] text-slate-400">check_circle</span>
+<span>Hábitos</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[22px] text-slate-400">emoji_events</span>
+<span>Retos y Desafíos</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-sm shadow-sm shadow-blue-200" href="#">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">group</span>
+<span>Comunidad</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[22px] text-slate-400">insights</span>
+<span>Progreso y Métricas</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[22px] text-slate-400">settings</span>
+<span>Ajustes</span>
+</a>
+</nav>
+</div>
+<!-- Usuario & acciones inferiores -->
+<div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
+            MS
+          </div>
+<div class="flex flex-col min-w-0">
+<span class="text-sm font-semibold text-slate-800 truncate">Marina Soler</span>
+<span class="text-xs text-slate-400 truncate">Usuario</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<button class="p-1.5 hover:text-slate-600 rounded-lg hover:bg-slate-50 transition-colors" title="Ayuda">
+<span class="material-symbols-outlined text-[18px]">help</span>
+</button>
+<button class="p-1.5 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors" title="Cerrar sesión">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- ÁREA DE CONTENIDO PRINCIPAL -->
+<main class="flex-1 min-w-0 flex flex-col gap-6">
+<!-- 2. CABECERA SUPERIOR A LAS PESTAÑAS (CALCADA EXACTA) -->
+<header class="flex flex-col gap-5"><!-- Fila de Título y Conectados sin elementos a la derecha -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-3">
+<h1 class="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">Comunidad &amp; Bienestar</h1>
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-xs text-emerald-800 font-semibold">4,890 miembros conectados</span>
+</div>
+</div>
+<p class="text-sm text-slate-500">
+    Espacio seguro y colaborativo para compartir rutinas, debatir y conectar con profesionales.
+  </p>
+</div>
+<!-- Barra de búsqueda global -->
+<div class="relative w-full my-1">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[22px]">search</span>
+<input class="w-full h-12 pl-12 pr-24 rounded-2xl bg-white border border-slate-200/80 text-sm text-slate-800 placeholder:text-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" placeholder="Buscar foros, hábitos comunitarios, artículos o especialistas..." type="text"/>
+<div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-medium text-slate-500 border border-slate-200">
+<span>⌘</span><span>K</span>
+</div>
+</div>
+<!-- Pestañas horizontales idénticas a SCREEN_26 con Especialistas activo -->
+<div class="flex items-center gap-2.5 overflow-x-auto py-0.5 no-scrollbar">
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]">dashboard</span>
+<span>Todo</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]">forum</span>
+<span>Foros de Apoyo</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]">repeat</span>
+<span>Hábitos Compartidos</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]">auto_stories</span>
+<span>Artículos y Guías</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-blue-600 text-white font-medium text-xs shadow-sm hover:bg-blue-700 transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span>Especialistas</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-xs shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[17px]">military_tech</span>
+<span>Retos</span>
+</button>
+</div></header>
+<!-- 3. CONTENIDO ESPECÍFICO DE ESPECIALISTAS -->
+<div class="flex flex-col gap-6">
+<!-- Banner Hero / Acompañamiento Profesional -->
+<section class="bg-white rounded-3xl p-6 lg:p-8 shadow-sm border border-slate-100 relative overflow-hidden">
+<div class="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-8 relative z-10">
+<div class="max-w-3xl flex flex-col gap-4">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 w-fit border border-blue-100">
+<span class="material-symbols-outlined text-[16px] text-blue-600" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-xs font-bold uppercase tracking-wider">Terapeutas y psicólogos colegiados</span>
+</div>
+<h2 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                Sesiones online 1 a 1 totalmente confidenciales
+              </h2>
+<p class="text-sm lg:text-base text-slate-600 max-w-2xl leading-relaxed">
+                Acompañamiento profesional y empático para fortalecer tus hábitos, restaurar tu equilibrio emocional y guiar tu bienestar mental a tu propio ritmo.
+              </p>
+<!-- Métricas destacadas -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+<div class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+<div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">psychology</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xl font-bold text-slate-900 leading-none">45+</span>
+<span class="text-xs text-slate-500 mt-1">Especialistas verificados</span>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+<div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xl font-bold text-slate-900 leading-none">98%</span>
+<span class="text-xs text-slate-500 mt-1">Valoraciones positivas</span>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+<div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">lock</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xl font-bold text-slate-900 leading-none">100%</span>
+<span class="text-xs text-slate-500 mt-1">Confidencial y cifrado</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tarjeta Test 2 min -->
+<div class="w-full xl:w-80 shrink-0 bg-blue-50/70 border border-blue-100 rounded-3xl p-6 flex flex-col justify-between">
+<div class="flex flex-col gap-2.5">
+<div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[22px]">tune</span>
+</div>
+<h3 class="font-bold text-slate-900 text-base pt-1">
+                  ¿No sabes cuál especialista elegir?
+                </h3>
+<p class="text-xs text-slate-600 leading-relaxed">
+                  Haz nuestro test de coincidencia personalizada en 2 minutos y conéctate con el especialista idóneo según tu momento y objetivos.
+                </p>
+</div>
+<button class="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm active:scale-95" id="start-test-btn">
+<span>Comenzar test guiado</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Barra de Filtros temáticos -->
+<section class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+<div class="flex items-center gap-2 overflow-x-auto w-full pb-1 no-scrollbar" id="category-pills">
+<button class="filter-pill active px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white shadow-sm whitespace-nowrap" data-filter="all">
+              Todos
+            </button>
+<button class="filter-pill px-4 py-2 rounded-xl text-sm font-medium bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50 hover:text-slate-900 transition-all whitespace-nowrap" data-filter="ansiedad">
+              🧠 Ansiedad y Estrés
+            </button>
+<button class="filter-pill px-4 py-2 rounded-xl text-sm font-medium bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50 hover:text-slate-900 transition-all whitespace-nowrap" data-filter="mindfulness">
+              🧘 Mindfulness y Compasión
+            </button>
+<button class="filter-pill px-4 py-2 rounded-xl text-sm font-medium bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50 hover:text-slate-900 transition-all whitespace-nowrap" data-filter="sueno">
+              🌙 Higiene del Sueño
+            </button>
+<button class="filter-pill px-4 py-2 rounded-xl text-sm font-medium bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50 hover:text-slate-900 transition-all whitespace-nowrap" data-filter="habitos">
+              🎯 Hábitos y Procrastinación
+            </button>
+</div>
+<div class="flex items-center gap-2 shrink-0 self-end md:self-auto">
+<span class="text-xs text-slate-500 font-semibold">Ordenar por:</span>
+<select class="bg-white border border-slate-200/80 text-slate-700 text-xs font-semibold px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm cursor-pointer">
+<option>Mayor puntuación</option>
+<option>Disponibilidad más cercana</option>
+<option>Precio menor a mayor</option>
+</select>
+</div>
+</section>
+<!-- Cuadrícula de 6 Especialistas Verificados -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="specialists-grid">
+<!-- Especialista 1 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-category="ansiedad">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover bg-slate-100" data-alt="Portrait of Lic. Sofia Aranda" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzF6b5BB_9dMXt1Ss5EOh-aGgkfSMWJky6rGPRyWRHlaoqb3h-pMIiYcPTVchjmdNv4kO2wlS9j9EC7QrA-y7gY8tGZ225K7Uaf9jD0TGSu2wlBsqfsSklwwi8LTt2z8yQsLDc730OEtBhnyn6CA1Xc0u9JOA0LzlmRUMB_1XXHrhTo5OfxDA-CGFeSFxSOdIxcP4Qq3WXJv4CC5XZgr_07wboLkdho7BSHfOPL1GbxjacdqENO-xv"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 ring-2 ring-white rounded-full" title="En línea hoy"></span>
+</div>
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                    4.9 <span class="text-slate-400 font-normal">(68)</span>
+</span>
+<span class="text-xs text-blue-600 font-semibold mt-1">En línea hoy</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-bold text-slate-900 text-base">Lic. Sofía Aranda</h3>
+<span class="material-symbols-outlined text-blue-600 text-[18px]" style="font-variation-settings: 'FILL' 1;" title="Perfil Colegiado Verificado">verified</span>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Psicóloga Clínica • Máster en TCC y Trauma</p>
+<span class="text-[11px] text-slate-400 mt-1 inline-block font-medium">Colegiada Nº 24.819</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Ansiedad generalizada</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Gestión emocional</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Autocrítica</span>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-slate-100 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-slate-500 text-xs">
+<span class="material-symbols-outlined text-[16px] text-blue-600">videocam</span>
+<span>Videoconsulta (50 min)</span>
+</div>
+<span class="text-lg font-bold text-slate-900">45€ <span class="text-xs text-slate-400 font-normal">/ sesión</span></span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200 transition-colors text-center">
+                  Ver perfil
+                </button>
+<button class="px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-all shadow-sm text-center">
+                  Agendar cita
+                </button>
+</div>
+</div>
+</article>
+<!-- Especialista 2 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-category="mindfulness">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover bg-slate-100" data-alt="Portrait of Dr. Marcos Valiente" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChOZTq66icj-i6FGcsxaqTsCYisZ1XtSoln_qtNmaEJ1i3IbOX-zqWBiDbTgMCWB6zu5LVm33WBgDm0wROz7tl112-IU6E1PWy856Pnm3bdTZRFexGBwzW3umpJmptGm3I_6qDIIuXCFp48YEqiAPWJ7Z4dmD919JFUnYy3IhDkPnPgGVWJY8XV9cy_BbhxXU6ArD2qE4Asfht1hav13Q9Dh9VmE4eR-f07U9g2FL2USAH1mw3Pgo6"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 ring-2 ring-white rounded-full" title="Disponible"></span>
+</div>
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                    5.0 <span class="text-slate-400 font-normal">(94)</span>
+</span>
+<span class="text-xs text-blue-600 font-semibold mt-1">Disponible</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-bold text-slate-900 text-base">Dr. Marcos Valiente</h3>
+<span class="material-symbols-outlined text-blue-600 text-[18px]" style="font-variation-settings: 'FILL' 1;" title="Perfil Colegiado Verificado">verified</span>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Mindfulness Terapéutico &amp; Burnout Laboral</p>
+<span class="text-[11px] text-slate-400 mt-1 inline-block font-medium">Colegiado Nº 18.302</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Estrés crónico</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Atención plena</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Liderazgo sano</span>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-slate-100 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-slate-500 text-xs">
+<span class="material-symbols-outlined text-[16px] text-blue-600">videocam</span>
+<span>Videoconsulta (50 min)</span>
+</div>
+<span class="text-lg font-bold text-slate-900">50€ <span class="text-xs text-slate-400 font-normal">/ sesión</span></span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200 transition-colors text-center">
+                  Ver perfil
+                </button>
+<button class="px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-all shadow-sm text-center">
+                  Agendar cita
+                </button>
+</div>
+</div>
+</article>
+<!-- Especialista 3 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-category="sueno">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover bg-slate-100" data-alt="Portrait of Dra. Elena Vidal" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBySECNUw9K0T5lZAabjECgOafuppIFWaJceIJkkviEmusm9Z8GKffzeU17os7WyOI7jBZBaa-kVRFRrY63iBtfuChxYUrn6amD7uMM5OlBVZd1_izeL3pKGrcJh7wQ_tg8jFJ1F94-iVOapEhFq8aRCGE7Y2dMLuVXi5_S6fs_5ENT7e8_NXs2OVX0ph0gWGt0wUwiWFZ4_qeaghUb4TDtRVMCo0FK69pVWAHWWlJDhRgemMWzzOvS"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-amber-500 ring-2 ring-white rounded-full" title="Citas próx."></span>
+</div>
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                    4.8 <span class="text-slate-400 font-normal">(112)</span>
+</span>
+<span class="text-xs text-slate-500 font-semibold mt-1">Citas próx.</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-bold text-slate-900 text-base">Dra. Elena Vidal</h3>
+<span class="material-symbols-outlined text-blue-600 text-[18px]" style="font-variation-settings: 'FILL' 1;" title="Perfil Colegiado Verificado">verified</span>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Psiquiatra y Neurofisióloga • Sueño</p>
+<span class="text-[11px] text-slate-400 mt-1 inline-block font-medium">Colegiada Nº 31.045</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Insomnio y Despertares</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Ritmo circadiano</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Descanso reparador</span>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-slate-100 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-slate-500 text-xs">
+<span class="material-symbols-outlined text-[16px] text-blue-600">videocam</span>
+<span>Videoconsulta (50 min)</span>
+</div>
+<span class="text-lg font-bold text-slate-900">60€ <span class="text-xs text-slate-400 font-normal">/ sesión</span></span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200 transition-colors text-center">
+                  Ver perfil
+                </button>
+<button class="px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-all shadow-sm text-center">
+                  Agendar cita
+                </button>
+</div>
+</div>
+</article>
+<!-- Especialista 4 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-category="habitos">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover bg-slate-100" data-alt="Portrait of Lic. Andres Salgado" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfetfpLWGvJUyeXzRnXgo-IRtWyFFmdVZCzAQWMo2JXKhYX04w25BkkQCLN_79gnpJl9Xi7l8NRVWZ_jlcnPcpbXPoKYRzwmhsxi8ck_4_newL5saxIZmXJpkK-Q0VdPwIJyQzZ1TwE0LVZMfcLsoPpgm06FQcflvqPhb5SXlvjjdOAf--vUhSoZqAtfwDJ4HwwUiBZT_26u37LbuyOS1K2L41zEYrnucgviqOUNPG3tzD90_CRCs_"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 ring-2 ring-white rounded-full" title="En línea"></span>
+</div>
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                    4.9 <span class="text-slate-400 font-normal">(53)</span>
+</span>
+<span class="text-xs text-blue-600 font-semibold mt-1">En línea</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-bold text-slate-900 text-base">Lic. Andrés Salgado</h3>
+<span class="material-symbols-outlined text-blue-600 text-[18px]" style="font-variation-settings: 'FILL' 1;" title="Perfil Colegiado Verificado">verified</span>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Psicólogo Positivo • Formador de Hábitos</p>
+<span class="text-[11px] text-slate-400 mt-1 inline-block font-medium">Colegiada Nº 26.940</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Procrastinación</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Micro-rutinas</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Motivación intrínseca</span>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-slate-100 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-slate-500 text-xs">
+<span class="material-symbols-outlined text-[16px] text-blue-600">videocam</span>
+<span>Videoconsulta (50 min)</span>
+</div>
+<span class="text-lg font-bold text-slate-900">45€ <span class="text-xs text-slate-400 font-normal">/ sesión</span></span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200 transition-colors text-center">
+                  Ver perfil
+                </button>
+<button class="px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-all shadow-sm text-center">
+                  Agendar cita
+                </button>
+</div>
+</div>
+</article>
+<!-- Especialista 5 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-category="ansiedad">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover bg-slate-100" data-alt="Portrait of Dra. Carmen Mendez" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV2eRp4RkWAlPX_GY29hsckcRN5-Qhq5Avnx6546q-1eR45YULCvce04tQTsjOsrFSiePQQabIUP-ISGH0q0d__7cFcoIcDs38wjzyeaZ8JBd93faH0_RXuf55xlhQzyYiAB-8tMvRh-Hcx590jB82WX_clZgZN3WQvRN9-fgc01C3kuIDDNJF1EU7H08JuhK47TTnLO1IKg5VbsPUNKjKZRg69BOoIA0RqJYY6kVqzmsJ1_DRoakb"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-amber-500 ring-2 ring-white rounded-full" title="Citas esta semana"></span>
+</div>
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                    5.0 <span class="text-slate-400 font-normal">(81)</span>
+</span>
+<span class="text-xs text-slate-500 font-semibold mt-1">Citas esta semana</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-bold text-slate-900 text-base">Dra. Carmen Méndez</h3>
+<span class="material-symbols-outlined text-blue-600 text-[18px]" style="font-variation-settings: 'FILL' 1;" title="Perfil Colegiado Verificado">verified</span>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Terapeuta Somática &amp; Sistema Nervioso</p>
+<span class="text-[11px] text-slate-400 mt-1 inline-block font-medium">Colegiada Nº 19.874</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Tensión muscular</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Regulación vagal</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Respiración diafragmática</span>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-slate-100 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-slate-500 text-xs">
+<span class="material-symbols-outlined text-[16px] text-blue-600">videocam</span>
+<span>Videoconsulta (50 min)</span>
+</div>
+<span class="text-lg font-bold text-slate-900">55€ <span class="text-xs text-slate-400 font-normal">/ sesión</span></span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200 transition-colors text-center">
+                  Ver perfil
+                </button>
+<button class="px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-all shadow-sm text-center">
+                  Agendar cita
+                </button>
+</div>
+</div>
+</article>
+<!-- Especialista 6 -->
+<article class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between" data-category="habitos">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover bg-slate-100" data-alt="Portrait of Lic. Paula Ribera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDgxDaDoDyCkYhLcOHp8Vs36-neieEBM0VUbhDUwZYXoilBWS3dKhLZ23GP46J9OVFXCA1QJLZtFwGZUxOfn4ijGfvjCYO5YDLlQ8TEg9cXTyQxyWz7RGg7kVm7wvUlkL0hLMB64bVYrY-d_Fp9565r82XZG1zgILmOYHrBhjQVVnfL15aaAZXeiOQ7hMcpsGdO0xbuXNFjB-vf2VX-rtlkwfO-ZcvCC1C3yVbI-F8l8WbmA4AkJr5"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 ring-2 ring-white rounded-full" title="Disponible"></span>
+</div>
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                    4.9 <span class="text-slate-400 font-normal">(76)</span>
+</span>
+<span class="text-xs text-blue-600 font-semibold mt-1">Disponible</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-bold text-slate-900 text-base">Lic. Paula Ribera</h3>
+<span class="material-symbols-outlined text-blue-600 text-[18px]" style="font-variation-settings: 'FILL' 1;" title="Perfil Colegiado Verificado">verified</span>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Neuropsicóloga • TDAH y Foco Atencional</p>
+<span class="text-[11px] text-slate-400 mt-1 inline-block font-medium">Colegiada Nº 22.411</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Gestión del tiempo</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Sistemas visuales</span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">Enfoque sin culpa</span>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-slate-100 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-slate-500 text-xs">
+<span class="material-symbols-outlined text-[16px] text-blue-600">videocam</span>
+<span>Videoconsulta (50 min)</span>
+</div>
+<span class="text-lg font-bold text-slate-900">50€ <span class="text-xs text-slate-400 font-normal">/ sesión</span></span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200 transition-colors text-center">
+                  Ver perfil
+                </button>
+<button class="px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-all shadow-sm text-center">
+                  Agendar cita
+                </button>
+</div>
+</div>
+</article>
+</section>
+<!-- Sección de Garantía y Preguntas Frecuentes -->
+<section class="bg-white rounded-3xl p-6 lg:p-8 border border-slate-100 shadow-sm">
+<div class="flex items-center gap-3.5 mb-6">
+<div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+<span class="material-symbols-outlined text-[22px]">verified_user</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-slate-900">Garantía de tranquilidad y preguntas frecuentes</h3>
+<p class="text-xs text-slate-500">Diseñado con el máximo rigor clínico y respeto a tu intimidad.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col gap-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+<div class="flex items-center gap-2 text-blue-600 font-semibold text-sm">
+<span class="material-symbols-outlined text-[20px]">chat_bubble_outline</span>
+<span>¿Cómo funciona la primera sesión?</span>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed">
+                Un espacio libre de juicio donde explorarás tus retos presentes, definirás metas realistas de hábitos y acordaréis un plan adaptado a tu ritmo vital.
+              </p>
+</div>
+<div class="flex flex-col gap-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+<div class="flex items-center gap-2 text-blue-600 font-semibold text-sm">
+<span class="material-symbols-outlined text-[20px]">event_repeat</span>
+<span>Cancelación flexible</span>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed">
+                Puedes reprogramar o cancelar tu sesión sin costo alguno hasta 24 horas antes de la hora fijada, directamente desde tu panel de usuario.
+              </p>
+</div>
+<div class="flex flex-col gap-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+<div class="flex items-center gap-2 text-blue-600 font-semibold text-sm">
+<span class="material-symbols-outlined text-[20px]">encrypted</span>
+<span>Videollamada cifrada extremo a extremo</span>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed">
+                Conexión peer-to-peer bajo estándares RGPD y HIPAA médica internacional. No se almacena ninguna grabación ni dato de la conversación.
+              </p>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Script interactivo de filtros -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const pills = document.querySelectorAll('.filter-pill');
+      const cards = document.querySelectorAll('#specialists-grid > article');
+
+      pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          pills.forEach(p => {
+            p.classList.remove('bg-blue-600', 'text-white', 'shadow-sm', 'active');
+            p.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200/80');
+          });
+
+          pill.classList.remove('bg-white', 'text-slate-600', 'border', 'border-slate-200/80');
+          pill.classList.add('bg-blue-600', 'text-white', 'shadow-sm', 'active');
+
+          const filter = pill.getAttribute('data-filter');
+
+          cards.forEach(card => {
+            if (filter === 'all' || card.getAttribute('data-category') === filter) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      const startTestBtn = document.getElementById('start-test-btn');
+      if (startTestBtn) {
+        startTestBtn.addEventListener('click', () => {
+          alert('Iniciando cuestionario guiado para emparejarte con el especialista idóneo según tus objetivos.');
+        });
+      }
+    });
+  </script>
+</body></html>

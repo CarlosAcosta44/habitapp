@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useRef, useEffect } from "react";
 import { updatePerfilBasicoAction, updateAvatarAction } from "@/actions/perfil.actions";
-import type { ProfileForEdit } from "@/types/domain/perfil.types";
+import type { ProfileForEdit } from "@/domain/perfil.types";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -83,7 +83,7 @@ export function EditProfileForm({ profile, userId }: Props) {
             
             {isUploadingAvatar && (
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
-                <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg aria-hidden="true" className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -104,7 +104,7 @@ export function EditProfileForm({ profile, userId }: Props) {
               disabled={isUploadingAvatar}
               className="px-5 py-2.5 bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 font-semibold text-sm rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all disabled:opacity-50 flex items-center gap-2"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg aria-hidden="true" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
               </svg>
               Cambiar Foto
@@ -207,7 +207,7 @@ export function EditProfileForm({ profile, userId }: Props) {
         {/* Mensaje Global */}
         {state?.message && (
           <div className={`p-4 rounded-xl text-sm font-medium flex items-center gap-3 ${state.success ? 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400' : 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400'}`}>
-            <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg aria-hidden="true" className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               {state.success ? (
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               ) : (
@@ -227,7 +227,7 @@ export function EditProfileForm({ profile, userId }: Props) {
           >
             {isPending ? (
               <span className="flex items-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg aria-hidden="true" className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getUsersAction, updateUserRoleAction } from '@/actions/admin.actions';
-import type { UserProfileDto } from '@/types/domain/usuario.types';
+import type { UserProfileDto } from '@/domain/usuario.types';
 import { Shield, ShieldAlert, User, Star } from 'lucide-react';
 
 export function AdminUsersList() {
