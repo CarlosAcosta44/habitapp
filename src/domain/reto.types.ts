@@ -23,4 +23,7 @@ export interface Reto {
   diasRestantes?: number;
   porcentajeCompletado?: number;
   participantes?: number | string;
+  participantes_count?: number;
+  usuarios_participando?: string[];
+  inscrito?: boolean;
 }

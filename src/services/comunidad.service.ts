@@ -12,6 +12,15 @@ import type { Reto } from "@/domain/reto.types";
 export class ComunidadService {
   constructor() {}
 
+  // ─── Estadísticas de Comunidad ──────────────────────────────────────────────
+  async getStats(): Promise<Result<{ totalMiembros: number; conectados: number }>> {
+    try {
+      return await comunidadRepository.get<{ totalMiembros: number; conectados: number }>('users/community/stats');
+    } catch (e: any) {
+      return ok({ totalMiembros: 30, conectados: 30 });
+    }
+  }
+
   // ─── Foros ──────────────────────────────────────────────────────────────────
   async getForos(): Promise<Result<any[]>> {
     try {
@@ -32,7 +41,7 @@ export class ComunidadService {
       const allRes = await this.getForos();
       if (allRes.success && Array.isArray(allRes.data)) {
         const found = allRes.data.find(
-          (f: any) => String(f.idForo || f.id || f.id_foro) === String(foroId)
+          (f: any) => String(f.idforo || f.idForo || f.id || f.id_foro) === String(foroId)
         );
         if (found) return ok(found);
       }
@@ -70,12 +79,14 @@ export class ComunidadService {
     idForo: string;
     contenido: string;
     idComentarioPadre?: string | null;
+    imagenUrl?: string | null;
   }): Promise<Result<any>> {
-    if (!dto.contenido?.trim()) return err("El comentario no puede estar vacío");
+    if (!dto.contenido?.trim() && !dto.imagenUrl) return err("El comentario no puede estar vacío");
     try {
       return await comunidadRepository.post<any>(`users/community/foros/${dto.idForo}/comentarios`, {
-        contenido: dto.contenido.trim(),
+        contenido: (dto.contenido || '').trim(),
         parentId: dto.idComentarioPadre || undefined,
+        imagenUrl: dto.imagenUrl || undefined,
       });
     } catch (e: any) {
       return err(`Error al crear comentario: ${e.message}`);

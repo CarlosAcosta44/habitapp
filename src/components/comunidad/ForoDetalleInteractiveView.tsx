@@ -20,18 +20,32 @@ import {
   CheckCircle2,
   Loader2,
   Trash2,
+  Image as ImageIcon,
+  X,
 } from 'lucide-react';
-import { comentarAction, reaccionarAction, deleteComentarioAction } from '@/actions/comunidad.actions';
+import { comentarAction, reaccionarAction, deleteComentarioAction, uploadComunidadImageAction } from '@/actions/comunidad.actions';
 
 interface Comentario {
+  idcomentario?: string;
   idComentario?: string;
   id?: string;
   contenido: string;
   fechaPublicacion?: string;
+  fechapublicacion?: string;
   fechacreacion?: string;
+  idcomentario_padre?: string | null;
   idComentarioPadre?: string | null;
   parentId?: string | null;
   likes_count?: number;
+  liked_by_me?: boolean;
+  imagen_url?: string | null;
+  imagenUrl?: string | null;
+  usuarios?: {
+    idusuario?: string;
+    nombre?: string;
+    apellido?: string;
+    fotoperfil?: string;
+  };
   autor?: {
     id?: string;
     nombre: string;
@@ -66,14 +80,22 @@ export function ForoDetalleInteractiveView({
 
   // Estados locales
   const [newCommentText, setNewCommentText] = useState('');
+  const [commentImage, setCommentImage] = useState('');
+  const [isUploadingCommentImage, setIsUploadingCommentImage] = useState(false);
+  const commentFileInputRef = useRef<HTMLInputElement>(null);
+
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
+  const [replyImage, setReplyImage] = useState('');
+  const [isUploadingReplyImage, setIsUploadingReplyImage] = useState(false);
+  const replyFileInputRef = useRef<HTMLInputElement>(null);
+
   const [hiddenThreads, setHiddenThreads] = useState<Record<string, boolean>>({});
 
   // Likes locales optimistas
-  const foroId = foro?.idForo || foro?.id || '';
+  const foroId = foro?.idforo || foro?.idForo || foro?.id || '';
   const [foroLikes, setForoLikes] = useState<number>(foro?.likes_count ?? foro?.reacciones?.meGusta ?? 24);
-  const [hasLikedForo, setHasLikedForo] = useState<boolean>(false);
+  const [hasLikedForo, setHasLikedForo] = useState<boolean>(foro?.liked_by_me ?? false);
   const [commentLikes, setCommentLikes] = useState<Record<string, number>>({});
   const [likedComments, setLikedComments] = useState<Record<string, boolean>>({});
 
@@ -92,8 +114,7 @@ export function ForoDetalleInteractiveView({
     const respuestas: Record<string, Comentario[]> = {};
 
     initialComentarios.forEach((c) => {
-      const pid = c.idComentarioPadre || c.parentId;
-      const cid = c.idComentario || c.id || '';
+      const pid = c.idcomentario_padre || c.idComentarioPadre || c.parentId;
       if (!pid) {
         padres.push(c);
       } else {
@@ -132,19 +153,89 @@ export function ForoDetalleInteractiveView({
     });
   };
 
+  // ── Manejo de subida de imagen para comentario principal ──
+  const handleSelectCommentImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Por favor selecciona un archivo de imagen válido');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('La imagen no debe superar los 5 MB');
+      return;
+    }
+
+    try {
+      setIsUploadingCommentImage(true);
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await uploadComunidadImageAction(fd);
+      if (res.success && res.url) {
+        setCommentImage(res.url);
+        showToast('Imagen adjuntada correctamente 🖼️');
+      } else {
+        showToast(res.message || 'Error al subir la imagen');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Error al procesar la imagen');
+    } finally {
+      setIsUploadingCommentImage(false);
+      if (commentFileInputRef.current) commentFileInputRef.current.value = '';
+    }
+  };
+
+  // ── Manejo de subida de imagen para respuesta ──
+  const handleSelectReplyImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Por favor selecciona un archivo de imagen válido');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('La imagen no debe superar los 5 MB');
+      return;
+    }
+
+    try {
+      setIsUploadingReplyImage(true);
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await uploadComunidadImageAction(fd);
+      if (res.success && res.url) {
+        setReplyImage(res.url);
+        showToast('Imagen adjuntada a la respuesta 🖼️');
+      } else {
+        showToast(res.message || 'Error al subir la imagen');
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Error al procesar la imagen');
+    } finally {
+      setIsUploadingReplyImage(false);
+      if (replyFileInputRef.current) replyFileInputRef.current.value = '';
+    }
+  };
+
   // ── Publicar Comentario Principal ──
   const handlePostComment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCommentText.trim() || !foroId) return;
+    if ((!newCommentText.trim() && !commentImage.trim()) || !foroId) return;
 
     startTransition(async () => {
       const fd = new FormData();
       fd.set('idForo', foroId);
       fd.set('contenido', newCommentText.trim());
+      if (commentImage.trim()) {
+        fd.set('imagenUrl', commentImage.trim());
+      }
 
       const res = await comentarAction(null, fd);
       if (res.success) {
         setNewCommentText('');
+        setCommentImage('');
         showToast('Respuesta publicada exitosamente ✨');
         router.refresh();
       } else {
@@ -155,17 +246,21 @@ export function ForoDetalleInteractiveView({
 
   // ── Publicar Sub-respuesta Anidada ──
   const handlePostReply = (parentId: string) => {
-    if (!replyText.trim() || !foroId) return;
+    if ((!replyText.trim() && !replyImage.trim()) || !foroId) return;
 
     startTransition(async () => {
       const fd = new FormData();
       fd.set('idForo', foroId);
       fd.set('contenido', replyText.trim());
       fd.set('idComentarioPadre', parentId);
+      if (replyImage.trim()) {
+        fd.set('imagenUrl', replyImage.trim());
+      }
 
       const res = await comentarAction(null, fd);
       if (res.success) {
         setReplyText('');
+        setReplyImage('');
         setReplyingToId(null);
         showToast('Respuesta añadida al hilo');
         router.refresh();
@@ -208,8 +303,10 @@ export function ForoDetalleInteractiveView({
     return `${f}${l}` || 'HB';
   };
 
-  const autorNombre = foro?.autor?.nombre
-    ? `${foro.autor.nombre} ${foro.autor.apellido || ''}`
+  const autorNombre = foro?.usuarios
+    ? `${foro.usuarios.nombre || ''} ${foro.usuarios.apellido || ''}`.trim()
+    : foro?.autor?.nombre
+    ? `${foro.autor.nombre || ''} ${foro.autor.apellido || ''}`.trim()
     : 'Miembro de la Comunidad';
 
   return (
@@ -285,9 +382,17 @@ export function ForoDetalleInteractiveView({
         {/* Fila del autor */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#572de4] to-indigo-500 text-white flex items-center justify-center font-bold text-sm shadow-sm ring-2 ring-indigo-100 dark:ring-indigo-900/50">
-              {getInitials(foro?.autor?.nombre, foro?.autor?.apellido)}
-            </div>
+            {foro?.usuarios?.fotoperfil || foro?.autor?.avatarUrl ? (
+              <img
+                src={foro?.usuarios?.fotoperfil || foro?.autor?.avatarUrl}
+                alt={autorNombre}
+                className="w-12 h-12 rounded-full object-cover shadow-sm ring-2 ring-indigo-100 dark:ring-indigo-900/50"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#572de4] to-indigo-500 text-white flex items-center justify-center font-bold text-sm shadow-sm ring-2 ring-indigo-100 dark:ring-indigo-900/50">
+                {getInitials(foro?.usuarios?.nombre || foro?.autor?.nombre, foro?.usuarios?.apellido || foro?.autor?.apellido)}
+              </div>
+            )}
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
@@ -317,6 +422,17 @@ export function ForoDetalleInteractiveView({
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
           {foro?.descripcion || 'Comparte tus experiencias e ideas en este espacio seguro.'}
         </p>
+
+        {/* Imagen adjunta en el post si existe */}
+        {foro?.imagen_url && (
+          <div className="rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 max-h-96 w-full bg-slate-100 dark:bg-slate-900 shadow-sm">
+            <img
+              src={foro.imagen_url}
+              alt="Imagen del foro"
+              className="w-full h-full object-cover max-h-96"
+            />
+          </div>
+        )}
 
         {/* Context Badges */}
         <div className="flex flex-wrap gap-2 pt-1">
@@ -402,14 +518,69 @@ export function ForoDetalleInteractiveView({
             </div>
           </div>
 
+          {/* Input oculto para adjuntar imagen desde el dispositivo */}
+          <input
+            ref={commentFileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleSelectCommentImage}
+          />
+
+          {/* Preview o loader de la imagen adjunta en comentario */}
+          {(isUploadingCommentImage || commentImage) && (
+            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 animate-in fade-in">
+              {isUploadingCommentImage ? (
+                <div className="flex items-center gap-2 text-xs text-[#572de4] dark:text-indigo-400 font-semibold py-1">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Subiendo imagen desde tu dispositivo...</span>
+                </div>
+              ) : (
+                <div className="relative group w-24 h-16 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                  <img src={commentImage} alt="Preview" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setCommentImage('')}
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-slate-900/80 text-white flex items-center justify-center hover:bg-rose-600 transition-colors shadow-sm"
+                    title="Quitar imagen"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex items-center justify-between pt-1">
-            <span className="text-xs text-slate-400 dark:text-slate-500 hidden sm:inline">
-              Sé amable y respetuoso con la comunidad 🌱
-            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => commentFileInputRef.current?.click()}
+                disabled={isUploadingCommentImage}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+                  commentImage
+                    ? 'bg-indigo-50 dark:bg-indigo-950/80 text-[#572de4] dark:text-indigo-300'
+                    : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+                title="Adjuntar imagen desde tu dispositivo"
+              >
+                {isUploadingCommentImage ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <ImageIcon className="w-4 h-4" />
+                )}
+                <span className="hidden sm:inline">
+                  {commentImage ? 'Cambiar imagen' : 'Adjuntar imagen'}
+                </span>
+              </button>
+              <span className="text-xs text-slate-400 dark:text-slate-500 hidden sm:inline">
+                Sé amable y respetuoso con la comunidad 🌱
+              </span>
+            </div>
 
             <button
               type="submit"
-              disabled={isPending || !newCommentText.trim()}
+              disabled={isPending || (!newCommentText.trim() && !commentImage.trim())}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#572de4] hover:bg-[#461ebd] text-white text-xs font-bold shadow-md transition-all active:scale-95 disabled:opacity-50 ml-auto"
             >
               {isPending ? (
@@ -436,15 +607,19 @@ export function ForoDetalleInteractiveView({
             </div>
           ) : (
             comentariosPadre.map((comentario) => {
-              const cId = comentario.idComentario || comentario.id || '';
+              const cId = comentario.idcomentario || comentario.idComentario || comentario.id || '';
               const subRespuestas = respuestasMap[cId] || [];
               const isHidden = hiddenThreads[cId] || false;
               const isReplyingThis = replyingToId === cId;
               const isLiked = likedComments[cId] || false;
               const likesCount = commentLikes[cId] ?? comentario.likes_count ?? 8;
-              const cAutorNombre = comentario.autor?.nombre
-                ? `${comentario.autor.nombre} ${comentario.autor.apellido || ''}`
+              const cAutorNombre = comentario.usuarios
+                ? `${comentario.usuarios.nombre || ''} ${comentario.usuarios.apellido || ''}`.trim()
+                : comentario.autor?.nombre
+                ? `${comentario.autor.nombre} ${comentario.autor.apellido || ''}`.trim()
                 : 'Miembro';
+              const cAvatar = comentario.usuarios?.fotoperfil || comentario.autor?.avatarUrl;
+              const cImg = comentario.imagen_url || comentario.imagenUrl;
 
               return (
                 <article
@@ -454,9 +629,17 @@ export function ForoDetalleInteractiveView({
                   {/* Cabecera del comentario */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-[#572de4] dark:text-indigo-400 flex items-center justify-center font-bold text-xs shadow-sm">
-                        {getInitials(comentario.autor?.nombre, comentario.autor?.apellido)}
-                      </div>
+                      {cAvatar ? (
+                        <img
+                          src={cAvatar}
+                          alt={cAutorNombre}
+                          className="w-10 h-10 rounded-full object-cover shadow-sm ring-1 ring-slate-200 dark:ring-slate-700"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-[#572de4] dark:text-indigo-400 flex items-center justify-center font-bold text-xs shadow-sm">
+                          {getInitials(comentario.usuarios?.nombre || comentario.autor?.nombre, comentario.usuarios?.apellido || comentario.autor?.apellido)}
+                        </div>
+                      )}
                       <div className="flex flex-col">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="font-bold text-sm text-slate-900 dark:text-white">
@@ -465,7 +648,7 @@ export function ForoDetalleInteractiveView({
                           <span className="text-xs text-slate-400 dark:text-slate-500">• Miembro activo</span>
                         </div>
                         <span className="text-xs text-slate-400 dark:text-slate-500">
-                          {formatTimeAgo(comentario.fechaPublicacion || comentario.fechacreacion)}
+                          {formatTimeAgo(comentario.fechapublicacion || comentario.fechaPublicacion || comentario.fechacreacion)}
                         </span>
                       </div>
                     </div>
@@ -483,9 +666,22 @@ export function ForoDetalleInteractiveView({
                   </div>
 
                   {/* Texto del comentario */}
-                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
-                    {comentario.contenido}
-                  </p>
+                  {comentario.contenido && (
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                      {comentario.contenido}
+                    </p>
+                  )}
+
+                  {/* Imagen adjunta en comentario */}
+                  {cImg && (
+                    <div className="rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 max-h-72 w-full max-w-md bg-slate-100 dark:bg-slate-900 shadow-sm mt-1">
+                      <img
+                        src={cImg}
+                        alt="Imagen adjunta en comentario"
+                        className="w-full h-full object-cover max-h-72"
+                      />
+                    </div>
+                  )}
 
                   {/* Barra de interacciones y toggle de respuestas */}
                   <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800">
@@ -508,6 +704,7 @@ export function ForoDetalleInteractiveView({
                         onClick={() => {
                           setReplyingToId(isReplyingThis ? null : cId);
                           setReplyText('');
+                          setReplyImage('');
                         }}
                         className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-[#572de4] dark:hover:text-indigo-400 flex items-center gap-1 transition-colors"
                       >
@@ -559,19 +756,68 @@ export function ForoDetalleInteractiveView({
                         placeholder="Escribe tu respuesta a este comentario..."
                         className="w-full bg-white dark:bg-slate-900 rounded-xl p-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 border border-slate-200 dark:border-slate-700 outline-none resize-none"
                       />
-                      <button
-                        type="button"
-                        disabled={isPending || !replyText.trim()}
-                        onClick={() => handlePostReply(cId)}
-                        className="self-end px-4 py-2 rounded-xl bg-[#572de4] hover:bg-[#461ebd] text-white text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-1.5"
-                      >
-                        {isPending ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        ) : (
-                          <Send className="w-3.5 h-3.5" />
-                        )}
-                        <span>Enviar respuesta</span>
-                      </button>
+
+                      {/* Input oculto para adjuntar imagen en respuesta */}
+                      <input
+                        ref={replyFileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleSelectReplyImage}
+                      />
+
+                      {(isUploadingReplyImage || replyImage) && (
+                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 animate-in fade-in">
+                          {isUploadingReplyImage ? (
+                            <div className="flex items-center gap-2 text-xs text-[#572de4] dark:text-indigo-400 font-semibold py-1">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span>Subiendo imagen...</span>
+                            </div>
+                          ) : (
+                            <div className="relative group w-20 h-14 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+                              <img src={replyImage} alt="Preview" className="w-full h-full object-cover" />
+                              <button
+                                type="button"
+                                onClick={() => setReplyImage('')}
+                                className="absolute top-1 right-1 w-4 h-4 rounded-full bg-slate-900/80 text-white flex items-center justify-center hover:bg-rose-600 transition-colors shadow-sm"
+                                title="Quitar imagen"
+                              >
+                                <X className="w-2.5 h-2.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between pt-1">
+                        <button
+                          type="button"
+                          onClick={() => replyFileInputRef.current?.click()}
+                          disabled={isUploadingReplyImage}
+                          className="text-xs text-slate-500 hover:text-[#572de4] flex items-center gap-1"
+                        >
+                          {isUploadingReplyImage ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <ImageIcon className="w-3.5 h-3.5" />
+                          )}
+                          <span>{replyImage ? 'Cambiar imagen' : 'Adjuntar imagen'}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={isPending || (!replyText.trim() && !replyImage.trim())}
+                          onClick={() => handlePostReply(cId)}
+                          className="px-4 py-2 rounded-xl bg-[#572de4] hover:bg-[#461ebd] text-white text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-1.5"
+                        >
+                          {isPending ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Send className="w-3.5 h-3.5" />
+                          )}
+                          <span>Enviar respuesta</span>
+                        </button>
+                      </div>
                     </div>
                   )}
 
@@ -579,12 +825,16 @@ export function ForoDetalleInteractiveView({
                   {!isHidden && subRespuestas.length > 0 && (
                     <div className="flex flex-col gap-3 pl-4 sm:pl-6 ml-2 sm:ml-4 border-l-2 border-slate-200 dark:border-slate-800 pt-1">
                       {subRespuestas.map((sub) => {
-                        const sId = sub.idComentario || sub.id || '';
+                        const sId = sub.idcomentario || sub.idComentario || sub.id || '';
                         const sIsLiked = likedComments[sId] || false;
                         const sLikes = commentLikes[sId] ?? sub.likes_count ?? 3;
-                        const subAutorNombre = sub.autor?.nombre
-                          ? `${sub.autor.nombre} ${sub.autor.apellido || ''}`
+                        const subAutorNombre = sub.usuarios
+                          ? `${sub.usuarios.nombre || ''} ${sub.usuarios.apellido || ''}`.trim()
+                          : sub.autor?.nombre
+                          ? `${sub.autor.nombre} ${sub.autor.apellido || ''}`.trim()
                           : 'Miembro';
+                        const subAvatar = sub.usuarios?.fotoperfil || sub.autor?.avatarUrl;
+                        const subImg = sub.imagen_url || sub.imagenUrl;
 
                         return (
                           <div
@@ -593,15 +843,23 @@ export function ForoDetalleInteractiveView({
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2.5">
-                                <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-[11px] shrink-0">
-                                  {getInitials(sub.autor?.nombre, sub.autor?.apellido)}
-                                </div>
+                                {subAvatar ? (
+                                  <img
+                                    src={subAvatar}
+                                    alt={subAutorNombre}
+                                    className="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700"
+                                  />
+                                ) : (
+                                  <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-[11px] shrink-0">
+                                    {getInitials(sub.usuarios?.nombre || sub.autor?.nombre, sub.usuarios?.apellido || sub.autor?.apellido)}
+                                  </div>
+                                )}
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="font-bold text-xs text-slate-900 dark:text-white">
                                     {subAutorNombre}
                                   </span>
                                   <span className="text-[11px] text-slate-400">
-                                    • {formatTimeAgo(sub.fechaPublicacion || sub.fechacreacion)}
+                                    • {formatTimeAgo(sub.fechapublicacion || sub.fechaPublicacion || sub.fechacreacion)}
                                   </span>
                                 </div>
                               </div>
@@ -618,9 +876,21 @@ export function ForoDetalleInteractiveView({
                               )}
                             </div>
 
-                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed pl-9">
-                              {sub.contenido}
-                            </p>
+                            {sub.contenido && (
+                              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed pl-9">
+                                {sub.contenido}
+                              </p>
+                            )}
+
+                            {subImg && (
+                              <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-slate-800 max-h-56 w-full max-w-xs bg-slate-100 dark:bg-slate-900 shadow-sm mt-1 ml-9">
+                                <img
+                                  src={subImg}
+                                  alt="Imagen adjunta en respuesta"
+                                  className="w-full h-full object-cover max-h-56"
+                                />
+                              </div>
+                            )}
 
                             <div className="flex items-center gap-3 pl-9 pt-0.5">
                               <button

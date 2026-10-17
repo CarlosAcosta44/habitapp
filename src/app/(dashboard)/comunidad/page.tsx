@@ -32,6 +32,7 @@ export default async function ComunidadPage() {
     retosRes,
     userHabitosRes,
     profileRes,
+    statsRes,
   ] = await Promise.all([
     comunidadService.getForos(),
     comunidadService.getHabitosComunidad(),
@@ -40,6 +41,7 @@ export default async function ComunidadPage() {
     comunidadService.getRetos(),
     habitoService.getAll("Activo"),
     usuarioService.getPerfilMe(),
+    comunidadService.getStats(),
   ]);
 
   const foros = forosRes.success && Array.isArray(forosRes.data) ? forosRes.data : [];
@@ -51,6 +53,7 @@ export default async function ComunidadPage() {
 
   const profile = profileRes.success ? profileRes.data : null;
   const isAdmin = profile?.nombrerol?.toUpperCase() === "ADMINISTRADOR";
+  const totalMiembros = statsRes.success && statsRes.data?.totalMiembros ? statsRes.data.totalMiembros : 30;
 
   return (
     <ComunidadInteractiveView
@@ -62,6 +65,7 @@ export default async function ComunidadPage() {
       userHabitos={userHabitos}
       userId={user.id}
       isAdmin={isAdmin}
+      totalMiembros={totalMiembros}
     />
   );
 }

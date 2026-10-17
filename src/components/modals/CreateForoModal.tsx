@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition, useEffect } from 'react';
+import React, { useState, useTransition, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import {
@@ -13,8 +13,10 @@ import {
   Tag,
   ShieldCheck,
   Send,
+  Image as ImageIcon,
+  Trash2,
 } from 'lucide-react';
-import { createForoAction } from '@/actions/comunidad.actions';
+import { createForoAction, uploadComunidadImageAction } from '@/actions/comunidad.actions';
 
 interface CreateForoModalProps {
   isOpen: boolean;
@@ -40,7 +42,11 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [categoria, setCategoria] = useState('Ansiedad');
+  const [imagenUrl, setImagenUrl] = useState('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -51,11 +57,37 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
       setTitulo('');
       setDescripcion('');
       setCategoria('Ansiedad');
+      setImagenUrl('');
+      setIsUploadingImage(false);
       setErrorMsg(null);
     }
   }, [isOpen]);
 
   if (!isOpen || !isMounted) return null;
+
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    setErrorMsg(null);
+
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await uploadComunidadImageAction(fd);
+      if (res.success && res.url) {
+        setImagenUrl(res.url);
+      } else {
+        setErrorMsg(res.message || 'Error al subir la imagen');
+      }
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Error al procesar la imagen');
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,9 +105,13 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
 
     startTransition(async () => {
       const fd = new FormData();
-      fd.set('titulo', titulo.trim());
+      fd.set('titulo', titulo.trim().substring(0, 45));
       fd.set('descripcion', descripcion.trim());
-      fd.set('categoria', categoria);
+      const cleanCat = categoria.trim().replace(/^#+/, '').substring(0, 45) || 'General';
+      fd.set('categoria', cleanCat);
+      if (imagenUrl) {
+        fd.set('imagenUrl', imagenUrl);
+      }
 
       const res = await createForoAction(null, fd);
       if (res.success) {
@@ -137,46 +173,80 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
             </div>
           )}
 
-          {/* Categoría / Hashtag */}
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Tag className="w-3.5 h-3.5 text-[#572de4]" />
-              <span>Categoría / Temática</span>
+          {/* Categoría / Hashtag libre */}
+          <div className="flex flex-col gap-2.5">
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Tag className="w-3.5 h-3.5 text-[#572de4]" />
+                <span>Categoría o Hashtag</span>
+              </span>
+              <span className="text-[11px] font-normal text-slate-400">
+                Máx. 45 caracteres (ej: #Productividad)
+              </span>
             </label>
-            <div className="flex items-center gap-2 flex-wrap">
-              {CATEGORIAS.map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setCategoria(cat.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                    categoria === cat.id
-                      ? 'bg-[#572de4] text-white shadow-sm scale-105'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
+
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm select-none">
+                #
+              </span>
+              <input
+                type="text"
+                value={categoria.replace(/^#/, '')}
+                onChange={(e) => {
+                  const cleaned = e.target.value.replace(/^#+/, '').replace(/\s+/g, '_');
+                  setCategoria(cleaned ? `#${cleaned}` : '');
+                }}
+                maxLength={45}
+                placeholder="Escribe tu categoría (ej: Ansiedad, MiRutina, Enfoque...)"
+                className="w-full pl-8 pr-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#572de4]"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5 pt-0.5">
+              <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+                Sugerencias populares:
+              </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {CATEGORIAS.map((cat) => {
+                  const currentNorm = categoria.replace(/^#/, '').toLowerCase();
+                  const catNorm = cat.id.replace(/^#/, '').toLowerCase();
+                  const isSelected = currentNorm === catNorm;
+
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setCategoria(cat.id)}
+                      className={`px-2.5 py-1 rounded-xl text-xs font-semibold transition-all ${
+                        isSelected
+                          ? 'bg-[#572de4] text-white shadow-sm scale-105'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
           {/* Título */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-              Título de la conversación
+              Título de la conversación (máx. 45 caracteres)
             </label>
             <input
               type="text"
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
-              placeholder="Ej: ¿Qué técnicas os funcionan mejor para el sobrepensamiento nocturno?"
+              placeholder="Ej: ¿Cómo lidiar con el sobrepensamiento?"
               className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#572de4]"
-              maxLength={120}
+              maxLength={45}
               required
             />
             <span className="text-[11px] text-slate-400 text-right">
-              {titulo.length}/120
+              {titulo.length}/45
             </span>
           </div>
 
@@ -197,6 +267,57 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
             <span className="text-[11px] text-slate-400 text-right">
               {descripcion.length}/2000
             </span>
+          </div>
+
+          {/* Imagen adjunta desde explorador de archivos */}
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <ImageIcon className="w-3.5 h-3.5 text-[#572de4]" />
+                <span>Imagen adjunta (opcional)</span>
+              </span>
+            </label>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageFileChange}
+              className="hidden"
+            />
+
+            {imagenUrl ? (
+              <div className="relative w-full max-w-xs h-36 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 group">
+                <img src={imagenUrl} alt="Vista previa" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setImagenUrl('')}
+                  className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-rose-600 transition-colors shadow-md"
+                  title="Eliminar imagen"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploadingImage}
+                className="w-full py-3 px-4 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-[#572de4] dark:hover:border-indigo-400 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {isUploadingImage ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#572de4]" />
+                    <span>Subiendo imagen a la nube...</span>
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="w-4 h-4 text-[#572de4]" />
+                    <span>Subir imagen desde tu dispositivo</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
 
           {/* Banner de espacio seguro */}

@@ -65,8 +65,17 @@ export function ShareHabitModal({
     (h) => (h.estado ?? 'Activo').toLowerCase() === 'activo'
   );
 
-  const getCategoryIcon = (catName?: string) => {
-    const name = (catName || '').toLowerCase();
+  const getCategoryName = (habito: any): string => {
+    if (typeof habito?.categoria_nombre === 'string') return habito.categoria_nombre;
+    if (typeof habito?.categoria === 'string') return habito.categoria;
+    if (habito?.categoria?.nombre && typeof habito.categoria.nombre === 'string') return habito.categoria.nombre;
+    if (habito?.categorias_habitos?.nombre && typeof habito.categorias_habitos.nombre === 'string') return habito.categorias_habitos.nombre;
+    return 'Hábito diario';
+  };
+
+  const getCategoryIcon = (catName?: any) => {
+    const raw = typeof catName === 'string' ? catName : (catName?.nombre || '');
+    const name = (raw || '').toLowerCase();
     if (name.includes('agua') || name.includes('hidrat')) return Droplets;
     if (name.includes('ejercicio') || name.includes('movim') || name.includes('físic')) return Dumbbell;
     if (name.includes('sueño') || name.includes('dormir') || name.includes('noche')) return Moon;
@@ -137,7 +146,8 @@ export function ShareHabitModal({
               const id = habito.idHabito || habito.idhabito || habito.id;
               const isShared = sharedIds[id] || habito.es_publico || habito.compartido;
               const isLoading = loadingId === id;
-              const CatIcon = getCategoryIcon(habito.categoria_nombre || habito.categoria);
+              const catName = getCategoryName(habito);
+              const CatIcon = getCategoryIcon(catName);
               const racha = habito.rachaActual ?? 0;
 
               return (
@@ -151,7 +161,7 @@ export function ShareHabitModal({
                     </div>
                     <div className="flex flex-col min-w-0">
                       <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 truncate">
-                        {habito.categoria_nombre || habito.categoria || 'Hábito diario'}
+                        {catName}
                       </span>
                       <p className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
                         {habito.nombre}

@@ -7,6 +7,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies }        from "next/headers";
 import { z }              from "zod";
 import { requireUser }    from "@/lib/auth/require-user";
 import { ComunidadService } from "@/services/comunidad.service";
@@ -17,19 +18,25 @@ const service = new ComunidadService();
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 const CreateForoSchema = z.object({
   titulo:      z.string().min(5,  "El título debe tener al menos 5 caracteres")
-                         .max(120, "El título no puede superar 120 caracteres"),
+                         .max(45, "El título no puede superar 45 caracteres"),
   descripcion: z.string().min(10, "La descripción debe tener al menos 10 caracteres")
                          .max(2000, "Máximo 2000 caracteres"),
-  categoria:   z.string().min(2,  "Debes seleccionar una categoría"),
-  imagenUrl:   z.string().url().optional().or(z.literal("")),
+  categoria:   z.string().min(2,  "Debes seleccionar una categoría")
+                         .max(45, "La categoría no puede superar 45 caracteres"),
+  imagenUrl:   z.string().optional().or(z.literal("")),
 });
 
 const ComentarSchema = z.object({
   idForo:            z.string().min(1, "Foro inválido"),
   contenido:         z.string()
-                      .min(1,   "El comentario no puede estar vacío")
-                      .max(1000, "Máximo 1000 caracteres"),
+                      .max(2000, "Máximo 2000 caracteres")
+                      .optional()
+                      .or(z.literal("")),
   idComentarioPadre: z.string().optional(),
+  imagenUrl:         z.string().optional(),
+}).refine((data) => (data.contenido && data.contenido.trim().length > 0) || !!data.imagenUrl, {
+  message: "El comentario debe contener texto o una imagen adjunta",
+  path: ["contenido"],
 });
 
 // ─── createForoAction ─────────────────────────────────────────────────────────
@@ -81,23 +88,25 @@ export async function comentarAction(
 
   const rawData = {
     idForo:            formData.get("idForo") || formData.get("foroId"),
-    contenido:         formData.get("contenido"),
+    contenido:         formData.get("contenido") || "",
     idComentarioPadre: formData.get("idComentarioPadre") || undefined,
+    imagenUrl:         formData.get("imagenUrl") || undefined,
   };
 
   const validation = ComentarSchema.safeParse(rawData);
   if (!validation.success) {
     return {
       success: false,
-      message: "Por favor escribe un comentario válido",
+      message: "Por favor escribe un comentario o adjunta una imagen válida",
       errors:  validation.error.flatten().fieldErrors,
     };
   }
 
   const result = await service.comentar({
     idForo:            validation.data.idForo,
-    contenido:         validation.data.contenido,
+    contenido:         validation.data.contenido || "",
     idComentarioPadre: validation.data.idComentarioPadre ?? null,
+    imagenUrl:         validation.data.imagenUrl ?? null,
   });
 
   if (!result.success) {
@@ -199,3 +208,47 @@ export async function desuscribirseAction(_prevState: any, formData: FormData) {
   revalidatePath("/comunidad");
   return { success: true, message: "Te has desuscrito del foro" };
 }
+
+// ─── uploadComunidadImageAction ──────────────────────────────────────────────
+export async function uploadComunidadImageAction(
+  formData: FormData
+): Promise<{ success: boolean; url?: string; message?: string }> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  const file = formData.get("file") as File;
+  if (!file || !(file instanceof File) || file.size === 0) {
+    return { success: false, message: "Por favor selecciona un archivo de imagen válido" };
+  }
+
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("access_token")?.value;
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+
+    const forwardFd = new FormData();
+    forwardFd.append("file", file);
+
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(`${backendUrl}/users/community/upload-image`, {
+      method: "POST",
+      headers,
+      body: forwardFd,
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      return { success: false, message: errData.message || "Error al subir la imagen" };
+    }
+
+    const data = await res.json();
+    return { success: true, url: data.url };
+  } catch (err: any) {
+    return { success: false, message: err?.message || "Error al conectar con el servidor" };
+  }
+}
+
