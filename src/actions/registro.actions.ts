@@ -55,6 +55,7 @@ export async function marcarCompletadoAction(
 
   const result = await service.marcarCompletado({
     idHabito:    validation.data.idHabito,
+    fecha:       validation.data.fecha,
     observacion: validation.data.observacion,
   });
 
@@ -118,6 +119,7 @@ export async function avanzarProgresoAction(
   const result = await service.avanzarProgreso({
     idHabito:       validation.data.idHabito,
     cantidadASumar: validation.data.cantidadAsumar,
+    fecha:          validation.data.fecha,
     observacion:    validation.data.observacion,
   });
 

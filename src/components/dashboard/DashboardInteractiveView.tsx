@@ -15,12 +15,7 @@ interface DashboardInteractiveViewProps {
   quote: DailyQuote;
   initialHabitos: any[];
   allHabitos?: any[];
-  registros: {
-    idhabito?: string;
-    idHabito?: string;
-    fecha: string;
-    completado: boolean;
-  }[];
+  registros: any[];
   retos: Reto[];
   totalArchivados: number;
   rachasMap: Record<string, number>;
@@ -56,6 +51,13 @@ export function DashboardInteractiveView({
   useEffect(() => {
     setHabitos(initialHabitos);
   }, [initialHabitos]);
+
+  // Lista local completa de hábitos (activos, archivados e inactivos)
+  const [allHabitosList, setAllHabitosList] = useState<any[]>(allHabitos || []);
+
+  useEffect(() => {
+    setAllHabitosList(allHabitos || []);
+  }, [allHabitos]);
 
   // Contador local de hábitos archivados
   const [totalArchivadosCount, setTotalArchivadosCount] = useState(totalArchivados);
@@ -105,15 +107,28 @@ export function DashboardInteractiveView({
     );
   };
 
-  // Callback cuando se archiva un hábito
+  // Callback cuando se archiva un hábito:
+  // Se remueve de los hábitos activos de hoy, pero se PRESERVA en allHabitosList para el historial
   const handleHabitArchived = (idHabito: string) => {
     setHabitos((prev) => prev.filter((h) => (h.idHabito || h.idhabito) !== idHabito));
+    setAllHabitosList((prev) =>
+      prev.map((h) =>
+        (h.idHabito || h.idhabito) === idHabito ? { ...h, estado: 'Archivado' } : h
+      )
+    );
     setTotalArchivadosCount((prev) => prev + 1);
   };
 
-  // Callback cuando se elimina un hábito
+  // Callback cuando se elimina un hábito:
+  // Se remueve de los hábitos activos de hoy, pero se PRESERVA en allHabitosList como Inactivo para el historial
   const handleHabitDeleted = (idHabito: string) => {
     setHabitos((prev) => prev.filter((h) => (h.idHabito || h.idhabito) !== idHabito));
+    setAllHabitosList((prev) =>
+      prev.map((h) =>
+        (h.idHabito || h.idhabito) === idHabito ? { ...h, estado: 'Inactivo' } : h
+      )
+    );
+    setTotalArchivadosCount((prev) => prev + 1);
   };
 
   // Callback cuando se reactiva un hábito desde el modal de archivados
@@ -125,8 +140,9 @@ export function DashboardInteractiveView({
   const recordsMapByHabitId = useMemo(() => {
     const map: Record<string, boolean> = {};
     for (const r of registros) {
-      if (r.fecha === selectedDate && r.completado) {
-        const id = r.idHabito || r.idhabito;
+      const regFecha = typeof r.fecha === 'string' ? r.fecha.slice(0, 10) : r.fecha;
+      if (regFecha === selectedDate && r.completado) {
+        const id = r.idHabito || r.idhabito || r.id_habito;
         if (id) {
           map[id] = true;
         }
@@ -140,52 +156,117 @@ export function DashboardInteractiveView({
     const map: Record<string, string[]> = {};
     for (const r of registros) {
       if (r.completado && r.fecha) {
-        const id = r.idHabito || r.idhabito;
-        if (id) {
+        const id = r.idHabito || r.idhabito || r.id_habito;
+        const regFecha = typeof r.fecha === 'string' ? r.fecha.slice(0, 10) : r.fecha;
+        if (id && regFecha) {
           if (!map[id]) map[id] = [];
-          map[id].push(r.fecha);
+          map[id].push(regFecha);
         }
       }
     }
     return map;
   }, [registros]);
 
-  // Hábitos que se deben mostrar en la fecha seleccionada
-  // (En días pasados se preservan los hábitos que tuvieron registros completados ese día)
+  // Hábitos que se deben mostrar en la fecha seleccionada:
+  // - Si es hoy: muestra los hábitos activos actuales.
+  // - Si es un día pasado: muestra el historial completo de hábitos que estuvieron vigentes ese día
+  //   (incluyendo hábitos archivados o borrados) con su estado de completitud real de esa fecha.
   const displayedHabitos = useMemo(() => {
     if (selectedDate === todayStr) {
       return habitos;
     }
-    const pool = (allHabitos && allHabitos.length > 0) ? allHabitos : habitos;
+
+    const pool = (allHabitosList && allHabitosList.length > 0) ? allHabitosList : habitos;
     const seenIds = new Set<string>();
     const list: any[] = [];
 
-    // Primero los que tuvieron registro ese día
+    // Función auxiliar para buscar el registro histórico de un hábito en la fecha seleccionada
+    const findRecord = (habitId: string) => {
+      return registros.find((r) => {
+        const id = r.idHabito || r.idhabito || r.id_habito;
+        const regFecha = typeof r.fecha === 'string' ? r.fecha.slice(0, 10) : r.fecha;
+        return id === habitId && regFecha === selectedDate;
+      });
+    };
+
+    // 1. Hábitos del pool (activos, archivados, inactivos) que existían en esa fecha
     for (const h of pool) {
       const id = h.idHabito || h.idhabito;
-      if (id && recordsMapByHabitId[id]) {
+      if (!id || seenIds.has(id)) continue;
+
+      const fInicio = (h.fechaInicio || h.fechainicio || '').slice(0, 10);
+      const fFin = (h.fechaFin || h.fechafin || '').slice(0, 10);
+      const record = findRecord(id);
+
+      // El hábito existía si tiene registro histórico ese día O si su fecha de inicio es <= selectedDate
+      const existedOnDate = record !== undefined || (!fInicio || fInicio <= selectedDate);
+      const notExpired = !fFin || fFin >= selectedDate;
+
+      if (existedOnDate && notExpired) {
         seenIds.add(id);
-        list.push(h);
+        if (record) {
+          list.push({
+            ...h,
+            registroHoy: {
+              idRegistro: record.idRegistro || record.idregistro,
+              completado: Boolean(record.completado),
+              progresoActual: record.progresoActual || 0,
+              puntosGanados: record.puntosGanados,
+              observacion: record.observacion,
+            },
+          });
+        } else {
+          list.push({
+            ...h,
+            registroHoy: {
+              completado: false,
+              progresoActual: 0,
+            },
+          });
+        }
       }
     }
 
-    // Luego los activos actuales
-    for (const h of habitos) {
-      const id = h.idHabito || h.idhabito;
-      if (id && !seenIds.has(id)) {
-        seenIds.add(id);
-        list.push(h);
+    // 2. Si hay algún registro histórico de un hábito que ya no esté en el pool (respaldo de integridad)
+    for (const r of registros) {
+      const regFecha = typeof r.fecha === 'string' ? r.fecha.slice(0, 10) : r.fecha;
+      if (regFecha === selectedDate) {
+        const id = r.idHabito || r.idhabito || r.id_habito;
+        if (id && !seenIds.has(id)) {
+          seenIds.add(id);
+          list.push({
+            idHabito: id,
+            idhabito: id,
+            nombre: r.habito?.nombre || 'Hábito en historial',
+            descripcion: r.observacion || '',
+            puntos: r.habito?.puntos || r.puntosGanados || 10,
+            estado: 'Inactivo',
+            metaDiaria: r.progresoActual || 1,
+            unidadMedida: 'veces',
+            registroHoy: {
+              idRegistro: r.idRegistro || r.idregistro,
+              completado: Boolean(r.completado),
+              progresoActual: r.progresoActual || 0,
+              puntosGanados: r.puntosGanados,
+              observacion: r.observacion,
+            },
+          });
+        }
       }
     }
 
     return list;
-  }, [selectedDate, todayStr, habitos, allHabitos, recordsMapByHabitId]);
+  }, [selectedDate, todayStr, habitos, allHabitosList, registros]);
 
   // Lista de todas las fechas con algún hábito completado para los dots del calendario
   const diasConRegistro = useMemo(() => {
-    const dates = new Set(
-      registros.filter((r) => r.completado).map((r) => r.fecha)
-    );
+    const dates = new Set<string>();
+    for (const r of registros) {
+      if (r.completado && r.fecha) {
+        const regFecha = typeof r.fecha === 'string' ? r.fecha.slice(0, 10) : r.fecha;
+        if (regFecha) dates.add(regFecha);
+      }
+    }
     // Si hoy hay algún hábito completado en el estado local, agregamos hoy
     if (habitos.some((h) => h.registroHoy?.completado)) {
       dates.add(todayStr);
@@ -218,7 +299,7 @@ export function DashboardInteractiveView({
 
       {/* ── Cuadrícula Principal: Hábitos a la izquierda, Widgets a la derecha (en móvil retos fluye debajo) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Columna Principal: Lista de Hábitos del Día Seleccionado */}
+        {/* Columna Principal: Lista de Hábitos del Día Seleccionado y Contenedor de Hábitos Archivados */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           <TodayHabitsList
             habitos={displayedHabitos}
@@ -232,6 +313,13 @@ export function DashboardInteractiveView({
             onArchive={handleHabitArchived}
             onDelete={handleHabitDeleted}
           />
+
+          {/* Contenedor de Hábitos Archivados (debajo de los hábitos) */}
+          <ArchivedHabitsWidget
+            totalArchivados={totalArchivadosCount}
+            onHabitReactivated={handleHabitReactivated}
+            onHabitDeleted={handleHabitDeleted}
+          />
         </div>
 
         {/* Columna Lateral (Widgets) */}
@@ -240,11 +328,6 @@ export function DashboardInteractiveView({
           <StreakWidget
             rachaActual={rachaGlobalReal}
             diasSemana={semanaChecks}
-          />
-          <ArchivedHabitsWidget
-            totalArchivados={totalArchivadosCount}
-            onHabitReactivated={handleHabitReactivated}
-            onHabitDeleted={handleHabitDeleted}
           />
         </div>
       </div>

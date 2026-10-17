@@ -22,6 +22,7 @@ export class RegistroService {
   // ─── marcarCompletado ──────────────────────────────────────────────────────
   async marcarCompletado(dto: {
     idHabito: string;
+    fecha?: string;
     observacion?: string;
   }): Promise<Result<any>> {
     return registroRepository.post<any>("users/records/completar", dto);
@@ -36,6 +37,7 @@ export class RegistroService {
   async avanzarProgreso(dto: {
     idHabito: string;
     cantidadASumar: number;
+    fecha?: string;
     observacion?: string;
   }): Promise<Result<any>> {
     return registroRepository.patch<any>("users/records/progreso", dto);

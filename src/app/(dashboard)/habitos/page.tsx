@@ -73,13 +73,13 @@ export default async function HabitosDashboardPage() {
     quoteResult,
     retosResult,
     historialResult,
-    archivadosResult,
+    allHabitosResult,
   ] = await Promise.all([
     habitoService.getDashboard(),
     quoteService.getDailyQuote(),
     comunidadService.getRetos(),
     registroService.getHistorialUsuario(),
-    habitoService.getAll("Inactivo"),
+    habitoService.getAll(),
   ]);
 
   const habitos = habitosResult.success && Array.isArray(habitosResult.data) ? habitosResult.data : [];
@@ -88,9 +88,16 @@ export default async function HabitosDashboardPage() {
     : { phrase: "Transforma tus metas en hábitos y tus hábitos en realidad.", author: "HabitApp" };
   const retos = retosResult.success && Array.isArray(retosResult.data) ? retosResult.data : [];
   const registrosReales = historialResult.success && Array.isArray(historialResult.data) ? historialResult.data : [];
-  const archivados = archivadosResult.success && Array.isArray(archivadosResult.data) ? archivadosResult.data : [];
+  const allHabitosFetched = allHabitosResult.success && Array.isArray(allHabitosResult.data) ? allHabitosResult.data : [];
+  
+  // Hábitos archivados/inactivos
+  const archivados = allHabitosFetched.filter(
+    (h: any) => (h.estado ?? '').toLowerCase() === 'inactivo' || (h.estado ?? '').toLowerCase() === 'archivado'
+  );
   const totalArchivados = archivados.length;
-  const allHabitos = [...habitos, ...archivados];
+  
+  // allHabitos contiene todos los hábitos (activos, inactivos y archivados)
+  const allHabitos = allHabitosFetched.length > 0 ? allHabitosFetched : habitos;
 
   // ── 3. Calcular rachas reales para cada hábito individual ────────────────────
   const rachasMap: Record<string, number> = {};

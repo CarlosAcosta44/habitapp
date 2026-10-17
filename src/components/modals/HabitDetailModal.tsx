@@ -653,7 +653,7 @@ export function HabitDetailModal({
                   </div>
                   <div className="flex flex-col">
                     <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-                      {Math.max(rachaActual, 14)} días
+                      {Math.max(rachaActual, habito.recordRacha ?? rachaActual)} {Math.max(rachaActual, habito.recordRacha ?? rachaActual) === 1 ? 'día' : 'días'}
                     </span>
                     <span className="text-[11px] text-slate-500 dark:text-slate-400">
                       Máxima constancia
@@ -671,10 +671,10 @@ export function HabitDetailModal({
                   </div>
                   <div className="flex flex-col">
                     <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-                      {porcentaje > 0 ? `${porcentaje}%` : '85%'}
+                      {completedDates.length > 0 ? `${Math.min(100, Math.round((completedDates.length / Math.max(1, 30)) * 100))}%` : (localCompletado ? '100%' : '0%')}
                     </span>
                     <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Este mes
+                      Cumplimiento
                     </span>
                   </div>
                 </div>
@@ -689,10 +689,10 @@ export function HabitDetailModal({
                   </div>
                   <div className="flex flex-col">
                     <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-                      {Math.max(rachaActual * 3, 24)}
+                      {completedDates.length}
                     </span>
                     <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Cumplimientos
+                      {completedDates.length === 1 ? 'Cumplimiento' : 'Cumplimientos'}
                     </span>
                   </div>
                 </div>
