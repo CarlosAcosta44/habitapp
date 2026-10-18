@@ -90,7 +90,7 @@ export function ComunidadInteractiveView({
   const [isShareHabitOpen, setIsShareHabitOpen] = useState(false);
 
   // Feedback de acciones
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [cloningId, setCloningId] = useState<string | null>(null);
   const [joiningRetoId, setJoiningRetoId] = useState<string | null>(null);
   const [reactingForoId, setReactingForoId] = useState<string | null>(null);
@@ -114,9 +114,13 @@ export function ComunidadInteractiveView({
   }, []);
 
   // Mostrar toast auto-ocultable
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+  const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
+    let displayMsg = msg;
+    if (msg.includes('invalid input syntax') || msg.includes('JWT') || msg.includes('Token')) {
+      displayMsg = 'Ocurrió un error al procesar la solicitud. Por favor intenta de nuevo.';
+    }
+    setToast({ message: displayMsg, type });
+    setTimeout(() => setToast(null), 4000);
   };
 
   // ── Filtrado de Hábitos Comunitarios ──
@@ -235,7 +239,7 @@ export function ComunidadInteractiveView({
         showToast(`¡"${nombre}" ha sido añadido a tus hábitos diarios! 🎯`);
         router.refresh();
       } else {
-        showToast(res.message || 'Error al clonar hábito');
+        showToast(res.message || 'Error al clonar hábito', 'error');
       }
       setCloningId(null);
     });
@@ -264,7 +268,7 @@ export function ComunidadInteractiveView({
         }
         router.refresh();
       } else {
-        showToast(res.message || 'Error al unirse al reto');
+        showToast(res.message || 'Error al unirse al reto', 'error');
       }
       setJoiningRetoId(null);
     });
@@ -304,10 +308,22 @@ export function ComunidadInteractiveView({
   return (
     <div className="flex flex-col w-full max-w-7xl mx-auto space-y-7 pb-16">
       {/* ── Toast de Feedback Flotante ── */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-          <span className="text-xs sm:text-sm font-semibold">{toastMessage}</span>
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed bottom-6 right-6 z-50 p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 max-w-md break-words border ${
+            toast.type === 'error'
+              ? 'bg-rose-950 text-rose-100 border-rose-800'
+              : 'bg-slate-900 text-white border-slate-800 dark:bg-slate-900 dark:text-white dark:border-slate-800'
+          }`}
+        >
+          {toast.type === 'error' ? (
+            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" aria-hidden="true" />
+          ) : (
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" aria-hidden="true" />
+          )}
+          <span className="text-xs sm:text-sm font-semibold break-words leading-snug">{toast.message}</span>
         </div>
       )}
 

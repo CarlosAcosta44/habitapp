@@ -51,7 +51,11 @@ export function ShareHabitModal({
           setSharedIds((prev) => ({ ...prev, [id]: true }));
           if (onShared) onShared(id);
         } else {
-          setFeedbackError(res.message || 'Error al compartir el hábito');
+          let errorMsg = res.message || 'Error al compartir el hábito';
+          if (errorMsg.includes('invalid input syntax') || errorMsg.includes('JWT') || errorMsg.includes('Token')) {
+            errorMsg = 'Error al compartir el hábito con la comunidad. Por favor reintenta.';
+          }
+          setFeedbackError(errorMsg);
         }
       } catch (e: any) {
         setFeedbackError(e.message || 'Error inesperado al compartir');
@@ -136,7 +140,7 @@ export function ShareHabitModal({
         </div>
 
         {feedbackError && (
-          <div className="mx-6 mt-4 p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-xs text-rose-600 dark:text-rose-300">
+          <div className="mx-6 mt-4 p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-xs text-rose-600 dark:text-rose-300 break-words">
             {feedbackError}
           </div>
         )}
