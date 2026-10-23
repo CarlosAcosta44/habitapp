@@ -23,7 +23,7 @@ export function DeleteCommentButton({ commentId }: { commentId: string }) {
       alert("Comentario eliminado");
       router.refresh();
     } else {
-      alert("Error al eliminar el comentario: " + result.error);
+      alert("Error al eliminar el comentario: " + (result.message || 'Error desconocido'));
     }
   };
 

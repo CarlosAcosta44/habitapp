@@ -22,6 +22,8 @@ interface ShareHabitModalProps {
   onClose: () => void;
   habitos: any[];
   onShared?: (idHabito: string) => void;
+  habitosPublicados?: any[];
+  currentUserId?: string;
 }
 
 export function ShareHabitModal({
@@ -29,6 +31,8 @@ export function ShareHabitModal({
   onClose,
   habitos = [],
   onShared,
+  habitosPublicados = [],
+  currentUserId,
 }: ShareHabitModalProps) {
   const [isPending, startTransition] = useTransition();
   const [sharedIds, setSharedIds] = useState<Record<string, boolean>>({});
@@ -155,7 +159,18 @@ export function ShareHabitModal({
           ) : (
             activeHabitos.map((habito) => {
               const id = habito.idHabito || habito.idhabito || habito.id;
-              const isShared = sharedIds[id] || habito.es_publico || habito.compartido;
+              const habitName = (habito.nombre || '').trim().toLowerCase();
+              const alreadyPublished =
+                Array.isArray(habitosPublicados) &&
+                habitosPublicados.some((ph) => {
+                  const phUserId = ph.idusuario || ph.idUsuario || ph.usuario_id;
+                  const matchUser = !currentUserId || phUserId === currentUserId;
+                  const phHabitId = ph.idhabito || ph.idHabito;
+                  const phName = (ph.nombre_habito || ph.titulo || ph.nombre || '').trim().toLowerCase();
+                  return matchUser && ((phHabitId && phHabitId === id) || (Boolean(habitName) && phName === habitName));
+                });
+
+              const isShared = Boolean(sharedIds[id]) || Boolean(habito.es_publico) || Boolean(habito.compartido) || alreadyPublished;
               const isLoading = loadingId === id;
               const catName = getCategoryName(habito);
               const CatIcon = getCategoryIcon(catName);

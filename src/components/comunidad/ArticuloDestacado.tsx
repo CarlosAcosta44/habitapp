@@ -30,9 +30,10 @@ const categoriaIcono: Record<string, string> = {
 
 interface ArticuloDestacadoProps {
   articulo: Articulo;
+  onClick?: () => void;
 }
 
-export function ArticuloDestacado({ articulo }: ArticuloDestacadoProps) {
+export function ArticuloDestacado({ articulo, onClick }: ArticuloDestacadoProps) {
   const badgeColor =
     categoriaBadgeColors[articulo.categoria ?? ""] ?? categoriaBadgeColors.default;
   const icono =
@@ -48,7 +49,10 @@ export function ArticuloDestacado({ articulo }: ArticuloDestacadoProps) {
     (articulo.contenido.length > 110 ? "…" : "");
 
   return (
-    <div className="group rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 space-y-3 hover:shadow-md transition-shadow cursor-pointer">
+    <div
+      onClick={onClick}
+      className="group rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 space-y-3 hover:shadow-md transition-shadow cursor-pointer"
+    >
 
       {/* Header: ícono + categoría + tiempo */}
       <div className="flex items-center justify-between gap-3">

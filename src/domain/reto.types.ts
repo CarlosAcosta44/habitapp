@@ -9,6 +9,7 @@ export interface Reto {
   titulo: string;
   descripcion: string;
   insignia_recompensa?: string | null;
+  icono?: string | null;
   puntos_recompensa?: number;
   fechainicio: string;
   fechafin?: string | null;
@@ -26,4 +27,9 @@ export interface Reto {
   participantes_count?: number;
   usuarios_participando?: string[];
   inscrito?: boolean;
+  completado?: boolean;
+  dias_progreso?: number;
+  dias_objetivo?: number;
+  usuario_estado?: string | null;
+  checkin_hecho_hoy?: boolean;
 }

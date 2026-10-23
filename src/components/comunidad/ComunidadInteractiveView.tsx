@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useTransition, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Search,
   MessageSquare,
@@ -32,15 +32,23 @@ import {
   Edit3,
   Trophy,
   X,
+  MoreVertical,
+  Trash2,
 } from 'lucide-react';
 import type { Reto } from '@/domain/reto.types';
 import {
   clonarHabitoAction,
   unirseRetoAction,
+  salirRetoAction,
+  checkinRetoAction,
   reaccionarAction,
+  deleteForoAction,
 } from '@/actions/comunidad.actions';
 import { CreateForoModal } from '@/components/modals/CreateForoModal';
 import { ShareHabitModal } from '@/components/modals/ShareHabitModal';
+import { CreateRetoModal } from '@/components/modals/CreateRetoModal';
+import { EditForoModal } from '@/components/modals/EditForoModal';
+import { ArticleReaderModal } from '@/components/modals/ArticleReaderModal';
 
 interface ComunidadInteractiveViewProps {
   readonly initialForos: any[];
@@ -68,10 +76,23 @@ export function ComunidadInteractiveView({
   totalMiembros = 30,
 }: ComunidadInteractiveViewProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  // Tab activo
-  const [activeTab, setActiveTab] = useState<TabType>('todo');
+  // Tab activo sincronizado con query param ?tab=
+  const initialTabParam = searchParams.get('tab') as TabType;
+  const [activeTab, setActiveTab] = useState<TabType>(
+    initialTabParam && ['todo', 'foros', 'habitos', 'articulos', 'especialistas', 'retos'].includes(initialTabParam)
+      ? initialTabParam
+      : 'todo'
+  );
+
+  useEffect(() => {
+    const tab = searchParams.get('tab') as TabType;
+    if (tab && ['todo', 'foros', 'habitos', 'articulos', 'especialistas', 'retos'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   // Buscador y atajo ⌘K
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,18 +102,28 @@ export function ComunidadInteractiveView({
   const [selectedTag, setSelectedTag] = useState<string>('Todos');
   const [sortBy, setSortBy] = useState<'recientes' | 'populares' | 'sin_responder'>('recientes');
 
-  // Filtros de categoría para Especialistas y Retos
+  // Filtros de categoría para Especialistas
   const [selectedEspCategory, setSelectedEspCategory] = useState<string>('Todos');
-  const [selectedRetoCategory, setSelectedRetoCategory] = useState<string>('Todos');
 
-  // Modal para crear foro y compartir hábito
+  // Modal para crear foro, compartir hábito y crear reto
   const [isCreateForoOpen, setIsCreateForoOpen] = useState(false);
   const [isShareHabitOpen, setIsShareHabitOpen] = useState(false);
+  const [isCreateRetoOpen, setIsCreateRetoOpen] = useState(false);
+  const [editingForo, setEditingForo] = useState<any | null>(null);
+
+  // Filtro de retos: 'todos' | 'participando'
+  const [retoFilterTab, setRetoFilterTab] = useState<'todos' | 'participando'>('todos');
+
+  // Menú de opciones de foro y eliminación
+  const [openForoMenuId, setOpenForoMenuId] = useState<string | null>(null);
+  const [deletingForoId, setDeletingForoId] = useState<string | null>(null);
 
   // Feedback de acciones
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [cloningId, setCloningId] = useState<string | null>(null);
   const [joiningRetoId, setJoiningRetoId] = useState<string | null>(null);
+  const [leavingRetoId, setLeavingRetoId] = useState<string | null>(null);
+  const [checkingInRetoId, setCheckingInRetoId] = useState<string | null>(null);
   const [reactingForoId, setReactingForoId] = useState<string | null>(null);
 
   // Modal de especialista para agendar o ver perfil
@@ -100,6 +131,9 @@ export function ComunidadInteractiveView({
 
   // Modal interactivo de detalle de Reto
   const [selectedRetoModal, setSelectedRetoModal] = useState<any | null>(null);
+
+  // Modal de lectura de artículo
+  const [selectedArticuloModal, setSelectedArticuloModal] = useState<any | null>(null);
 
   // Atajo de teclado ⌘K o Ctrl+K
   useEffect(() => {
@@ -205,17 +239,24 @@ export function ComunidadInteractiveView({
     return list;
   }, [initialEspecialistas, selectedEspCategory, searchQuery]);
 
+  // ── Retos en los que participa el usuario actual ──
+  const misRetos = useMemo(() => {
+    return initialRetos.filter(
+      (r) =>
+        (userId && r.usuarios_participando?.includes(userId)) ||
+        r.inscrito === true
+    );
+  }, [initialRetos, userId]);
+
+  // ── Retos activos vigentes (cuya fecha de fin no ha expirado) ──
+  const retosVigentesCount = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return initialRetos.filter((r) => !r.fechafin || r.fechafin >= today).length;
+  }, [initialRetos]);
+
   // ── Filtrado de Retos ──
   const retosFiltrados = useMemo(() => {
-    let list = initialRetos;
-    if (selectedRetoCategory !== 'Todos') {
-      const q = selectedRetoCategory.toLowerCase();
-      list = list.filter(
-        (r) =>
-          r.titulo?.toLowerCase().includes(q) ||
-          r.descripcion?.toLowerCase().includes(q)
-      );
-    }
+    let list = retoFilterTab === 'participando' ? misRetos : initialRetos;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter(
@@ -225,7 +266,26 @@ export function ComunidadInteractiveView({
       );
     }
     return list;
-  }, [initialRetos, selectedRetoCategory, searchQuery]);
+  }, [initialRetos, misRetos, retoFilterTab, searchQuery]);
+
+  // ── Acción: Eliminar Foro ──
+  const handleDeleteForo = (foroId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm('¿Estás seguro de que deseas eliminar este foro? Esta acción no se puede deshacer.')) return;
+
+    setDeletingForoId(foroId);
+    startTransition(async () => {
+      const res = await deleteForoAction(foroId);
+      if (res.success) {
+        showToast('Foro eliminado con éxito ✨');
+        router.refresh();
+      } else {
+        showToast(res.message || 'Error al eliminar el foro', 'error');
+      }
+      setDeletingForoId(null);
+      setOpenForoMenuId(null);
+    });
+  };
 
   // ── Acción: Clonar Hábito Comunitario ──
   const handleCloneHabit = (habito: any) => {
@@ -271,6 +331,64 @@ export function ComunidadInteractiveView({
         showToast(res.message || 'Error al unirse al reto', 'error');
       }
       setJoiningRetoId(null);
+    });
+  };
+
+  // ── Acción: Salir de Reto ──
+  const handleLeaveReto = (reto: Reto) => {
+    const id = reto.idreto || reto.idReto || reto.id || '';
+    setLeavingRetoId(id);
+
+    startTransition(async () => {
+      const res = await salirRetoAction(id);
+      if (res.success) {
+        showToast(`Has salido de "${reto.titulo}"`);
+        if (selectedRetoModal && (selectedRetoModal.idreto === id || selectedRetoModal.id === id)) {
+          setSelectedRetoModal((prev: any) =>
+            prev
+              ? {
+                  ...prev,
+                  participantes_count: Math.max(0, (prev.participantes_count || 1) - 1),
+                  usuarios_participando: (prev.usuarios_participando || []).filter((uId: string) => uId !== userId),
+                  inscrito: false,
+                }
+              : null
+          );
+        }
+        router.refresh();
+      } else {
+        showToast(res.message || 'Error al salir del reto', 'error');
+      }
+      setLeavingRetoId(null);
+    });
+  };
+
+  // ── Acción: Registrar Avance / Check-in en Reto ──
+  const handleCheckinReto = (reto: Reto) => {
+    const id = reto.idreto || reto.idReto || reto.id || '';
+    setCheckingInRetoId(id);
+
+    startTransition(async () => {
+      const res = await checkinRetoAction(id);
+      if (res.success) {
+        showToast(res.message || '¡Avance registrado! 🎯');
+        if (selectedRetoModal && (selectedRetoModal.idreto === id || selectedRetoModal.id === id)) {
+          setSelectedRetoModal((prev: any) =>
+            prev
+              ? {
+                  ...prev,
+                  progreso: res.progreso ?? Math.min(100, (prev.progreso || 0) + 15),
+                  dias_progreso: res.dias_progreso ?? ((prev.dias_progreso || 0) + 1),
+                  completado: res.completed || prev.completado,
+                }
+              : null
+          );
+        }
+        router.refresh();
+      } else {
+        showToast(res.message || 'Error al registrar avance', 'error');
+      }
+      setCheckingInRetoId(null);
     });
   };
 
@@ -594,7 +712,9 @@ export function ComunidadInteractiveView({
                           <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
                             <Users className="w-3.5 h-3.5 text-[#572de4]" />
                             <span>
-                              {habito.clones_count ? `${habito.clones_count} hacen esto` : 'Popular'}
+                              {habito.clones_count && habito.clones_count > 0
+                                ? `${habito.clones_count} ${habito.clones_count === 1 ? 'persona hace esto' : 'hacen esto'}`
+                                : 'Nuevo'}
                             </span>
                           </div>
 
@@ -738,12 +858,63 @@ export function ComunidadInteractiveView({
                             </div>
                           </div>
 
-                          {(foro.likes_count || 0) > 10 && (
-                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800 text-[11px] font-semibold">
-                              <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
-                              Destacado
-                            </span>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {(foro.likes_count || 0) > 10 && (
+                              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800 text-[11px] font-semibold">
+                                <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
+                                Destacado
+                              </span>
+                            )}
+
+                            {Boolean(userId && (foro.idusuario === userId || isAdmin)) && (
+                              <div className="relative">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenForoMenuId(openForoMenuId === id ? null : id);
+                                  }}
+                                  className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                  title="Opciones del foro"
+                                >
+                                  <MoreVertical className="w-4 h-4" />
+                                </button>
+
+                                {openForoMenuId === id && (
+                                  <div
+                                    className="absolute right-0 top-9 z-20 w-40 bg-white dark:bg-[#151c2c] rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-800 py-1.5 animate-in fade-in zoom-in-95 duration-150"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setOpenForoMenuId(null);
+                                        setEditingForo(foro);
+                                      }}
+                                      className="w-full flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left"
+                                    >
+                                      <Edit3 className="w-3.5 h-3.5" />
+                                      <span>Editar foro</span>
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      disabled={deletingForoId === id || isPending}
+                                      onClick={(e) => handleDeleteForo(id, e)}
+                                      className="w-full flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors text-left disabled:opacity-50 border-t border-slate-100 dark:border-slate-800/60"
+                                    >
+                                      {deletingForoId === id ? (
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                      ) : (
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      )}
+                                      <span>Eliminar foro</span>
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         <div>
@@ -838,7 +1009,16 @@ export function ComunidadInteractiveView({
                     return (
                       <div
                         key={id}
-                        className="p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setSelectedArticuloModal(art)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setSelectedArticuloModal(art);
+                          }
+                        }}
+                        className="p-5 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex flex-col justify-between cursor-pointer group hover:border-[#572de4]/40"
                       >
                         <div className="flex flex-col gap-2.5">
                           <div className="flex items-center justify-between">
@@ -852,7 +1032,7 @@ export function ComunidadInteractiveView({
                           </div>
 
                           <div>
-                            <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-snug">
+                            <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-snug group-hover:text-[#572de4] transition-colors">
                               {art.titulo}
                             </h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed line-clamp-3">
@@ -861,18 +1041,25 @@ export function ComunidadInteractiveView({
                           </div>
                         </div>
 
-                        <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-[#572de4] dark:text-indigo-400 text-[11px] font-bold">
-                            EV
+                        <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-[#572de4] dark:text-indigo-400 text-[11px] font-bold">
+                              EV
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-xs font-semibold text-slate-900 dark:text-white leading-tight">
+                                Dra. Elena Vidal
+                              </span>
+                              <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                                Psiquiatra Colegiada
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex flex-col">
-                            <span className="text-xs font-semibold text-slate-900 dark:text-white leading-tight">
-                              Dra. Elena Vidal
-                            </span>
-                            <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                              Psiquiatra Colegiada
-                            </span>
-                          </div>
+
+                          <span className="text-xs font-bold text-[#572de4] dark:text-indigo-400 group-hover:underline flex items-center gap-1">
+                            <span>Leer artículo</span>
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                          </span>
                         </div>
                       </div>
                     );
@@ -1100,16 +1287,99 @@ export function ComunidadInteractiveView({
                   <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                     Retos y Desafíos Comunitarios
                   </h2>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-[#572de4] dark:text-indigo-300 text-[11px] uppercase tracking-wider font-bold border border-indigo-100 dark:border-indigo-900/50">
-                    <span className="w-2 h-2 rounded-full bg-[#572de4] animate-pulse" />
-                    Temporada activa
-                  </span>
                 </div>
-                <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 shadow-sm text-xs font-semibold">
-                  <Award className="w-4 h-4 text-[#572de4]" />
-                  <span>{initialRetos.length} retos activos en la plataforma</span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 shadow-sm text-xs font-semibold">
+                    <Award className="w-4 h-4 text-[#572de4]" />
+                    <span>{retosVigentesCount} {retosVigentesCount === 1 ? 'reto activo' : 'retos activos'}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateRetoOpen(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#572de4] hover:bg-[#461ebd] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Crear reto</span>
+                  </button>
                 </div>
               </div>
+
+              {/* Selector de Pestañas de Retos: Todos vs Participando */}
+              <div className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setRetoFilterTab('todos')}
+                  className={`pb-3 text-xs sm:text-sm font-bold transition-all relative ${
+                    retoFilterTab === 'todos'
+                      ? 'text-[#572de4] dark:text-indigo-400 border-b-2 border-[#572de4]'
+                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                  }`}
+                >
+                  Todos los desafíos ({initialRetos.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRetoFilterTab('participando')}
+                  className={`pb-3 text-xs sm:text-sm font-bold transition-all relative flex items-center gap-1.5 ${
+                    retoFilterTab === 'participando'
+                      ? 'text-[#572de4] dark:text-indigo-400 border-b-2 border-[#572de4]'
+                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                  }`}
+                >
+                  <Trophy className="w-4 h-4" />
+                  <span>En los que participas ({misRetos.length})</span>
+                </button>
+              </div>
+
+              {/* Fila Destacada: Retos en Curso del Usuario */}
+              {retoFilterTab === 'todos' && misRetos.length > 0 && (
+                <div className="p-5 rounded-3xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-bold text-[#572de4] dark:text-indigo-300 uppercase tracking-wider">
+                      <Trophy className="w-4 h-4" />
+                      <span>Tus Retos en Curso ({misRetos.length})</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setRetoFilterTab('participando')}
+                      className="text-xs font-bold text-[#572de4] dark:text-indigo-400 hover:underline"
+                    >
+                      Filtrar solo mis retos →
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {misRetos.map((mr) => (
+                      <div
+                        key={mr.idreto}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setSelectedRetoModal(mr)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setSelectedRetoModal(mr);
+                          }
+                        }}
+                        className="p-3.5 rounded-2xl bg-white dark:bg-[#111827] border border-indigo-100/80 dark:border-indigo-900/50 shadow-sm cursor-pointer hover:border-[#572de4] transition-all flex flex-col gap-2"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            {mr.titulo}
+                          </span>
+                          <span className="text-sm">{mr.insignia_recompensa || '🏆'}</span>
+                        </div>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                          {mr.descripcion}
+                        </span>
+                        <div className="flex items-center justify-between text-[11px] font-bold text-[#572de4] dark:text-indigo-300 pt-1 border-t border-slate-100 dark:border-slate-800">
+                          <span>+{mr.puntos_recompensa || 50} pts</span>
+                          <span className="text-emerald-600 dark:text-emerald-400">Participando ✓</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Banner Destacado Retos */}
               <section className="relative overflow-hidden rounded-3xl p-7 bg-gradient-to-r from-[#572de4] via-indigo-600 to-violet-700 text-white shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
@@ -1133,26 +1403,13 @@ export function ComunidadInteractiveView({
                 <div className="absolute right-1/3 -bottom-16 w-48 h-48 rounded-full bg-violet-400/20 blur-xl pointer-events-none" />
               </section>
 
-              {/* Filtros de Retos */}
+              {/* Encabezado de Lista de Retos */}
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-                  {['Todos', 'Azúcar', 'Lectura', 'Corredores'].map((cat) => (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setSelectedRetoCategory(cat)}
-                      className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                        selectedRetoCategory === cat
-                          ? 'bg-[#572de4] text-white shadow-sm'
-                          : 'bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
-                      }`}
-                    >
-                      {cat === 'Todos' ? 'Todos los retos' : cat}
-                    </button>
-                  ))}
-                </div>
-                <span className="text-xs text-slate-500 dark:text-slate-400">
-                  {retosFiltrados.length} retos disponibles
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  {retoFilterTab === 'participando' ? 'Retos en los que estás participando' : 'Explorar todos los retos'}
+                </h3>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  {retosFiltrados.length} {retosFiltrados.length === 1 ? 'reto disponible' : 'retos disponibles'}
                 </span>
               </div>
 
@@ -1160,7 +1417,7 @@ export function ComunidadInteractiveView({
               {retosFiltrados.length === 0 ? (
                 <div className="text-center py-12 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]">
                   <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
-                    No se encontraron retos en esta categoría
+                    No se encontraron retos disponibles
                   </p>
                 </div>
               ) : (
@@ -1168,12 +1425,15 @@ export function ComunidadInteractiveView({
                   {retosFiltrados.map((reto) => {
                     const id = reto.idreto || reto.idReto || reto.id || '';
                     const isJoiningThis = joiningRetoId === id;
+                    const isLeavingThis = leavingRetoId === id;
                     const puntos = reto.puntos_recompensa ?? 0;
                     const isEnrolled = Boolean(
                       (userId && reto.usuarios_participando?.includes(userId)) ||
                       reto.inscrito === true
                     );
                     const participantesCount = reto.participantes_count ?? (reto.usuarios_participando?.length ?? 0);
+                    const todayStr = new Date().toISOString().slice(0, 10);
+                    const isExpired = Boolean(reto.fechafin && reto.fechafin < todayStr) || reto.estado === 'Finalizado';
 
                     return (
                       <article
@@ -1191,19 +1451,31 @@ export function ComunidadInteractiveView({
                       >
                         <div className="flex flex-col gap-3">
                           <div className="flex items-center justify-between">
-                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#572de4] dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/80 px-2.5 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/50">
-                              <Sparkles className="w-3 h-3" />
-                              {reto.fechafin ? 'Reto con fecha límite' : 'Reto continuo'}
-                            </span>
+                            {isExpired ? (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/80 px-2.5 py-1 rounded-full border border-rose-200 dark:border-rose-900/50">
+                                <X className="w-3 h-3" />
+                                Caducado
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#572de4] dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/80 px-2.5 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/50">
+                                <Sparkles className="w-3 h-3" />
+                                {reto.fechafin ? `Límite: ${reto.fechafin}` : 'Reto continuo'}
+                              </span>
+                            )}
                             <span className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border border-amber-200/60 dark:border-amber-900/50 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
                               <Star className="w-3 h-3 fill-current" />
                               +{puntos} pts
                             </span>
                           </div>
 
-                          <h4 className="text-base font-bold text-slate-900 dark:text-white mt-1 group-hover:text-[#572de4] transition-colors">
-                            {reto.titulo}
-                          </h4>
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100/70 dark:border-indigo-900/40 flex items-center justify-center shrink-0 select-none shadow-xs">
+                              {reto.icono || '🏆'}
+                            </span>
+                            <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#572de4] transition-colors leading-snug">
+                              {reto.titulo}
+                            </h4>
+                          </div>
 
                           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
                             {reto.descripcion}
@@ -1223,9 +1495,112 @@ export function ComunidadInteractiveView({
                           </div>
 
                           {isEnrolled ? (
-                            <div className="w-full py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
-                              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                              <span>Ya estás participando</span>
+                            <div className="flex flex-col gap-2.5">
+                              <div className="space-y-1">
+                                <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                                  <span className="flex items-center gap-1 text-slate-500">
+                                    Progreso: <strong className="text-slate-800 dark:text-slate-100">{reto.dias_progreso ?? 0} / {reto.dias_objetivo ?? 7} días</strong>
+                                  </span>
+                                  <span className="text-[#572de4] dark:text-indigo-400 font-bold">{reto.progreso ?? 0}%</span>
+                                </div>
+                                <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                                  <div
+                                    className={`h-full rounded-full transition-all duration-500 ${
+                                      reto.completado || (reto.progreso ?? 0) >= 100
+                                        ? 'bg-emerald-500'
+                                        : 'bg-gradient-to-r from-[#572de4] to-indigo-400'
+                                    }`}
+                                    style={{ width: `${Math.min(100, reto.progreso ?? 0)}%` }}
+                                  />
+                                </div>
+                              </div>
+
+                              {reto.completado || (reto.progreso ?? 0) >= 100 ? (
+                                <div className="w-full py-2 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
+                                  <Trophy className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                  <span className="truncate">¡Reto Completado!</span>
+                                </div>
+                              ) : isExpired ? (
+                                <div className="flex items-center gap-2">
+                                  <div className="flex-1 py-2 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-not-allowed">
+                                    <X className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                                    <span>Reto finalizado</span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleLeaveReto(reto);
+                                    }}
+                                    disabled={isLeavingThis || isPending}
+                                    className="px-2.5 py-2 rounded-xl border border-rose-200 dark:border-rose-900/80 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-xs font-semibold transition-colors flex items-center gap-1 disabled:opacity-50 shrink-0"
+                                    title="Salir del reto"
+                                  >
+                                    {isLeavingThis ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                                    <span>Salir</span>
+                                  </button>
+                                </div>
+                              ) : reto.checkin_hecho_hoy ? (
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="flex-1 py-2 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-default shadow-xs"
+                                    title="Ya registraste tu día de hoy. ¡Vuelve mañana!"
+                                  >
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                                    <span className="truncate">Día de hoy listo ✓</span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleLeaveReto(reto);
+                                    }}
+                                    disabled={isLeavingThis || isPending}
+                                    className="px-2.5 py-2 rounded-xl border border-rose-200 dark:border-rose-900/80 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-xs font-semibold transition-colors flex items-center gap-1 disabled:opacity-50 shrink-0"
+                                    title="Salir del reto"
+                                  >
+                                    {isLeavingThis ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                                    <span>Salir</span>
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleCheckinReto(reto);
+                                    }}
+                                    disabled={checkingInRetoId === id || isPending}
+                                    className="flex-1 py-2 px-3 rounded-xl bg-[#572de4] hover:bg-[#461ebd] text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
+                                    title="Registrar avance de hoy"
+                                  >
+                                    {checkingInRetoId === id ? (
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    ) : (
+                                      <CheckCircle2 className="w-3.5 h-3.5" />
+                                    )}
+                                    <span>Check-in (+1 día)</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleLeaveReto(reto);
+                                    }}
+                                    disabled={isLeavingThis || isPending || checkingInRetoId === id}
+                                    className="px-2.5 py-2 rounded-xl border border-rose-200 dark:border-rose-900/80 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-xs font-semibold transition-colors flex items-center gap-1 disabled:opacity-50 shrink-0"
+                                    title="Salir del reto"
+                                  >
+                                    {isLeavingThis ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                                    <span>Salir</span>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          ) : isExpired ? (
+                            <div className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-not-allowed">
+                              <span>Reto finalizado</span>
                             </div>
                           ) : (
                             <button
@@ -1468,10 +1843,40 @@ export function ComunidadInteractiveView({
         isOpen={isShareHabitOpen}
         onClose={() => setIsShareHabitOpen(false)}
         habitos={userHabitos}
+        habitosPublicados={initialHabitosComunidad}
+        currentUserId={userId}
         onShared={() => {
           showToast('¡Hábito compartido en la comunidad con éxito! ✨');
           router.refresh();
         }}
+      />
+
+      {/* ── Modal para Crear Reto ── */}
+      <CreateRetoModal
+        isOpen={isCreateRetoOpen}
+        onClose={() => setIsCreateRetoOpen(false)}
+        onSuccess={() => {
+          showToast('¡Reto comunitario creado y te has unido exitosamente! 🏆');
+          router.refresh();
+        }}
+      />
+
+      {/* ── Modal para Editar Foro ── */}
+      <EditForoModal
+        isOpen={Boolean(editingForo)}
+        onClose={() => setEditingForo(null)}
+        foro={editingForo}
+        onSuccess={() => {
+          showToast('¡Foro actualizado con éxito! ✨');
+          router.refresh();
+        }}
+      />
+
+      {/* ── Modal de Lectura de Artículo ── */}
+      <ArticleReaderModal
+        isOpen={Boolean(selectedArticuloModal)}
+        onClose={() => setSelectedArticuloModal(null)}
+        articulo={selectedArticuloModal}
       />
 
       {/* ── Modal de Perfil de Especialista ── */}
@@ -1546,6 +1951,9 @@ export function ComunidadInteractiveView({
         );
         const modalParticipantes = selectedRetoModal.participantes_count ?? (selectedRetoModal.usuarios_participando?.length ?? 0);
         const isJoiningModal = joiningRetoId === modalId;
+        const isLeavingModal = leavingRetoId === modalId;
+        const todayModalStr = new Date().toISOString().slice(0, 10);
+        const isModalExpired = Boolean(selectedRetoModal.fechafin && selectedRetoModal.fechafin < todayModalStr) || selectedRetoModal.estado === 'Finalizado';
 
         return (
           <div
@@ -1599,11 +2007,22 @@ export function ComunidadInteractiveView({
                     <Users className="w-3.5 h-3.5 inline mr-1" />
                     {modalParticipantes} participante{modalParticipantes === 1 ? '' : 's'}
                   </span>
+                  {isModalExpired && (
+                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 flex items-center gap-1">
+                      <X className="w-3 h-3" />
+                      Caducado
+                    </span>
+                  )}
                 </div>
 
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
-                  {selectedRetoModal.titulo}
-                </h3>
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/80 border border-indigo-100 dark:border-indigo-900/60 flex items-center justify-center shrink-0 select-none shadow-xs">
+                    {selectedRetoModal.icono || '🏆'}
+                  </span>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
+                    {selectedRetoModal.titulo}
+                  </h3>
+                </div>
               </div>
 
               {/* Description */}
@@ -1636,14 +2055,131 @@ export function ComunidadInteractiveView({
 
               {/* Status / Action */}
               {modalEnrolled ? (
-                <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-200 flex items-center gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="text-xs font-bold">¡Estás participando activamente!</span>
-                    <span className="text-[11px] text-emerald-600 dark:text-emerald-300">
-                      Registra tus hábitos diarios para asegurar los {modalPuntos} puntos.
-                    </span>
+                <div className="flex flex-col gap-3">
+                  {/* Progress bar in modal */}
+                  <div className="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 space-y-2">
+                    <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-200">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-[#572de4]" />
+                        Progreso completado: <strong className="text-slate-900 dark:text-white">{selectedRetoModal.dias_progreso ?? 0} / {selectedRetoModal.dias_objetivo ?? 7} días</strong>
+                      </span>
+                      <span className="text-[#572de4] dark:text-indigo-400 font-bold">{selectedRetoModal.progreso ?? 0}%</span>
+                    </div>
+                    <div className="w-full h-2.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          selectedRetoModal.completado || (selectedRetoModal.progreso ?? 0) >= 100
+                            ? 'bg-emerald-500'
+                            : 'bg-gradient-to-r from-[#572de4] to-indigo-400'
+                        }`}
+                        style={{ width: `${Math.min(100, selectedRetoModal.progreso ?? 0)}%` }}
+                      />
+                    </div>
                   </div>
+
+                  {selectedRetoModal.completado || (selectedRetoModal.progreso ?? 0) >= 100 ? (
+                    <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-200 flex items-center gap-3">
+                      <Trophy className="w-7 h-7 text-emerald-500 shrink-0" />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold">🎉 ¡Reto Completado con Éxito!</span>
+                        <span className="text-xs text-emerald-600 dark:text-emerald-300">
+                          Has asegurado los +{modalPuntos} puntos y avanzado en tus logros de comunidad.
+                        </span>
+                      </div>
+                    </div>
+                  ) : isModalExpired ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center gap-3">
+                        <X className="w-6 h-6 text-rose-500 shrink-0" />
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">Este reto ha finalizado</span>
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                            La fecha límite concluyó. No es posible registrar más avances diarios.
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleLeaveReto(selectedRetoModal)}
+                        disabled={isLeavingModal || isPending}
+                        className="w-full py-3 rounded-2xl border border-rose-200 dark:border-rose-900/80 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                        {isLeavingModal ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                        <span>Salir de este reto</span>
+                      </button>
+                    </div>
+                  ) : selectedRetoModal.checkin_hecho_hoy ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/50 border border-indigo-200/60 dark:border-indigo-900/50 text-indigo-950 dark:text-indigo-200 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">
+                              ¡Check-in de hoy registrado!
+                            </span>
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                              Ya sumaste tu día. Vuelve mañana para continuar con tu progreso.
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleLeaveReto(selectedRetoModal)}
+                        disabled={isLeavingModal || isPending}
+                        className="w-full py-3 rounded-2xl border border-rose-200 dark:border-rose-900/80 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                        {isLeavingModal ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                        <span>Salir de este reto</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-900/40 text-emerald-800 dark:text-emerald-200 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                          <span className="text-xs font-semibold">
+                            Participando activamente
+                          </span>
+                        </div>
+                        <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                          +{modalPuntos} pts al finalizar
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => handleCheckinReto(selectedRetoModal)}
+                          disabled={checkingInRetoId === (selectedRetoModal.id || (selectedRetoModal as any).id_reto) || isPending}
+                          className="flex-1 py-3.5 rounded-2xl bg-[#572de4] hover:bg-[#461ebd] text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+                        >
+                          {checkingInRetoId === (selectedRetoModal.id || (selectedRetoModal as any).id_reto) ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle2 className="w-4 h-4" />
+                          )}
+                          <span>Hacer Check-in Diario (+1 día)</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleLeaveReto(selectedRetoModal)}
+                          disabled={isLeavingModal || isPending}
+                          className="px-4 py-3.5 rounded-2xl border border-rose-200 dark:border-rose-900/80 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 shrink-0"
+                          title="Salir de este reto"
+                        >
+                          {isLeavingModal ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                          <span>Salir</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : isModalExpired ? (
+                <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 text-center text-xs sm:text-sm font-semibold">
+                  Este reto ya ha finalizado y no admite nuevas inscripciones.
                 </div>
               ) : (
                 <button

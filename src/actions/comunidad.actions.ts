@@ -166,9 +166,48 @@ export async function unirseRetoAction(retoId: string): Promise<ActionState> {
     return { success: false, message: result.error };
   }
 
-  revalidatePath("/retos");
   revalidatePath("/comunidad");
+  revalidatePath("/dashboard");
   return { success: true, message: "¡Te has unido al reto comunitario exitosamente! 🏆" };
+}
+
+// ─── salirRetoAction ──────────────────────────────────────────────────────────
+export async function salirRetoAction(retoId: string): Promise<ActionState> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  const result = await service.leaveReto(retoId);
+  if (!result.success) {
+    return { success: false, message: result.error };
+  }
+
+  revalidatePath("/comunidad");
+  revalidatePath("/dashboard");
+  return { success: true, message: "Has salido del reto correctamente." };
+}
+
+// ─── checkinRetoAction ────────────────────────────────────────────────────────
+export async function checkinRetoAction(
+  retoId: string
+): Promise<ActionState & { completed?: boolean; puntosGanados?: number; progreso?: number; dias_progreso?: number }> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  const result = await service.checkinReto(retoId);
+  if (!result.success) {
+    return { success: false, message: result.error };
+  }
+
+  revalidatePath("/comunidad");
+  revalidatePath("/dashboard");
+  return {
+    success: true,
+    message: result.data.message || "¡Avance registrado exitosamente! 🎯",
+    completed: result.data.completed,
+    puntosGanados: result.data.puntosGanados,
+    progreso: result.data.progreso,
+    dias_progreso: result.data.dias_progreso,
+  };
 }
 
 // ─── compartirHabitoAction ───────────────────────────────────────────────────
@@ -185,14 +224,124 @@ export async function compartirHabitoAction(idHabito: string): Promise<ActionSta
   return { success: true, message: "Hábito compartido en la comunidad exitosamente ✨" };
 }
 
-export async function deleteForoAction(foroId: string) {
-  const { adminService } = await import("@/services/admin.service");
-  return await adminService.deleteForum(foroId);
+export async function updateForoAction(
+  foroId: string,
+  updates: { titulo: string; descripcion: string; categoria?: string; imagenUrl?: string }
+): Promise<ActionState> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  if (!updates.titulo?.trim() || updates.titulo.trim().length < 5) {
+    return { success: false, message: "El título debe tener al menos 5 caracteres" };
+  }
+  if (!updates.descripcion?.trim() || updates.descripcion.trim().length < 10) {
+    return { success: false, message: "La descripción debe tener al menos 10 caracteres" };
+  }
+
+  const res = await service.updateForo(foroId, updates);
+  if (!res.success) {
+    return { success: false, message: res.error };
+  }
+
+  revalidatePath("/comunidad");
+  revalidatePath(`/comunidad/foros/${foroId}`);
+  return { success: true, message: "Foro actualizado exitosamente ✨" };
 }
 
-export async function deleteComentarioAction(comentarioId: string) {
-  const { adminService } = await import("@/services/admin.service");
-  return await adminService.deleteForumComment(comentarioId);
+export async function deleteForoAction(foroId: string): Promise<ActionState> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  const res = await service.deleteForo(foroId);
+  if (!res.success) {
+    return { success: false, message: res.error };
+  }
+
+  revalidatePath("/comunidad");
+  return { success: true, message: "Foro eliminado exitosamente" };
+}
+
+export async function updateComentarioAction(
+  comentarioId: string,
+  contenido: string,
+  foroId?: string
+): Promise<ActionState> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  if (!contenido?.trim()) {
+    return { success: false, message: "El comentario no puede estar vacío" };
+  }
+
+  const res = await service.updateComentario(comentarioId, contenido.trim());
+  if (!res.success) {
+    return { success: false, message: res.error };
+  }
+
+  revalidatePath("/comunidad");
+  if (foroId) {
+    revalidatePath(`/comunidad/foros/${foroId}`);
+  }
+  return { success: true, message: "Comentario actualizado exitosamente ✨" };
+}
+
+export async function deleteComentarioAction(comentarioId: string, foroId?: string): Promise<ActionState> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  const res = await service.deleteComentario(comentarioId);
+  if (!res.success) {
+    return { success: false, message: res.error };
+  }
+
+  revalidatePath("/comunidad");
+  if (foroId) {
+    revalidatePath(`/comunidad/foros/${foroId}`);
+  }
+  return { success: true, message: "Comentario eliminado exitosamente" };
+}
+
+export async function createRetoAction(
+  _prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState> {
+  const userResult = await requireUser();
+  if (!userResult.success) return { success: false, message: userResult.error };
+
+  const titulo = formData.get("titulo") as string;
+  const descripcion = formData.get("descripcion") as string;
+  const puntosRecompensa = parseInt(formData.get("puntosRecompensa") as string, 10) || 50;
+  const fechaInicio = formData.get("fechaInicio") as string;
+  const fechaFin = formData.get("fechaFin") as string;
+  const insigniaRecompensa = formData.get("insigniaRecompensa") as string;
+  const icono = formData.get("icono") as string;
+  const diasObjetivo = parseInt(formData.get("diasObjetivo") as string, 10) || 7;
+
+  if (!titulo?.trim() || titulo.trim().length < 5) {
+    return { success: false, message: "El título debe tener al menos 5 caracteres" };
+  }
+  if (!descripcion?.trim() || descripcion.trim().length < 10) {
+    return { success: false, message: "La descripción debe tener al menos 10 caracteres" };
+  }
+
+  const res = await service.createReto({
+    titulo: titulo.trim(),
+    descripcion: descripcion.trim(),
+    puntosRecompensa: 50,
+    fechaInicio: fechaInicio || undefined,
+    fechaFin: fechaFin || undefined,
+    insigniaRecompensa: insigniaRecompensa || '🏆',
+    icono: icono || insigniaRecompensa || '🏆',
+    diasObjetivo,
+  });
+
+  if (!res.success) {
+    return { success: false, message: res.error };
+  }
+
+  revalidatePath("/comunidad");
+  revalidatePath("/habitos");
+  return { success: true, message: "¡Reto comunitario creado y te has unido exitosamente! 🏆" };
 }
 
 export async function suscribirseAction(_prevState: any, formData: FormData) {
