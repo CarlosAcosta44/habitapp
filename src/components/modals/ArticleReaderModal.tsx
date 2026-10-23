@@ -104,13 +104,13 @@ export function ArticleReaderModal({ isOpen, onClose, articulo }: ArticleReaderM
     <dialog
       open
       aria-labelledby="article-reader-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200 w-full h-full max-w-none max-h-none m-0 border-0"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-transparent animate-in fade-in duration-200 w-full h-full max-w-none max-h-none m-0 border-0"
     >
-      {/* Backdrop click to close */}
-      <div
-        className="absolute inset-0"
+      <button
+        type="button"
+        aria-label="Cerrar artículo"
         onClick={onClose}
-        aria-hidden="true"
+        className="fixed inset-0 bg-slate-950/70 backdrop-blur-md -z-10 cursor-default"
       />
 
       {/* Reader Container */}

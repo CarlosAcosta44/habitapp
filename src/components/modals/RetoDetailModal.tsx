@@ -230,11 +230,14 @@ export function RetoDetailModal({
     <dialog
       open
       aria-labelledby="reto-detail-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200 w-full h-full max-w-none max-h-none m-0 border-0"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-transparent animate-in fade-in duration-200 w-full h-full max-w-none max-h-none m-0 border-0"
     >
+      <button
+        type="button"
+        aria-label="Cerrar modal"
+        onClick={onClose}
+        className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm -z-10 cursor-default"
+      />
       <div
         className="relative w-full max-w-lg bg-white dark:bg-[#111827] rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col gap-5 animate-in zoom-in-95 duration-200"
       >

@@ -135,11 +135,14 @@ export function EditForoModal({ isOpen, onClose, foro, onSuccess }: EditForoModa
     <dialog
       open
       aria-labelledby="edit-foro-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200 w-full h-full max-w-none max-h-none m-0 border-0"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-transparent animate-in fade-in duration-200 w-full h-full max-w-none max-h-none m-0 border-0"
     >
+      <button
+        type="button"
+        aria-label="Cerrar modal"
+        onClick={onClose}
+        className="fixed inset-0 bg-slate-950/70 backdrop-blur-md -z-10 cursor-default"
+      />
       <div
         className="w-full max-w-xl bg-white dark:bg-[#111827] rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh]"
       >

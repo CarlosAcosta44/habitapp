@@ -498,7 +498,7 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
               {reminderEnabled && (
                 <div className="flex flex-col gap-2 pt-1">
                   {reminders.map((time, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
+                    <div key={`new-rem-${time}-${idx}`} className="flex items-center gap-2">
                       <div className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-800/60 text-sm">
                         <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
                         <input

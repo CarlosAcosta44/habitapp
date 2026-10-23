@@ -18,24 +18,16 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
-  Calendar,
   ShieldCheck,
   Star,
   Flag,
-  Share2,
-  Dumbbell,
-  Zap,
-  Utensils,
-  Moon,
-  Smile,
-  Droplets,
   Edit3,
   Trophy,
-  X,
   MoreVertical,
   Trash2,
 } from 'lucide-react';
 import type { Reto } from '@/domain/reto.types';
+import type { Articulo } from '@/domain/comunidad.types';
 import {
   clonarHabitoAction,
   unirseRetoAction,
@@ -65,6 +57,12 @@ interface ComunidadInteractiveViewProps {
 }
 
 type TabType = 'todo' | 'foros' | 'habitos' | 'articulos' | 'especialistas' | 'retos';
+
+function formatClonesCount(count?: number | null): string {
+  if (!count || count <= 0) return 'Nuevo';
+  if (count === 1) return '1 persona hace esto';
+  return `${count} hacen esto`;
+}
 
 export function ComunidadInteractiveView({
   initialForos = [],
@@ -129,13 +127,13 @@ export function ComunidadInteractiveView({
   const [reactingForoId, setReactingForoId] = useState<string | null>(null);
 
   // Modal de especialista para agendar o ver perfil
-  const [selectedSpecialist, setSelectedSpecialist] = useState<any | null>(null);
+  const [selectedSpecialist, setSelectedSpecialist] = useState<Record<string, any> | null>(null);
 
   // Modal interactivo de detalle de Reto
-  const [selectedRetoModal, setSelectedRetoModal] = useState<any | null>(null);
+  const [selectedRetoModal, setSelectedRetoModal] = useState<Reto | null>(null);
 
   // Modal de lectura de artículo
-  const [selectedArticuloModal, setSelectedArticuloModal] = useState<any | null>(null);
+  const [selectedArticuloModal, setSelectedArticuloModal] = useState<Articulo | null>(null);
 
   // Atajo de teclado ⌘K o Ctrl+K
   useEffect(() => {
@@ -714,9 +712,7 @@ export function ComunidadInteractiveView({
                           <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
                             <Users className="w-3.5 h-3.5 text-[#572de4]" />
                             <span>
-                              {habito.clones_count && habito.clones_count > 0
-                                ? `${habito.clones_count} ${habito.clones_count === 1 ? 'persona hace esto' : 'hacen esto'}`
-                                : 'Nuevo'}
+                              {formatClonesCount(habito.clones_count)}
                             </span>
                           </div>
 
@@ -885,12 +881,11 @@ export function ComunidadInteractiveView({
                                 {openForoMenuId === id && (
                                   <div
                                     className="absolute right-0 top-9 z-20 w-40 bg-white dark:bg-[#151c2c] rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-800 py-1.5 animate-in fade-in zoom-in-95 duration-150"
-                                    onClick={(e) => e.stopPropagation()}
-                                    onKeyDown={(e) => e.stopPropagation()}
                                   >
                                     <button
                                       type="button"
-                                      onClick={() => {
+                                      onClick={(e) => {
+                                        e.stopPropagation();
                                         setOpenForoMenuId(null);
                                         setEditingForo(foro);
                                       }}

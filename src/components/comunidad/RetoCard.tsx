@@ -39,7 +39,6 @@ export function RetoCard({
   onLeave,
   onCheckIn,
 }: RetoCardProps) {
-  const id = reto.idreto || reto.idReto || reto.id || '';
   const puntos = reto.puntos_recompensa ?? 0;
   const isEnrolled = Boolean(
     (userId && reto.usuarios_participando?.includes(userId)) ||
@@ -221,20 +220,13 @@ export function RetoCard({
   };
 
   return (
-    <article
-      role="button"
-      tabIndex={0}
-      onClick={() => onSelect(reto)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onSelect(reto);
-        }
-      }}
-      className="bg-white dark:bg-[#111827] rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5 cursor-pointer group hover:border-[#572de4]/40 text-left"
-    >
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
+    <article className="bg-white dark:bg-[#111827] rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5 group hover:border-[#572de4]/40 text-left">
+      <button
+        type="button"
+        onClick={() => onSelect(reto)}
+        className="w-full flex flex-col gap-3 text-left focus:outline-none"
+      >
+        <div className="w-full flex items-center justify-between">
           {renderBadge()}
           <span className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border border-amber-200/60 dark:border-amber-900/50 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
             <Star className="w-3 h-3 fill-current" />
@@ -254,7 +246,7 @@ export function RetoCard({
         <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
           {reto.descripcion}
         </p>
-      </div>
+      </button>
 
       <div className="flex flex-col gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
         <div className="flex items-center justify-between text-slate-400 text-xs">

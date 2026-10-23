@@ -4,11 +4,8 @@ import React, { useState, useTransition } from 'react';
 import {
   Trophy,
   X,
-  Calendar,
   Star,
   Loader2,
-  Award,
-  Zap,
   Target,
 } from 'lucide-react';
 import { createRetoAction } from '@/actions/comunidad.actions';
@@ -71,18 +68,18 @@ export function CreateRetoModal({ isOpen, onClose, onSuccess }: CreateRetoModalP
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      role="presentation"
+    <dialog
+      open
+      aria-labelledby="create-reto-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-transparent animate-in fade-in duration-200 w-full h-full max-w-none max-h-none m-0 border-0"
     >
-      <div
-        className="w-full max-w-lg bg-white dark:bg-[#111827] rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]"
-        role="dialog"
-        aria-modal="true"
-      >
+      <button
+        type="button"
+        aria-label="Cerrar modal"
+        onClick={onClose}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm -z-10 cursor-default"
+      />
+      <div className="w-full max-w-lg bg-white dark:bg-[#111827] rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-6 pb-4 flex items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-3">
@@ -90,7 +87,7 @@ export function CreateRetoModal({ isOpen, onClose, onSuccess }: CreateRetoModalP
               <Trophy className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
+              <h2 id="create-reto-title" className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
                 Crear Reto Comunitario
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -150,9 +147,9 @@ export function CreateRetoModal({ isOpen, onClose, onSuccess }: CreateRetoModalP
           {/* Puntos e Insignia */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Recompensa
-              </label>
+              </span>
               <div className="w-full px-4 py-2 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 flex items-center justify-between">
                 <div className="flex items-center gap-1.5 font-bold text-sm">
                   <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
@@ -163,9 +160,9 @@ export function CreateRetoModal({ isOpen, onClose, onSuccess }: CreateRetoModalP
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Insignia / Ícono
-              </label>
+              </span>
               <div className="flex items-center gap-1.5 overflow-x-auto py-1">
                 {BADGES.map((b) => (
                   <button
@@ -188,10 +185,10 @@ export function CreateRetoModal({ isOpen, onClose, onSuccess }: CreateRetoModalP
           {/* Meta del Reto en Días */}
           <div className="flex flex-col gap-2 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/70 dark:border-slate-800">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                 <Target className="w-3.5 h-3.5 text-[#572de4]" />
                 Meta de Cumplimiento (Días) *
-              </label>
+              </span>
               <span className="text-xs font-bold text-[#572de4] bg-indigo-50 dark:bg-indigo-950/80 px-2 py-0.5 rounded-md">
                 {diasObjetivo} check-ins requeridos
               </span>
@@ -282,6 +279,6 @@ export function CreateRetoModal({ isOpen, onClose, onSuccess }: CreateRetoModalP
           </div>
         </form>
       </div>
-    </div>
+    </dialog>
   );
 }

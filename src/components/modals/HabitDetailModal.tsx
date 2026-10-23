@@ -67,7 +67,9 @@ function extractHabitDays(habito: any): number[] {
   return [1, 2, 3, 4, 5, 6, 7];
 }
 
-function determineFrequencyPreset(days: number[]): 'todos' | 'laborales' | 'personalizado' {
+type FrequencyPreset = 'todos' | 'laborales' | 'personalizado';
+
+function determineFrequencyPreset(days: number[]): FrequencyPreset {
   if (days.length === 7) return 'todos';
   if (days.length === 5 && [1, 2, 3, 4, 5].every((d: number) => days.includes(d))) {
     return 'laborales';
@@ -127,7 +129,7 @@ export function HabitDetailModal({
   const [editUnidadMedida, setEditUnidadMedida] = useState('veces');
   const [editEstado, setEditEstado] = useState<'Activo' | 'Inactivo'>('Activo');
   const [editSelectedDays, setEditSelectedDays] = useState<number[]>([1, 2, 3, 4, 5, 6, 7]);
-  const [editFrequencyPreset, setEditFrequencyPreset] = useState<'todos' | 'laborales' | 'personalizado'>('todos');
+  const [editFrequencyPreset, setEditFrequencyPreset] = useState<FrequencyPreset>('todos');
   const [editReminders, setEditReminders] = useState<string[]>([]);
 
   // UI feedback
@@ -325,7 +327,7 @@ export function HabitDetailModal({
   };
 
   // Manejadores de selector rápido de frecuencia en edición
-  const handleEditPresetChange = (preset: 'todos' | 'laborales' | 'personalizado') => {
+  const handleEditPresetChange = (preset: FrequencyPreset) => {
     setEditFrequencyPreset(preset);
     if (preset === 'todos') {
       setEditSelectedDays([1, 2, 3, 4, 5, 6, 7]);
@@ -757,7 +759,7 @@ export function HabitDetailModal({
                 ) : (
                   <div className="flex flex-col gap-2 pt-1">
                     {editReminders.map((time, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
+                      <div key={`edit-rem-${time}-${idx}`} className="flex items-center gap-2">
                         <div className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-800 text-sm">
                           <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
                           <input
@@ -1072,9 +1074,10 @@ export function HabitDetailModal({
                   <div className="flex items-center gap-2 flex-wrap">
                     {habito.recordatorios.map((r: any, idx: number) => {
                       const timeStr = formatSingleReminderTime(r);
+                      const rKey = r?.id || r?.idrecordatorio || timeStr || `rem-${idx}`;
                       return (
                         <span
-                          key={idx}
+                          key={`view-rem-${rKey}-${idx}`}
                           className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm"
                         >
                           <Clock className="w-3 h-3 text-[#572de4] dark:text-indigo-400" />
