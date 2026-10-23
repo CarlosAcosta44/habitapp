@@ -23,7 +23,7 @@ export function DeleteForumButton({ forumId }: { forumId: string }) {
       alert("Foro eliminado");
       router.refresh();
     } else {
-      alert("Error al eliminar el foro: " + result.error);
+      alert("Error al eliminar el foro: " + (result.message || 'Error desconocido'));
     }
   };
 

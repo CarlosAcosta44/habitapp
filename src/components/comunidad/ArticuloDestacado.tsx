@@ -29,10 +29,11 @@ const categoriaIcono: Record<string, string> = {
 };
 
 interface ArticuloDestacadoProps {
-  articulo: Articulo;
+  readonly articulo: Articulo;
+  readonly onClick?: () => void;
 }
 
-export function ArticuloDestacado({ articulo }: ArticuloDestacadoProps) {
+export function ArticuloDestacado({ articulo, onClick }: ArticuloDestacadoProps) {
   const badgeColor =
     categoriaBadgeColors[articulo.categoria ?? ""] ?? categoriaBadgeColors.default;
   const icono =
@@ -48,7 +49,11 @@ export function ArticuloDestacado({ articulo }: ArticuloDestacadoProps) {
     (articulo.contenido.length > 110 ? "…" : "");
 
   return (
-    <div className="group rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 space-y-3 hover:shadow-md transition-shadow cursor-pointer">
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-left w-full group rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 space-y-3 hover:shadow-md transition-shadow cursor-pointer block"
+    >
 
       {/* Header: ícono + categoría + tiempo */}
       <div className="flex items-center justify-between gap-3">
@@ -74,6 +79,6 @@ export function ArticuloDestacado({ articulo }: ArticuloDestacadoProps) {
       <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
         {extracto}
       </p>
-    </div>
+    </button>
   );
 }

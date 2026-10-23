@@ -47,6 +47,64 @@ interface HabitDetailModalProps {
   onDelete?: (idHabito: string) => void;
 }
 
+const DIAS_SEMANA = [
+  { num: 1, label: 'L', name: 'Lunes' },
+  { num: 2, label: 'M', name: 'Martes' },
+  { num: 3, label: 'M', name: 'Miércoles' },
+  { num: 4, label: 'J', name: 'Jueves' },
+  { num: 5, label: 'V', name: 'Viernes' },
+  { num: 6, label: 'S', name: 'Sábado' },
+  { num: 7, label: 'D', name: 'Domingo' },
+];
+
+function extractHabitDays(habito: any): number[] {
+  if (Array.isArray(habito.diasSemana) && habito.diasSemana.length > 0) {
+    return habito.diasSemana;
+  }
+  if (Array.isArray(habito.dias_semana) && habito.dias_semana.length > 0) {
+    return habito.dias_semana;
+  }
+  return [1, 2, 3, 4, 5, 6, 7];
+}
+
+type FrequencyPreset = 'todos' | 'laborales' | 'personalizado';
+
+function determineFrequencyPreset(days: number[]): FrequencyPreset {
+  if (days.length === 7) return 'todos';
+  if (days.length === 5 && [1, 2, 3, 4, 5].every((d: number) => days.includes(d))) {
+    return 'laborales';
+  }
+  return 'personalizado';
+}
+
+function extractHabitReminders(habito: any): string[] {
+  if (!Array.isArray(habito.recordatorios)) return [];
+  return habito.recordatorios
+    .map((r: any) => {
+      if (typeof r === 'string') return r.slice(0, 5);
+      if (r && typeof r.hora === 'string') return r.hora.slice(0, 5);
+      return '';
+    })
+    .filter(Boolean);
+}
+
+function formatSingleReminderTime(r: any): string {
+  if (typeof r === 'string') return r.slice(0, 5);
+  if (r && typeof r.hora === 'string') return r.hora.slice(0, 5);
+  return '08:00';
+}
+
+function formatRecordatoriosLabel(recordatorios: any): string {
+  if (!Array.isArray(recordatorios) || recordatorios.length === 0) {
+    return 'Sin recordatorios programados';
+  }
+  const formatted = recordatorios
+    .map((r: any) => formatSingleReminderTime(r))
+    .filter(Boolean)
+    .join(', ');
+  return `Recordatorios: ${formatted}`;
+}
+
 export function HabitDetailModal({
   isOpen,
   onClose,
@@ -67,9 +125,12 @@ export function HabitDetailModal({
   // Edit form states
   const [editNombre, setEditNombre] = useState('');
   const [editDescripcion, setEditDescripcion] = useState('');
-  const [editMetaDiaria, setEditMetaDiaria] = useState(1);
+  const [editMetaDiaria, setEditMetaDiaria] = useState<number | string>(1);
   const [editUnidadMedida, setEditUnidadMedida] = useState('veces');
   const [editEstado, setEditEstado] = useState<'Activo' | 'Inactivo'>('Activo');
+  const [editSelectedDays, setEditSelectedDays] = useState<number[]>([1, 2, 3, 4, 5, 6, 7]);
+  const [editFrequencyPreset, setEditFrequencyPreset] = useState<FrequencyPreset>('todos');
+  const [editReminders, setEditReminders] = useState<string[]>([]);
 
   // UI feedback
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
@@ -88,21 +149,27 @@ export function HabitDetailModal({
 
   // Sincronizar datos del hábito con el estado de edición y progreso al abrir o recibir props
   useEffect(() => {
-    if (habito) {
-      setEditNombre(habito.nombre || '');
-      setEditDescripcion(habito.descripcion || '');
-      setEditMetaDiaria(habito.metaDiaria ?? habito.meta_diaria ?? 1);
-      setEditUnidadMedida(habito.unidadMedida ?? habito.unidad_medida ?? 'veces');
-      setEditEstado(habito.estado === 'Inactivo' ? 'Inactivo' : 'Activo');
-      setIsEditing(false);
-      setFeedbackError(null);
-      setFeedbackSuccess(null);
+    if (!habito) return;
 
-      const isComp = habito.registroHoy?.completado ?? false;
-      const prog = habito.registroHoy?.progresoActual ?? (isComp ? (habito.metaDiaria ?? habito.meta_diaria ?? 1) : 0);
-      setLocalProgreso(prog);
-      setLocalCompletado(isComp);
-    }
+    setEditNombre(habito.nombre || '');
+    setEditDescripcion(habito.descripcion || '');
+    setEditMetaDiaria(habito.metaDiaria ?? habito.meta_diaria ?? 1);
+    setEditUnidadMedida(habito.unidadMedida ?? habito.unidad_medida ?? 'veces');
+    setEditEstado(habito.estado === 'Inactivo' ? 'Inactivo' : 'Activo');
+
+    const days = extractHabitDays(habito);
+    setEditSelectedDays(days);
+    setEditFrequencyPreset(determineFrequencyPreset(days));
+    setEditReminders(extractHabitReminders(habito));
+
+    setIsEditing(false);
+    setFeedbackError(null);
+    setFeedbackSuccess(null);
+
+    const isComp = habito.registroHoy?.completado ?? false;
+    const prog = habito.registroHoy?.progresoActual ?? (isComp ? (habito.metaDiaria ?? habito.meta_diaria ?? 1) : 0);
+    setLocalProgreso(prog);
+    setLocalCompletado(isComp);
   }, [habito, isOpen]);
 
   if (!isOpen || !isMounted || !habito) return null;
@@ -259,6 +326,51 @@ export function HabitDetailModal({
     });
   };
 
+  // Manejadores de selector rápido de frecuencia en edición
+  const handleEditPresetChange = (preset: FrequencyPreset) => {
+    setEditFrequencyPreset(preset);
+    if (preset === 'todos') {
+      setEditSelectedDays([1, 2, 3, 4, 5, 6, 7]);
+    } else if (preset === 'laborales') {
+      setEditSelectedDays([1, 2, 3, 4, 5]);
+    }
+  };
+
+  const handleEditToggleDay = (diaNum: number) => {
+    let newDays: number[];
+    if (editSelectedDays.includes(diaNum)) {
+      if (editSelectedDays.length === 1) return; // Mínimo un día seleccionado
+      newDays = editSelectedDays.filter((d) => d !== diaNum);
+    } else {
+      newDays = [...editSelectedDays, diaNum].sort((a, b) => a - b);
+    }
+    setEditSelectedDays(newDays);
+
+    if (newDays.length === 7) {
+      setEditFrequencyPreset('todos');
+    } else if (
+      newDays.length === 5 &&
+      [1, 2, 3, 4, 5].every((d) => newDays.includes(d))
+    ) {
+      setEditFrequencyPreset('laborales');
+    } else {
+      setEditFrequencyPreset('personalizado');
+    }
+  };
+
+  // Manejadores de recordatorios en edición
+  const handleAddEditReminder = () => {
+    setEditReminders((prev) => [...prev, '12:00']);
+  };
+
+  const handleUpdateEditReminder = (index: number, newTime: string) => {
+    setEditReminders((prev) => prev.map((t, i) => (i === index ? newTime : t)));
+  };
+
+  const handleRemoveEditReminder = (index: number) => {
+    setEditReminders((prev) => prev.filter((_, i) => i !== index));
+  };
+
   // ── Guardar edición ──
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -277,9 +389,11 @@ export function HabitDetailModal({
       if (editDescripcion.trim()) {
         fd.set('descripcion', editDescripcion.trim());
       }
-      fd.set('metaDiaria', editMetaDiaria.toString());
-      fd.set('unidadMedida', editUnidadMedida);
+      fd.set('metaDiaria', (Number(editMetaDiaria) || 1).toString());
+      fd.set('unidadMedida', editUnidadMedida.trim() || 'veces');
       fd.set('estado', editEstado);
+      fd.set('diasSemana', JSON.stringify(editSelectedDays));
+      fd.set('recordatorios', JSON.stringify(editReminders));
 
       const res = await updateHabitoAction(null, fd);
       if (res.success) {
@@ -418,7 +532,13 @@ export function HabitDetailModal({
                 </span>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 text-[11px] font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#572de4]"></span>
-                  Todos los días
+                  {(() => {
+                    const d = habito.diasSemana ?? habito.dias_semana;
+                    if (!Array.isArray(d) || d.length === 7 || d.length === 0) return 'Todos los días';
+                    if (d.length === 5 && [1, 2, 3, 4, 5].every((x: number) => d.includes(x))) return 'Laborales (L - V)';
+                    const labels = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+                    return d.map((n: number) => labels[n - 1] || n).join(', ');
+                  })()}
                 </span>
                 <span className="text-[11px] text-slate-400 ml-auto hidden sm:inline-block">
                   ID: HAB-{idHabito?.slice(0, 4)}
@@ -431,7 +551,7 @@ export function HabitDetailModal({
 
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-xs">
                 <Clock className="w-3.5 h-3.5 text-[#572de4] dark:text-indigo-400" />
-                <span>Horario sugerido: 08:00 AM - 20:00 PM</span>
+                <span>{formatRecordatoriosLabel(habito.recordatorios)}</span>
               </div>
             </div>
           </div>
@@ -474,7 +594,7 @@ export function HabitDetailModal({
                   Propósito y motivación
                 </label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={editDescripcion}
                   onChange={(e) => setEditDescripcion(e.target.value)}
                   placeholder="¿Por qué es importante para ti este hábito?"
@@ -482,6 +602,79 @@ export function HabitDetailModal({
                 />
               </div>
 
+              {/* Frecuencia y Días */}
+              <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                    Frecuencia y Días
+                  </label>
+
+                  {/* Segmented Controller de Frecuencia */}
+                  <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200/60 dark:border-slate-700/40 w-full sm:w-auto">
+                    <button
+                      type="button"
+                      onClick={() => handleEditPresetChange('todos')}
+                      className={`px-2 sm:px-2.5 py-1.5 sm:py-1 rounded-lg text-[11px] sm:text-xs text-center transition-all truncate ${
+                        editFrequencyPreset === 'todos'
+                          ? 'font-semibold bg-white dark:bg-slate-700 text-[#572de4] dark:text-indigo-300 shadow-sm'
+                          : 'font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      Todos los días
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleEditPresetChange('laborales')}
+                      className={`px-2 sm:px-2.5 py-1.5 sm:py-1 rounded-lg text-[11px] sm:text-xs text-center transition-all truncate ${
+                        editFrequencyPreset === 'laborales'
+                          ? 'font-semibold bg-white dark:bg-slate-700 text-[#572de4] dark:text-indigo-300 shadow-sm'
+                          : 'font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      Laborales
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleEditPresetChange('personalizado')}
+                      className={`px-2 sm:px-2.5 py-1.5 sm:py-1 rounded-lg text-[11px] sm:text-xs text-center transition-all truncate ${
+                        editFrequencyPreset === 'personalizado'
+                          ? 'font-semibold bg-white dark:bg-slate-700 text-[#572de4] dark:text-indigo-300 shadow-sm'
+                          : 'font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      Personalizado
+                    </button>
+                  </div>
+                </div>
+
+                {/* Días circulares [L, M, M, J, V, S, D] */}
+                <div className="flex items-center justify-between gap-1 pt-1 w-full">
+                  {DIAS_SEMANA.map((dia) => {
+                    const isSelected = editSelectedDays.includes(dia.num);
+
+                    return (
+                      <button
+                        key={dia.num}
+                        type="button"
+                        onClick={() => handleEditToggleDay(dia.num)}
+                        title={dia.name}
+                        className={`
+                          w-8 h-8 sm:w-10 sm:h-10 rounded-full font-bold text-xs sm:text-sm flex items-center justify-center transition-all select-none
+                          ${
+                            isSelected
+                              ? 'bg-[#572de4] text-white shadow-[0_2px_8px_rgba(87,45,228,0.3)] scale-105'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold'
+                          }
+                        `}
+                      >
+                        {dia.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Meta diaria y Unidad de medida */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label htmlFor="edit_meta_diaria" className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
@@ -491,32 +684,106 @@ export function HabitDetailModal({
                     id="edit_meta_diaria"
                     type="number"
                     min={1}
-                    max={999}
+                    max={9999}
                     value={editMetaDiaria}
-                    onChange={(e) => setEditMetaDiaria(Math.max(1, parseInt(e.target.value) || 1))}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '') {
+                        setEditMetaDiaria('');
+                      } else {
+                        const num = Number.parseInt(val, 10);
+                        if (!Number.isNaN(num)) setEditMetaDiaria(num);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (editMetaDiaria === '' || Number(editMetaDiaria) < 1) {
+                        setEditMetaDiaria(1);
+                      }
+                    }}
                     className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-900 dark:text-white text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-[#572de4]"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                  <label htmlFor="edit_unidad_medida" className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                     Unidad de medida
                   </label>
-                  <select
+                  <input
+                    id="edit_unidad_medida"
+                    type="text"
+                    list="unidades-sugeridas-edit"
                     value={editUnidadMedida}
                     onChange={(e) => setEditUnidadMedida(e.target.value)}
+                    placeholder="Unidad (ej: minutos, km...)"
                     className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#572de4]"
-                  >
-                    <option value="veces">veces</option>
-                    <option value="minutos">minutos</option>
-                    <option value="páginas">páginas</option>
-                    <option value="vasos">vasos</option>
-                    <option value="km">km</option>
-                    <option value="horas">horas</option>
-                  </select>
+                  />
+                  <datalist id="unidades-sugeridas-edit">
+                    <option value="veces" />
+                    <option value="minutos" />
+                    <option value="páginas" />
+                    <option value="vasos" />
+                    <option value="km" />
+                    <option value="horas" />
+                    <option value="pasos" />
+                    <option value="porciones" />
+                    <option value="capítulos" />
+                    <option value="repeticiones" />
+                    <option value="series" />
+                  </datalist>
                 </div>
               </div>
 
+              {/* Recordatorios en edición */}
+              <div className="flex flex-col gap-2 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Bell className="w-4 h-4 text-[#572de4] dark:text-indigo-400" />
+                    <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                      Recordatorios y Notificaciones
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddEditReminder}
+                    className="text-xs font-semibold text-[#572de4] dark:text-indigo-400 hover:underline flex items-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Añadir</span>
+                  </button>
+                </div>
+
+                {editReminders.length === 0 ? (
+                  <p className="text-xs text-slate-400 dark:text-slate-500 py-1">
+                    No hay recordatorios configurados. Haz clic en "Añadir" para agregar una hora de notificación.
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-2 pt-1">
+                    {editReminders.map((time, idx) => (
+                      <div key={`edit-rem-${time}-${idx}`} className="flex items-center gap-2">
+                        <div className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-800 text-sm">
+                          <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                          <input
+                            type="time"
+                            value={time}
+                            onChange={(e) => handleUpdateEditReminder(idx, e.target.value)}
+                            className="bg-transparent font-medium w-full focus:outline-none text-slate-900 dark:text-white"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveEditReminder(idx)}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                          title="Eliminar recordatorio"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Estado del hábito */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                   Estado del hábito
@@ -787,20 +1054,43 @@ export function HabitDetailModal({
                       Recordatorios
                     </span>
                   </div>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#572de4]/10 text-[#572de4] dark:bg-indigo-950 dark:text-indigo-300">
-                    Activos
+                  <span
+                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      Array.isArray(habito.recordatorios) && habito.recordatorios.length > 0
+                        ? 'bg-[#572de4]/10 text-[#572de4] dark:bg-indigo-950 dark:text-indigo-300'
+                        : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                    }`}
+                  >
+                    {(() => {
+                      if (!Array.isArray(habito.recordatorios) || habito.recordatorios.length === 0) {
+                        return 'Sin recordatorios';
+                      }
+                      const sufijo = habito.recordatorios.length === 1 ? 'activo' : 'activos';
+                      return `${habito.recordatorios.length} ${sufijo}`;
+                    })()}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm">
-                    <Clock className="w-3 h-3 text-[#572de4] dark:text-indigo-400" />
-                    08:00 AM
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm">
-                    <Clock className="w-3 h-3 text-[#572de4] dark:text-indigo-400" />
-                    14:00 PM
-                  </span>
-                </div>
+                {Array.isArray(habito.recordatorios) && habito.recordatorios.length > 0 ? (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {habito.recordatorios.map((r: any, idx: number) => {
+                      const timeStr = formatSingleReminderTime(r);
+                      const rKey = r?.id || r?.idrecordatorio || timeStr || `rem-${idx}`;
+                      return (
+                        <span
+                          key={`view-rem-${rKey}-${idx}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm"
+                        >
+                          <Clock className="w-3 h-3 text-[#572de4] dark:text-indigo-400" />
+                          {timeStr}
+                        </span>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 dark:text-slate-500">
+                    No tienes recordatorios configurados para este hábito.
+                  </p>
+                )}
               </div>
             </>
           )}

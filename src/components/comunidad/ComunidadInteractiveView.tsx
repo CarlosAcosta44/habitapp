@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useTransition, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Search,
   MessageSquare,
@@ -18,29 +18,31 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
-  Calendar,
   ShieldCheck,
   Star,
   Flag,
-  Share2,
-  Dumbbell,
-  Zap,
-  Utensils,
-  Moon,
-  Smile,
-  Droplets,
   Edit3,
   Trophy,
-  X,
+  MoreVertical,
+  Trash2,
 } from 'lucide-react';
 import type { Reto } from '@/domain/reto.types';
+import type { Articulo } from '@/domain/comunidad.types';
 import {
   clonarHabitoAction,
   unirseRetoAction,
+  salirRetoAction,
+  checkinRetoAction,
   reaccionarAction,
+  deleteForoAction,
 } from '@/actions/comunidad.actions';
 import { CreateForoModal } from '@/components/modals/CreateForoModal';
 import { ShareHabitModal } from '@/components/modals/ShareHabitModal';
+import { CreateRetoModal } from '@/components/modals/CreateRetoModal';
+import { EditForoModal } from '@/components/modals/EditForoModal';
+import { ArticleReaderModal } from '@/components/modals/ArticleReaderModal';
+import { RetoCard } from '@/components/comunidad/RetoCard';
+import { RetoDetailModal } from '@/components/modals/RetoDetailModal';
 
 interface ComunidadInteractiveViewProps {
   readonly initialForos: any[];
@@ -56,6 +58,12 @@ interface ComunidadInteractiveViewProps {
 
 type TabType = 'todo' | 'foros' | 'habitos' | 'articulos' | 'especialistas' | 'retos';
 
+function formatClonesCount(count?: number | null): string {
+  if (!count || count <= 0) return 'Nuevo';
+  if (count === 1) return '1 persona hace esto';
+  return `${count} hacen esto`;
+}
+
 export function ComunidadInteractiveView({
   initialForos = [],
   initialHabitosComunidad = [],
@@ -68,10 +76,23 @@ export function ComunidadInteractiveView({
   totalMiembros = 30,
 }: ComunidadInteractiveViewProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  // Tab activo
-  const [activeTab, setActiveTab] = useState<TabType>('todo');
+  // Tab activo sincronizado con query param ?tab=
+  const initialTabParam = searchParams.get('tab') as TabType;
+  const [activeTab, setActiveTab] = useState<TabType>(
+    initialTabParam && ['todo', 'foros', 'habitos', 'articulos', 'especialistas', 'retos'].includes(initialTabParam)
+      ? initialTabParam
+      : 'todo'
+  );
+
+  useEffect(() => {
+    const tab = searchParams.get('tab') as TabType;
+    if (tab && ['todo', 'foros', 'habitos', 'articulos', 'especialistas', 'retos'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   // Buscador y atajo ⌘K
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,25 +102,38 @@ export function ComunidadInteractiveView({
   const [selectedTag, setSelectedTag] = useState<string>('Todos');
   const [sortBy, setSortBy] = useState<'recientes' | 'populares' | 'sin_responder'>('recientes');
 
-  // Filtros de categoría para Especialistas y Retos
+  // Filtros de categoría para Especialistas
   const [selectedEspCategory, setSelectedEspCategory] = useState<string>('Todos');
-  const [selectedRetoCategory, setSelectedRetoCategory] = useState<string>('Todos');
 
-  // Modal para crear foro y compartir hábito
+  // Modal para crear foro, compartir hábito y crear reto
   const [isCreateForoOpen, setIsCreateForoOpen] = useState(false);
   const [isShareHabitOpen, setIsShareHabitOpen] = useState(false);
+  const [isCreateRetoOpen, setIsCreateRetoOpen] = useState(false);
+  const [editingForo, setEditingForo] = useState<Record<string, any> | null>(null);
+
+  // Filtro de retos: 'todos' | 'participando'
+  const [retoFilterTab, setRetoFilterTab] = useState<'todos' | 'participando'>('todos');
+
+  // Menú de opciones de foro y eliminación
+  const [openForoMenuId, setOpenForoMenuId] = useState<string | null>(null);
+  const [deletingForoId, setDeletingForoId] = useState<string | null>(null);
 
   // Feedback de acciones
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [cloningId, setCloningId] = useState<string | null>(null);
   const [joiningRetoId, setJoiningRetoId] = useState<string | null>(null);
+  const [leavingRetoId, setLeavingRetoId] = useState<string | null>(null);
+  const [checkingInRetoId, setCheckingInRetoId] = useState<string | null>(null);
   const [reactingForoId, setReactingForoId] = useState<string | null>(null);
 
   // Modal de especialista para agendar o ver perfil
-  const [selectedSpecialist, setSelectedSpecialist] = useState<any | null>(null);
+  const [selectedSpecialist, setSelectedSpecialist] = useState<Record<string, any> | null>(null);
 
   // Modal interactivo de detalle de Reto
-  const [selectedRetoModal, setSelectedRetoModal] = useState<any | null>(null);
+  const [selectedRetoModal, setSelectedRetoModal] = useState<Reto | null>(null);
+
+  // Modal de lectura de artículo
+  const [selectedArticuloModal, setSelectedArticuloModal] = useState<Articulo | null>(null);
 
   // Atajo de teclado ⌘K o Ctrl+K
   useEffect(() => {
@@ -114,9 +148,13 @@ export function ComunidadInteractiveView({
   }, []);
 
   // Mostrar toast auto-ocultable
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+  const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
+    let displayMsg = msg;
+    if (msg.includes('invalid input syntax') || msg.includes('JWT') || msg.includes('Token')) {
+      displayMsg = 'Ocurrió un error al procesar la solicitud. Por favor intenta de nuevo.';
+    }
+    setToast({ message: displayMsg, type });
+    setTimeout(() => setToast(null), 4000);
   };
 
   // ── Filtrado de Hábitos Comunitarios ──
@@ -201,17 +239,24 @@ export function ComunidadInteractiveView({
     return list;
   }, [initialEspecialistas, selectedEspCategory, searchQuery]);
 
+  // ── Retos en los que participa el usuario actual ──
+  const misRetos = useMemo(() => {
+    return initialRetos.filter(
+      (r) =>
+        (userId && r.usuarios_participando?.includes(userId)) ||
+        r.inscrito === true
+    );
+  }, [initialRetos, userId]);
+
+  // ── Retos activos vigentes (cuya fecha de fin no ha expirado) ──
+  const retosVigentesCount = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return initialRetos.filter((r) => !r.fechafin || r.fechafin >= today).length;
+  }, [initialRetos]);
+
   // ── Filtrado de Retos ──
   const retosFiltrados = useMemo(() => {
-    let list = initialRetos;
-    if (selectedRetoCategory !== 'Todos') {
-      const q = selectedRetoCategory.toLowerCase();
-      list = list.filter(
-        (r) =>
-          r.titulo?.toLowerCase().includes(q) ||
-          r.descripcion?.toLowerCase().includes(q)
-      );
-    }
+    let list = retoFilterTab === 'participando' ? misRetos : initialRetos;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter(
@@ -221,7 +266,26 @@ export function ComunidadInteractiveView({
       );
     }
     return list;
-  }, [initialRetos, selectedRetoCategory, searchQuery]);
+  }, [initialRetos, misRetos, retoFilterTab, searchQuery]);
+
+  // ── Acción: Eliminar Foro ──
+  const handleDeleteForo = (foroId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm('¿Estás seguro de que deseas eliminar este foro? Esta acción no se puede deshacer.')) return;
+
+    setDeletingForoId(foroId);
+    startTransition(async () => {
+      const res = await deleteForoAction(foroId);
+      if (res.success) {
+        showToast('Foro eliminado con éxito ✨');
+        router.refresh();
+      } else {
+        showToast(res.message || 'Error al eliminar el foro', 'error');
+      }
+      setDeletingForoId(null);
+      setOpenForoMenuId(null);
+    });
+  };
 
   // ── Acción: Clonar Hábito Comunitario ──
   const handleCloneHabit = (habito: any) => {
@@ -235,7 +299,7 @@ export function ComunidadInteractiveView({
         showToast(`¡"${nombre}" ha sido añadido a tus hábitos diarios! 🎯`);
         router.refresh();
       } else {
-        showToast(res.message || 'Error al clonar hábito');
+        showToast(res.message || 'Error al clonar hábito', 'error');
       }
       setCloningId(null);
     });
@@ -264,9 +328,67 @@ export function ComunidadInteractiveView({
         }
         router.refresh();
       } else {
-        showToast(res.message || 'Error al unirse al reto');
+        showToast(res.message || 'Error al unirse al reto', 'error');
       }
       setJoiningRetoId(null);
+    });
+  };
+
+  // ── Acción: Salir de Reto ──
+  const handleLeaveReto = (reto: Reto) => {
+    const id = reto.idreto || reto.idReto || reto.id || '';
+    setLeavingRetoId(id);
+
+    startTransition(async () => {
+      const res = await salirRetoAction(id);
+      if (res.success) {
+        showToast(`Has salido de "${reto.titulo}"`);
+        if (selectedRetoModal && (selectedRetoModal.idreto === id || selectedRetoModal.id === id)) {
+          setSelectedRetoModal((prev: any) =>
+            prev
+              ? {
+                  ...prev,
+                  participantes_count: Math.max(0, (prev.participantes_count || 1) - 1),
+                  usuarios_participando: (prev.usuarios_participando || []).filter((uId: string) => uId !== userId),
+                  inscrito: false,
+                }
+              : null
+          );
+        }
+        router.refresh();
+      } else {
+        showToast(res.message || 'Error al salir del reto', 'error');
+      }
+      setLeavingRetoId(null);
+    });
+  };
+
+  // ── Acción: Registrar Avance / Check-in en Reto ──
+  const handleCheckinReto = (reto: Reto) => {
+    const id = reto.idreto || reto.idReto || reto.id || '';
+    setCheckingInRetoId(id);
+
+    startTransition(async () => {
+      const res = await checkinRetoAction(id);
+      if (res.success) {
+        showToast(res.message || '¡Avance registrado! 🎯');
+        if (selectedRetoModal && (selectedRetoModal.idreto === id || selectedRetoModal.id === id)) {
+          setSelectedRetoModal((prev: any) =>
+            prev
+              ? {
+                  ...prev,
+                  progreso: res.progreso ?? Math.min(100, (prev.progreso || 0) + 15),
+                  dias_progreso: res.dias_progreso ?? ((prev.dias_progreso || 0) + 1),
+                  completado: res.completed || prev.completado,
+                }
+              : null
+          );
+        }
+        router.refresh();
+      } else {
+        showToast(res.message || 'Error al registrar avance', 'error');
+      }
+      setCheckingInRetoId(null);
     });
   };
 
@@ -304,10 +426,22 @@ export function ComunidadInteractiveView({
   return (
     <div className="flex flex-col w-full max-w-7xl mx-auto space-y-7 pb-16">
       {/* ── Toast de Feedback Flotante ── */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-          <span className="text-xs sm:text-sm font-semibold">{toastMessage}</span>
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed bottom-6 right-6 z-50 p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 max-w-md break-words border ${
+            toast.type === 'error'
+              ? 'bg-rose-950 text-rose-100 border-rose-800'
+              : 'bg-slate-900 text-white border-slate-800 dark:bg-slate-900 dark:text-white dark:border-slate-800'
+          }`}
+        >
+          {toast.type === 'error' ? (
+            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" aria-hidden="true" />
+          ) : (
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" aria-hidden="true" />
+          )}
+          <span className="text-xs sm:text-sm font-semibold break-words leading-snug">{toast.message}</span>
         </div>
       )}
 
@@ -578,7 +712,7 @@ export function ComunidadInteractiveView({
                           <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
                             <Users className="w-3.5 h-3.5 text-[#572de4]" />
                             <span>
-                              {habito.clones_count ? `${habito.clones_count} hacen esto` : 'Popular'}
+                              {formatClonesCount(habito.clones_count)}
                             </span>
                           </div>
 
@@ -722,12 +856,63 @@ export function ComunidadInteractiveView({
                             </div>
                           </div>
 
-                          {(foro.likes_count || 0) > 10 && (
-                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800 text-[11px] font-semibold">
-                              <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
-                              Destacado
-                            </span>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {(foro.likes_count || 0) > 10 && (
+                              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800 text-[11px] font-semibold">
+                                <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
+                                Destacado
+                              </span>
+                            )}
+
+                            {Boolean(userId && (foro.idusuario === userId || isAdmin)) && (
+                              <div className="relative">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenForoMenuId(openForoMenuId === id ? null : id);
+                                  }}
+                                  className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                  title="Opciones del foro"
+                                >
+                                  <MoreVertical className="w-4 h-4" />
+                                </button>
+
+                                {openForoMenuId === id && (
+                                  <div
+                                    className="absolute right-0 top-9 z-20 w-40 bg-white dark:bg-[#151c2c] rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-800 py-1.5 animate-in fade-in zoom-in-95 duration-150"
+                                  >
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOpenForoMenuId(null);
+                                        setEditingForo(foro);
+                                      }}
+                                      className="w-full flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left"
+                                    >
+                                      <Edit3 className="w-3.5 h-3.5" />
+                                      <span>Editar foro</span>
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      disabled={deletingForoId === id || isPending}
+                                      onClick={(e) => handleDeleteForo(id, e)}
+                                      className="w-full flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors text-left disabled:opacity-50 border-t border-slate-100 dark:border-slate-800/60"
+                                    >
+                                      {deletingForoId === id ? (
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                      ) : (
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      )}
+                                      <span>Eliminar foro</span>
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         <div>
@@ -820,9 +1005,11 @@ export function ComunidadInteractiveView({
                     const id = art.idarticulo || art.idArticulo || art.id;
 
                     return (
-                      <div
+                      <button
+                        type="button"
                         key={id}
-                        className="p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                        onClick={() => setSelectedArticuloModal(art)}
+                        className="text-left w-full p-5 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex flex-col justify-between cursor-pointer group hover:border-[#572de4]/40"
                       >
                         <div className="flex flex-col gap-2.5">
                           <div className="flex items-center justify-between">
@@ -836,7 +1023,7 @@ export function ComunidadInteractiveView({
                           </div>
 
                           <div>
-                            <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-snug">
+                            <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-snug group-hover:text-[#572de4] transition-colors">
                               {art.titulo}
                             </h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed line-clamp-3">
@@ -845,20 +1032,27 @@ export function ComunidadInteractiveView({
                           </div>
                         </div>
 
-                        <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-[#572de4] dark:text-indigo-400 text-[11px] font-bold">
-                            EV
+                        <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-[#572de4] dark:text-indigo-400 text-[11px] font-bold">
+                              EV
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-xs font-semibold text-slate-900 dark:text-white leading-tight">
+                                Dra. Elena Vidal
+                              </span>
+                              <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                                Psiquiatra Colegiada
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex flex-col">
-                            <span className="text-xs font-semibold text-slate-900 dark:text-white leading-tight">
-                              Dra. Elena Vidal
-                            </span>
-                            <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                              Psiquiatra Colegiada
-                            </span>
-                          </div>
+
+                          <span className="text-xs font-bold text-[#572de4] dark:text-indigo-400 group-hover:underline flex items-center gap-1">
+                            <span>Leer artículo</span>
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                          </span>
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -1084,16 +1278,99 @@ export function ComunidadInteractiveView({
                   <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                     Retos y Desafíos Comunitarios
                   </h2>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-[#572de4] dark:text-indigo-300 text-[11px] uppercase tracking-wider font-bold border border-indigo-100 dark:border-indigo-900/50">
-                    <span className="w-2 h-2 rounded-full bg-[#572de4] animate-pulse" />
-                    Temporada activa
-                  </span>
                 </div>
-                <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 shadow-sm text-xs font-semibold">
-                  <Award className="w-4 h-4 text-[#572de4]" />
-                  <span>{initialRetos.length} retos activos en la plataforma</span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 shadow-sm text-xs font-semibold">
+                    <Award className="w-4 h-4 text-[#572de4]" />
+                    <span>{retosVigentesCount} {retosVigentesCount === 1 ? 'reto activo' : 'retos activos'}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateRetoOpen(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#572de4] hover:bg-[#461ebd] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Crear reto</span>
+                  </button>
                 </div>
               </div>
+
+              {/* Selector de Pestañas de Retos: Todos vs Participando */}
+              <div className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setRetoFilterTab('todos')}
+                  className={`pb-3 text-xs sm:text-sm font-bold transition-all relative ${
+                    retoFilterTab === 'todos'
+                      ? 'text-[#572de4] dark:text-indigo-400 border-b-2 border-[#572de4]'
+                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                  }`}
+                >
+                  Todos los desafíos ({initialRetos.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRetoFilterTab('participando')}
+                  className={`pb-3 text-xs sm:text-sm font-bold transition-all relative flex items-center gap-1.5 ${
+                    retoFilterTab === 'participando'
+                      ? 'text-[#572de4] dark:text-indigo-400 border-b-2 border-[#572de4]'
+                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                  }`}
+                >
+                  <Trophy className="w-4 h-4" />
+                  <span>En los que participas ({misRetos.length})</span>
+                </button>
+              </div>
+
+              {/* Fila Destacada: Retos en Curso del Usuario */}
+              {retoFilterTab === 'todos' && misRetos.length > 0 && (
+                <div className="p-5 rounded-3xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-bold text-[#572de4] dark:text-indigo-300 uppercase tracking-wider">
+                      <Trophy className="w-4 h-4" />
+                      <span>Tus Retos en Curso ({misRetos.length})</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setRetoFilterTab('participando')}
+                      className="text-xs font-bold text-[#572de4] dark:text-indigo-400 hover:underline"
+                    >
+                      Filtrar solo mis retos →
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {misRetos.map((mr) => (
+                      <div
+                        key={mr.idreto}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setSelectedRetoModal(mr)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setSelectedRetoModal(mr);
+                          }
+                        }}
+                        className="p-3.5 rounded-2xl bg-white dark:bg-[#111827] border border-indigo-100/80 dark:border-indigo-900/50 shadow-sm cursor-pointer hover:border-[#572de4] transition-all flex flex-col gap-2"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            {mr.titulo}
+                          </span>
+                          <span className="text-sm">{mr.insignia_recompensa || '🏆'}</span>
+                        </div>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                          {mr.descripcion}
+                        </span>
+                        <div className="flex items-center justify-between text-[11px] font-bold text-[#572de4] dark:text-indigo-300 pt-1 border-t border-slate-100 dark:border-slate-800">
+                          <span>+{mr.puntos_recompensa || 50} pts</span>
+                          <span className="text-emerald-600 dark:text-emerald-400">Participando ✓</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Banner Destacado Retos */}
               <section className="relative overflow-hidden rounded-3xl p-7 bg-gradient-to-r from-[#572de4] via-indigo-600 to-violet-700 text-white shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
@@ -1117,26 +1394,13 @@ export function ComunidadInteractiveView({
                 <div className="absolute right-1/3 -bottom-16 w-48 h-48 rounded-full bg-violet-400/20 blur-xl pointer-events-none" />
               </section>
 
-              {/* Filtros de Retos */}
+              {/* Encabezado de Lista de Retos */}
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-                  {['Todos', 'Azúcar', 'Lectura', 'Corredores'].map((cat) => (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setSelectedRetoCategory(cat)}
-                      className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                        selectedRetoCategory === cat
-                          ? 'bg-[#572de4] text-white shadow-sm'
-                          : 'bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
-                      }`}
-                    >
-                      {cat === 'Todos' ? 'Todos los retos' : cat}
-                    </button>
-                  ))}
-                </div>
-                <span className="text-xs text-slate-500 dark:text-slate-400">
-                  {retosFiltrados.length} retos disponibles
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  {retoFilterTab === 'participando' ? 'Retos en los que estás participando' : 'Explorar todos los retos'}
+                </h3>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  {retosFiltrados.length} {retosFiltrados.length === 1 ? 'reto disponible' : 'retos disponibles'}
                 </span>
               </div>
 
@@ -1144,93 +1408,27 @@ export function ComunidadInteractiveView({
               {retosFiltrados.length === 0 ? (
                 <div className="text-center py-12 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]">
                   <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
-                    No se encontraron retos en esta categoría
+                    No se encontraron retos disponibles
                   </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                   {retosFiltrados.map((reto) => {
                     const id = reto.idreto || reto.idReto || reto.id || '';
-                    const isJoiningThis = joiningRetoId === id;
-                    const puntos = reto.puntos_recompensa ?? 0;
-                    const isEnrolled = Boolean(
-                      (userId && reto.usuarios_participando?.includes(userId)) ||
-                      reto.inscrito === true
-                    );
-                    const participantesCount = reto.participantes_count ?? (reto.usuarios_participando?.length ?? 0);
-
                     return (
-                      <article
+                      <RetoCard
                         key={id}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => setSelectedRetoModal(reto)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            setSelectedRetoModal(reto);
-                          }
-                        }}
-                        className="bg-white dark:bg-[#111827] rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5 cursor-pointer group hover:border-[#572de4]/40"
-                      >
-                        <div className="flex flex-col gap-3">
-                          <div className="flex items-center justify-between">
-                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#572de4] dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/80 px-2.5 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/50">
-                              <Sparkles className="w-3 h-3" />
-                              {reto.fechafin ? 'Reto con fecha límite' : 'Reto continuo'}
-                            </span>
-                            <span className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border border-amber-200/60 dark:border-amber-900/50 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
-                              <Star className="w-3 h-3 fill-current" />
-                              +{puntos} pts
-                            </span>
-                          </div>
-
-                          <h4 className="text-base font-bold text-slate-900 dark:text-white mt-1 group-hover:text-[#572de4] transition-colors">
-                            {reto.titulo}
-                          </h4>
-
-                          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
-                            {reto.descripcion}
-                          </p>
-                        </div>
-
-                        <div className="flex flex-col gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-                          <div className="flex items-center justify-between text-slate-400 text-xs">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3.5 h-3.5" />
-                              {reto.fechainicio ? `Inicio: ${reto.fechainicio}` : 'En curso'}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Users className="w-3.5 h-3.5" />
-                              {participantesCount} participante{participantesCount === 1 ? '' : 's'}
-                            </span>
-                          </div>
-
-                          {isEnrolled ? (
-                            <div className="w-full py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
-                              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                              <span>Ya estás participando</span>
-                            </div>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleJoinReto(reto);
-                              }}
-                              disabled={isJoiningThis || isPending}
-                              className="w-full py-2.5 rounded-xl bg-[#572de4] hover:bg-[#461ebd] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 disabled:opacity-50"
-                            >
-                              {isJoiningThis ? (
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              ) : (
-                                <Flag className="w-3.5 h-3.5" />
-                              )}
-                              <span>Unirme al reto</span>
-                            </button>
-                          )}
-                        </div>
-                      </article>
+                        reto={reto}
+                        userId={userId}
+                        isJoining={joiningRetoId === id}
+                        isLeaving={leavingRetoId === id}
+                        isCheckingIn={checkingInRetoId === id}
+                        isPending={isPending}
+                        onSelect={(r) => setSelectedRetoModal(r)}
+                        onJoin={handleJoinReto}
+                        onLeave={handleLeaveReto}
+                        onCheckIn={handleCheckinReto}
+                      />
                     );
                   })}
                 </div>
@@ -1452,10 +1650,40 @@ export function ComunidadInteractiveView({
         isOpen={isShareHabitOpen}
         onClose={() => setIsShareHabitOpen(false)}
         habitos={userHabitos}
+        habitosPublicados={initialHabitosComunidad}
+        currentUserId={userId}
         onShared={() => {
           showToast('¡Hábito compartido en la comunidad con éxito! ✨');
           router.refresh();
         }}
+      />
+
+      {/* ── Modal para Crear Reto ── */}
+      <CreateRetoModal
+        isOpen={isCreateRetoOpen}
+        onClose={() => setIsCreateRetoOpen(false)}
+        onSuccess={() => {
+          showToast('¡Reto comunitario creado y te has unido exitosamente! 🏆');
+          router.refresh();
+        }}
+      />
+
+      {/* ── Modal para Editar Foro ── */}
+      <EditForoModal
+        isOpen={Boolean(editingForo)}
+        onClose={() => setEditingForo(null)}
+        foro={editingForo}
+        onSuccess={() => {
+          showToast('¡Foro actualizado con éxito! ✨');
+          router.refresh();
+        }}
+      />
+
+      {/* ── Modal de Lectura de Artículo ── */}
+      <ArticleReaderModal
+        isOpen={Boolean(selectedArticuloModal)}
+        onClose={() => setSelectedArticuloModal(null)}
+        articulo={selectedArticuloModal}
       />
 
       {/* ── Modal de Perfil de Especialista ── */}
@@ -1521,133 +1749,19 @@ export function ComunidadInteractiveView({
         </div>
       )}
       {/* ── Modal Interactivo de Detalle de Reto ── */}
-      {selectedRetoModal && (() => {
-        const modalId = selectedRetoModal.idreto || selectedRetoModal.idReto || selectedRetoModal.id || '';
-        const modalPuntos = selectedRetoModal.puntos_recompensa ?? 0;
-        const modalEnrolled = Boolean(
-          (userId && selectedRetoModal.usuarios_participando?.includes(userId)) ||
-          selectedRetoModal.inscrito === true
-        );
-        const modalParticipantes = selectedRetoModal.participantes_count ?? (selectedRetoModal.usuarios_participando?.length ?? 0);
-        const isJoiningModal = joiningRetoId === modalId;
-
-        return (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) setSelectedRetoModal(null);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') setSelectedRetoModal(null);
-            }}
-            role="presentation"
-          >
-            <div
-              className="relative w-full max-w-lg bg-white dark:bg-[#111827] rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col gap-5 animate-in zoom-in-95 duration-200"
-              role="dialog"
-              aria-modal="true"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 flex items-center justify-center shadow-sm">
-                    <Trophy className="w-5 h-5" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      Desafío Comunitario
-                    </span>
-                    <span className="text-xs text-slate-400">
-                      ID: RETO-{modalId.slice(0, 6)}
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedRetoModal(null)}
-                  className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Title & Badges */}
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/80 border border-amber-200/60 dark:border-amber-900/60 text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
-                    <Star className="w-3.5 h-3.5 fill-current" />
-                    +{modalPuntos} pts de recompensa
-                  </span>
-                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-[#572de4] dark:text-indigo-300">
-                    <Users className="w-3.5 h-3.5 inline mr-1" />
-                    {modalParticipantes} participante{modalParticipantes === 1 ? '' : 's'}
-                  </span>
-                </div>
-
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
-                  {selectedRetoModal.titulo}
-                </h3>
-              </div>
-
-              {/* Description */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/60 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
-                {selectedRetoModal.descripcion || 'Sin descripción detallada disponible.'}
-              </div>
-
-              {/* Metadata Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/60 flex flex-col gap-1">
-                  <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-[#572de4]" />
-                    Fecha de Inicio
-                  </span>
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                    {selectedRetoModal.fechainicio || 'Inmediato'}
-                  </span>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/60 flex flex-col gap-1">
-                  <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-[#572de4]" />
-                    Fecha de Cierre
-                  </span>
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                    {selectedRetoModal.fechafin || 'Sin fecha límite'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Status / Action */}
-              {modalEnrolled ? (
-                <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-200 flex items-center gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="text-xs font-bold">¡Estás participando activamente!</span>
-                    <span className="text-[11px] text-emerald-600 dark:text-emerald-300">
-                      Registra tus hábitos diarios para asegurar los {modalPuntos} puntos.
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => handleJoinReto(selectedRetoModal)}
-                  disabled={isJoiningModal || isPending}
-                  className="w-full py-3.5 rounded-2xl bg-[#572de4] hover:bg-[#461ebd] text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
-                >
-                  {isJoiningModal ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Trophy className="w-4 h-4" />
-                  )}
-                  <span>Unirme a este reto (+{modalPuntos} pts)</span>
-                </button>
-              )}
-            </div>
-          </div>
-        );
-      })()}
+      <RetoDetailModal
+        reto={selectedRetoModal}
+        isOpen={Boolean(selectedRetoModal)}
+        onClose={() => setSelectedRetoModal(null)}
+        userId={userId}
+        isJoining={joiningRetoId === (selectedRetoModal?.idreto || selectedRetoModal?.idReto || selectedRetoModal?.id)}
+        isLeaving={leavingRetoId === (selectedRetoModal?.idreto || selectedRetoModal?.idReto || selectedRetoModal?.id)}
+        isCheckingIn={checkingInRetoId === (selectedRetoModal?.idreto || selectedRetoModal?.idReto || selectedRetoModal?.id)}
+        isPending={isPending}
+        onJoin={handleJoinReto}
+        onLeave={handleLeaveReto}
+        onCheckIn={handleCheckinReto}
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 
 interface AuthSplitContainerProps {
@@ -19,6 +19,31 @@ export function AuthSplitContainer({
   reverseImage = false,
   formMaxWidth = 'sm',
 }: AuthSplitContainerProps) {
+  const [userCount, setUserCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchUserStats = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+        const res = await fetch(`${apiUrl}/users/community/stats`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && typeof data.totalMiembros === 'number') {
+            setUserCount(data.totalMiembros);
+          }
+        }
+      } catch {
+        // Fallback silencioso si la API no responde
+      }
+    };
+    void fetchUserStats();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const displayUsers = userCount !== null ? userCount : 30;
 
   return (
     <div className={`w-full min-h-screen flex flex-col ${reverseImage ? 'md:flex-row-reverse' : 'md:flex-row'} items-stretch`}>
@@ -70,7 +95,7 @@ export function AuthSplitContainer({
               </div>
             </div>
             <p className="text-sm font-medium text-white drop-shadow-lg">
-              <span className="font-bold">+ 12k usuarios</span>
+              <span className="font-bold">+{displayUsers} usuarios</span>
               <br />
               <span className="italic opacity-80">escribiendo su historia hoy</span>
             </p>

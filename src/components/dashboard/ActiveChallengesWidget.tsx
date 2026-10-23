@@ -22,7 +22,7 @@ export function ActiveChallengesWidget({ retos }: ActiveChallengesWidgetProps) {
           </h3>
         </div>
         <Link
-          href="/retos"
+          href="/comunidad?tab=retos"
           className="text-xs sm:text-sm font-bold text-[#572de4] dark:text-indigo-400 hover:underline flex items-center gap-0.5"
         >
           <span>Ver todos</span>
@@ -38,7 +38,7 @@ export function ActiveChallengesWidget({ retos }: ActiveChallengesWidgetProps) {
               No tienes retos en curso.
             </p>
             <Link
-              href="/retos"
+              href="/comunidad?tab=retos"
               className="mt-2 inline-block text-xs font-bold text-[#572de4] dark:text-indigo-400 hover:underline"
             >
               Explorar desafíos ✨
@@ -54,7 +54,7 @@ export function ActiveChallengesWidget({ retos }: ActiveChallengesWidgetProps) {
             return (
               <Link
                 key={reto.idreto}
-                href="/retos"
+                href="/comunidad?tab=retos"
                 className="flex flex-col gap-2 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-100 dark:border-slate-800"
               >
                 <div className="flex items-center justify-between gap-2">

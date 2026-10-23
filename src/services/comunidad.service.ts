@@ -126,6 +126,45 @@ export class ComunidadService {
     }
   }
 
+  async updateForo(
+    foroId: string,
+    updates: { titulo?: string; descripcion?: string; categoria?: string; imagenUrl?: string }
+  ): Promise<Result<any>> {
+    if (!foroId) return err("ID del foro requerido");
+    try {
+      return await comunidadRepository.put<any>(`users/community/foros/${foroId}`, updates);
+    } catch (e: any) {
+      return err(`Error al actualizar foro: ${e.message}`);
+    }
+  }
+
+  async deleteForo(foroId: string): Promise<Result<any>> {
+    if (!foroId) return err("ID del foro requerido");
+    try {
+      return await comunidadRepository.delete<any>(`users/community/foros/${foroId}`);
+    } catch (e: any) {
+      return err(`Error al eliminar foro: ${e.message}`);
+    }
+  }
+
+  async updateComentario(comentarioId: string, contenido: string): Promise<Result<any>> {
+    if (!comentarioId) return err("ID del comentario requerido");
+    try {
+      return await comunidadRepository.put<any>(`users/community/comentarios/${comentarioId}`, { contenido });
+    } catch (e: any) {
+      return err(`Error al actualizar comentario: ${e.message}`);
+    }
+  }
+
+  async deleteComentario(comentarioId: string): Promise<Result<any>> {
+    if (!comentarioId) return err("ID del comentario requerido");
+    try {
+      return await comunidadRepository.delete<any>(`users/community/comentarios/${comentarioId}`);
+    } catch (e: any) {
+      return err(`Error al eliminar comentario: ${e.message}`);
+    }
+  }
+
   // ─── Retos Comunitarios ─────────────────────────────────────────────────────
   async getRetos(): Promise<Result<Reto[]>> {
     try {
@@ -140,6 +179,41 @@ export class ComunidadService {
       return await comunidadRepository.post<any>(`users/community/retos/${retoId}/unirse`, {});
     } catch (e: any) {
       return err(`Error al unirse al reto: ${e.message}`);
+    }
+  }
+
+  async leaveReto(retoId: string): Promise<Result<any>> {
+    try {
+      return await comunidadRepository.post<any>(`users/community/retos/${retoId}/salir`, {});
+    } catch (e: any) {
+      return err(`Error al salir del reto: ${e.message}`);
+    }
+  }
+
+  async checkinReto(retoId: string): Promise<Result<any>> {
+    try {
+      return await comunidadRepository.post<any>(`users/community/retos/${retoId}/checkin`, {});
+    } catch (e: any) {
+      return err(`Error al registrar avance en el reto: ${e.message}`);
+    }
+  }
+
+  async createReto(dto: {
+    titulo: string;
+    descripcion: string;
+    puntosRecompensa?: number;
+    fechaInicio?: string;
+    fechaFin?: string;
+    insigniaRecompensa?: string;
+    icono?: string;
+    diasObjetivo?: number;
+  }): Promise<Result<any>> {
+    if (!dto.titulo?.trim()) return err("El título del reto es requerido");
+    if (!dto.descripcion?.trim()) return err("La descripción es requerida");
+    try {
+      return await comunidadRepository.post<any>('users/community/retos', dto);
+    } catch (e: any) {
+      return err(`Error al crear reto: ${e.message}`);
     }
   }
 

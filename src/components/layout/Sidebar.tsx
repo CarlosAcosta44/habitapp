@@ -10,7 +10,6 @@ import {
   HelpCircle, 
   Moon,
   Sun,
-  Trophy,
   BarChart3,
   LogOut,
   Shield,
@@ -30,7 +29,6 @@ interface SidebarProps {
 function getSidebarNavLinks(user: User) {
   const links = [
     { name: 'Hábitos', href: '/habitos', icon: CheckCircle2 },
-    { name: 'Retos y Desafíos', href: '/retos', icon: Trophy },
     { name: 'Comunidad', href: '/comunidad', icon: Users },
     { name: 'Progreso y Métricas', href: '/reportes', icon: BarChart3 },
     { name: 'Ajustes', href: '/ajustes', icon: Settings },

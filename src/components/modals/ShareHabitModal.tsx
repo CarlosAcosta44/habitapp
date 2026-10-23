@@ -22,6 +22,8 @@ interface ShareHabitModalProps {
   onClose: () => void;
   habitos: any[];
   onShared?: (idHabito: string) => void;
+  habitosPublicados?: any[];
+  currentUserId?: string;
 }
 
 export function ShareHabitModal({
@@ -29,6 +31,8 @@ export function ShareHabitModal({
   onClose,
   habitos = [],
   onShared,
+  habitosPublicados = [],
+  currentUserId,
 }: ShareHabitModalProps) {
   const [isPending, startTransition] = useTransition();
   const [sharedIds, setSharedIds] = useState<Record<string, boolean>>({});
@@ -51,7 +55,11 @@ export function ShareHabitModal({
           setSharedIds((prev) => ({ ...prev, [id]: true }));
           if (onShared) onShared(id);
         } else {
-          setFeedbackError(res.message || 'Error al compartir el hábito');
+          let errorMsg = res.message || 'Error al compartir el hábito';
+          if (errorMsg.includes('invalid input syntax') || errorMsg.includes('JWT') || errorMsg.includes('Token')) {
+            errorMsg = 'Error al compartir el hábito con la comunidad. Por favor reintenta.';
+          }
+          setFeedbackError(errorMsg);
         }
       } catch (e: any) {
         setFeedbackError(e.message || 'Error inesperado al compartir');
@@ -136,7 +144,7 @@ export function ShareHabitModal({
         </div>
 
         {feedbackError && (
-          <div className="mx-6 mt-4 p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-xs text-rose-600 dark:text-rose-300">
+          <div className="mx-6 mt-4 p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-xs text-rose-600 dark:text-rose-300 break-words">
             {feedbackError}
           </div>
         )}
@@ -151,7 +159,18 @@ export function ShareHabitModal({
           ) : (
             activeHabitos.map((habito) => {
               const id = habito.idHabito || habito.idhabito || habito.id;
-              const isShared = sharedIds[id] || habito.es_publico || habito.compartido;
+              const habitName = (habito.nombre || '').trim().toLowerCase();
+              const alreadyPublished =
+                Array.isArray(habitosPublicados) &&
+                habitosPublicados.some((ph) => {
+                  const phUserId = ph.idusuario || ph.idUsuario || ph.usuario_id;
+                  const matchUser = !currentUserId || phUserId === currentUserId;
+                  const phHabitId = ph.idhabito || ph.idHabito;
+                  const phName = (ph.nombre_habito || ph.titulo || ph.nombre || '').trim().toLowerCase();
+                  return matchUser && ((phHabitId && phHabitId === id) || (Boolean(habitName) && phName === habitName));
+                });
+
+              const isShared = Boolean(sharedIds[id]) || Boolean(habito.es_publico) || Boolean(habito.compartido) || alreadyPublished;
               const isLoading = loadingId === id;
               const catName = getCategoryName(habito);
               const CatIcon = getCategoryIcon(catName);
