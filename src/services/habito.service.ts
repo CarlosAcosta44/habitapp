@@ -42,6 +42,7 @@ export class HabitoService {
     unidadMedida?: string;
     idCategoria: string;
     diasSemana?: number[];
+    recordatorios?: string[];
   }): Promise<Result<any>> {
     return habitoRepository.post<any>("users/habits", dto);
   }
@@ -56,6 +57,8 @@ export class HabitoService {
     idCategoria?: string;
     metaDiaria?: number;
     unidadMedida?: string;
+    diasSemana?: number[];
+    recordatorios?: string[];
   }): Promise<Result<any>> {
     return habitoRepository.patch<any>(`users/habits/${id}`, updates);
   }

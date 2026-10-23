@@ -33,6 +33,8 @@ const CreateHabitoSchema = z.object({
   idCategoria: z.string().min(1, "Debes seleccionar una categoría"),
   metaDiaria:  z.coerce.number().min(1, "Mínimo 1").default(1),
   unidadMedida:z.string().default("veces"),
+  diasSemana:  z.array(z.number()).default([1, 2, 3, 4, 5, 6, 7]),
+  recordatorios: z.array(z.string()).optional(),
 });
 
 const UpdateHabitoSchema = CreateHabitoSchema.partial().extend({
@@ -55,6 +57,28 @@ export async function createHabitoAction(
   if (!userResult.success) return { success: false, message: userResult.error };
   const user = userResult.data;
 
+  const diasSemanaRaw = formData.get("diasSemana");
+  let diasSemanaParsed = [1, 2, 3, 4, 5, 6, 7];
+  if (typeof diasSemanaRaw === "string" && diasSemanaRaw.trim()) {
+    try {
+      const p = JSON.parse(diasSemanaRaw);
+      if (Array.isArray(p) && p.length > 0) diasSemanaParsed = p.map(Number);
+    } catch {
+      // fallback
+    }
+  }
+
+  const recordatoriosRaw = formData.get("recordatorios");
+  let recordatoriosParsed: string[] | undefined;
+  if (typeof recordatoriosRaw === "string" && recordatoriosRaw.trim()) {
+    try {
+      const p = JSON.parse(recordatoriosRaw);
+      if (Array.isArray(p)) recordatoriosParsed = p.map(String).filter(Boolean);
+    } catch {
+      // fallback
+    }
+  }
+
   const rawData = {
     nombre:      formData.get("nombre"),
     descripcion: formData.get("descripcion"),
@@ -64,6 +88,8 @@ export async function createHabitoAction(
     idCategoria: formData.get("idCategoria"),
     metaDiaria:  formData.get("metaDiaria") || 1,
     unidadMedida:formData.get("unidadMedida") || "veces",
+    diasSemana:  diasSemanaParsed,
+    recordatorios: recordatoriosParsed,
   };
 
   const validation = CreateHabitoSchema.safeParse(rawData);
@@ -105,6 +131,8 @@ export async function createHabitoAction(
     fechaFin:    validation.data.fechaFin    ?? undefined,
     metaDiaria:  validation.data.metaDiaria,
     unidadMedida:validation.data.unidadMedida,
+    diasSemana:  validation.data.diasSemana,
+    recordatorios: validation.data.recordatorios,
   });
 
   if (!result.success) {
@@ -127,6 +155,28 @@ export async function updateHabitoAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
 
+  const diasSemanaRaw = formData.get("diasSemana");
+  let diasSemanaParsed: number[] | undefined;
+  if (typeof diasSemanaRaw === "string" && diasSemanaRaw.trim()) {
+    try {
+      const p = JSON.parse(diasSemanaRaw);
+      if (Array.isArray(p) && p.length > 0) diasSemanaParsed = p.map(Number);
+    } catch {
+      // fallback
+    }
+  }
+
+  const recordatoriosRaw = formData.get("recordatorios");
+  let recordatoriosParsed: string[] | undefined;
+  if (typeof recordatoriosRaw === "string" && recordatoriosRaw.trim()) {
+    try {
+      const p = JSON.parse(recordatoriosRaw);
+      if (Array.isArray(p)) recordatoriosParsed = p.map(String).filter(Boolean);
+    } catch {
+      // fallback
+    }
+  }
+
   const rawData = {
     nombre:      formData.get("nombre") || undefined,
     descripcion: formData.get("descripcion") || undefined,
@@ -136,6 +186,8 @@ export async function updateHabitoAction(
     estado:      formData.get("estado") || undefined,
     metaDiaria:  formData.get("metaDiaria") || undefined,
     unidadMedida:formData.get("unidadMedida") || undefined,
+    diasSemana:  diasSemanaParsed,
+    recordatorios: recordatoriosParsed,
   };
 
   const validation = UpdateHabitoSchema.safeParse(rawData);
@@ -152,6 +204,8 @@ export async function updateHabitoAction(
     fechaFin: validation.data.fechaFin ?? undefined,
     metaDiaria: validation.data.metaDiaria ?? undefined,
     unidadMedida: validation.data.unidadMedida ?? undefined,
+    diasSemana: validation.data.diasSemana,
+    recordatorios: validation.data.recordatorios,
   });
 
   if (!result.success) {
@@ -173,15 +227,13 @@ export async function deleteHabitoAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
 
-  // Soft-delete: marcamos como 'Inactivo' para que se retire de la rutina
-  // pero NUNCA se destruyan los registros históricos de días anteriores.
-  const result = await service.update(id, { estado: "Inactivo" });
+  const result = await service.delete(id);
   if (!result.success) {
     return { success: false, message: result.error };
   }
 
   revalidatePath("/habitos");
-  return { success: true, message: "Hábito retirado de tu rutina (historial preservado) ✨" };
+  return { success: true, message: "Hábito eliminado permanentemente 🗑️" };
 }
 
 // ─── completarHabitoAction ────────────────────────────────────────────────────

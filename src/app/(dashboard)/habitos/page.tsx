@@ -65,7 +65,8 @@ function calculateRealStreak(
 
 export default async function HabitosDashboardPage() {
   // ── 1. Verificar sesión ─────────────────────────────────────────────────────
-  await requireUser();
+  const user = await requireUser();
+  const currentUserId = user?.id || user?.idusuario;
 
   // ── 2. Obtener datos en paralelo para máxima velocidad ───────────────────────
   const [
@@ -86,7 +87,11 @@ export default async function HabitosDashboardPage() {
   const quote = quoteResult.success && quoteResult.data
     ? quoteResult.data
     : { phrase: "Transforma tus metas en hábitos y tus hábitos en realidad.", author: "HabitApp" };
-  const retos = retosResult.success && Array.isArray(retosResult.data) ? retosResult.data : [];
+  const allRetos = retosResult.success && Array.isArray(retosResult.data) ? retosResult.data : [];
+  const retos = allRetos.filter((r: any) => {
+    const list = r.usuarios_participando || [];
+    return Array.isArray(list) && currentUserId && list.includes(currentUserId);
+  });
   const registrosReales = historialResult.success && Array.isArray(historialResult.data) ? historialResult.data : [];
   const allHabitosFetched = allHabitosResult.success && Array.isArray(allHabitosResult.data) ? allHabitosResult.data : [];
   

@@ -16,6 +16,7 @@ import {
   Sparkles,
   Loader2,
   AlertCircle,
+  Trash2,
 } from 'lucide-react';
 import { createHabitoAction, getCategoriasAction } from '@/actions/habito.actions';
 import { getLocalDateString } from '@/lib/date-utils';
@@ -57,10 +58,10 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
   const [descripcion, setDescripcion] = useState('');
   const [frequencyPreset, setFrequencyPreset] = useState<'todos' | 'laborales' | 'personalizado'>('todos');
   const [selectedDays, setSelectedDays] = useState<number[]>([1, 2, 3, 4, 5, 6, 7]);
-  const [metaDiaria, setMetaDiaria] = useState(1);
+  const [metaDiaria, setMetaDiaria] = useState<number | string>(1);
   const [unidadMedida, setUnidadMedida] = useState('veces');
   const [reminderEnabled, setReminderEnabled] = useState(false);
-  const [reminderTime, setReminderTime] = useState('08:00');
+  const [reminders, setReminders] = useState<string[]>(['08:00']);
 
   // Async & UI states
   const [dbCategorias, setDbCategorias] = useState<CategoriaHabito[]>([]);
@@ -120,6 +121,19 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
     }
   };
 
+  // Manejadores de recordatorios múltiples
+  const handleAddReminder = () => {
+    setReminders((prev) => [...prev, '12:00']);
+  };
+
+  const handleUpdateReminder = (index: number, newTime: string) => {
+    setReminders((prev) => prev.map((t, i) => (i === index ? newTime : t)));
+  };
+
+  const handleRemoveReminder = (index: number) => {
+    setReminders((prev) => prev.filter((_, i) => i !== index));
+  };
+
   // Reset del formulario
   const handleReset = () => {
     setNombre('');
@@ -130,7 +144,7 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
     setMetaDiaria(1);
     setUnidadMedida('veces');
     setReminderEnabled(false);
-    setReminderTime('08:00');
+    setReminders(['08:00']);
     setErrorMessage(null);
     setIsSubmitting(false);
   };
@@ -169,8 +183,13 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
       formData.append('fechaInicio', hoyStr);
       formData.append('puntos', '10'); // 10 puntos por defecto
       formData.append('idCategoria', idCatToSend);
-      formData.append('metaDiaria', metaDiaria.toString());
-      formData.append('unidadMedida', unidadMedida);
+      formData.append('metaDiaria', (Number(metaDiaria) || 1).toString());
+      formData.append('unidadMedida', unidadMedida.trim() || 'veces');
+      formData.append('diasSemana', JSON.stringify(selectedDays));
+
+      if (reminderEnabled && reminders.length > 0) {
+        formData.append('recordatorios', JSON.stringify(reminders));
+      }
 
       const res = await createHabitoAction(null, formData);
 
@@ -379,7 +398,7 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
             </div>
           </div>
 
-          {/* 5. Meta diaria y Recordatorio en 2 columnas */}
+          {/* 5. Meta diaria y Recordatorios */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Meta diaria */}
             <div className="flex flex-col gap-1.5">
@@ -390,76 +409,124 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
                 <input
                   type="number"
                   min={1}
-                  max={999}
+                  max={9999}
                   value={metaDiaria}
-                  onChange={(e) => setMetaDiaria(Math.max(1, parseInt(e.target.value) || 1))}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '') {
+                      setMetaDiaria('');
+                    } else {
+                      const num = parseInt(val, 10);
+                      if (!isNaN(num)) setMetaDiaria(num);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (metaDiaria === '' || Number(metaDiaria) < 1) {
+                      setMetaDiaria(1);
+                    }
+                  }}
                   className="w-20 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-900 dark:text-white font-bold text-center text-sm focus:outline-none focus:ring-2 focus:ring-[#572de4]"
                 />
-                <select
-                  value={unidadMedida}
-                  onChange={(e) => setUnidadMedida(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#572de4]"
-                >
-                  <option value="veces">veces</option>
-                  <option value="minutos">minutos</option>
-                  <option value="páginas">páginas</option>
-                  <option value="vasos">vasos</option>
-                  <option value="km">km</option>
-                  <option value="horas">horas</option>
-                </select>
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    list="unidades-sugeridas-crear"
+                    value={unidadMedida}
+                    onChange={(e) => setUnidadMedida(e.target.value)}
+                    placeholder="Unidad (ej: minutos, km...)"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#572de4]"
+                  />
+                  <datalist id="unidades-sugeridas-crear">
+                    <option value="veces" />
+                    <option value="minutos" />
+                    <option value="páginas" />
+                    <option value="vasos" />
+                    <option value="km" />
+                    <option value="horas" />
+                    <option value="pasos" />
+                    <option value="porciones" />
+                    <option value="capítulos" />
+                    <option value="repeticiones" />
+                    <option value="series" />
+                  </datalist>
+                </div>
               </div>
             </div>
 
-            {/* Recordatorio */}
+            {/* Recordatorios */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
-                  Recordatorio
+                  Recordatorios
                 </label>
-                <span
-                  className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                    reminderEnabled
-                      ? 'bg-[#572de4]/15 text-[#572de4] dark:text-indigo-300'
-                      : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-                  }`}
-                >
-                  {reminderEnabled ? 'Activado' : 'Desactivado'}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div
-                  className={`
-                    flex-1 flex items-center gap-2 px-3.5 py-2 rounded-xl border text-sm transition-all
-                    ${
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                       reminderEnabled
-                        ? 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/60 text-slate-900 dark:text-white'
-                        : 'bg-slate-100/60 dark:bg-slate-800/20 border-slate-200/50 dark:border-slate-800 text-slate-400 dark:text-slate-600 opacity-60'
-                    }
-                  `}
-                >
-                  <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                  <input
-                    type="time"
-                    disabled={!reminderEnabled}
-                    value={reminderTime}
-                    onChange={(e) => setReminderTime(e.target.value)}
-                    className="bg-transparent font-medium w-full focus:outline-none text-slate-900 dark:text-white disabled:cursor-not-allowed"
-                  />
-                </div>
+                        ? 'bg-[#572de4]/15 text-[#572de4] dark:text-indigo-300'
+                        : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                    }`}
+                  >
+                    {reminderEnabled
+                      ? `${reminders.length} ${reminders.length === 1 ? 'activo' : 'activos'}`
+                      : 'Desactivado'}
+                  </span>
 
-                {/* Toggle switch iOS style */}
-                <button
-                  type="button"
-                  onClick={() => setReminderEnabled((prev) => !prev)}
-                  className={`
-                    w-11 h-6 rounded-full transition-colors flex items-center px-0.5 flex-shrink-0
-                    ${reminderEnabled ? 'bg-[#572de4] justify-end' : 'bg-slate-300 dark:bg-slate-700 justify-start'}
-                  `}
-                  title={reminderEnabled ? 'Desactivar recordatorio' : 'Activar recordatorio'}
-                >
-                  <span className="w-5 h-5 rounded-full bg-white shadow-sm transition-all" />
-                </button>
+                  {/* Toggle switch */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = !reminderEnabled;
+                      setReminderEnabled(next);
+                      if (next && reminders.length === 0) {
+                        setReminders(['08:00']);
+                      }
+                    }}
+                    className={`
+                      w-11 h-6 rounded-full transition-colors flex items-center px-0.5 flex-shrink-0
+                      ${reminderEnabled ? 'bg-[#572de4] justify-end' : 'bg-slate-300 dark:bg-slate-700 justify-start'}
+                    `}
+                    title={reminderEnabled ? 'Desactivar recordatorios' : 'Activar recordatorios'}
+                  >
+                    <span className="w-5 h-5 rounded-full bg-white shadow-sm transition-all" />
+                  </button>
+                </div>
               </div>
+
+              {reminderEnabled && (
+                <div className="flex flex-col gap-2 pt-1">
+                  {reminders.map((time, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <div className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-800/60 text-sm">
+                        <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                        <input
+                          type="time"
+                          value={time}
+                          onChange={(e) => handleUpdateReminder(idx, e.target.value)}
+                          className="bg-transparent font-medium w-full focus:outline-none text-slate-900 dark:text-white"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveReminder(idx)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                        title="Eliminar recordatorio"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={handleAddReminder}
+                    className="self-start text-xs font-semibold text-[#572de4] dark:text-indigo-400 hover:underline flex items-center gap-1 pt-0.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Añadir otro recordatorio</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </form>

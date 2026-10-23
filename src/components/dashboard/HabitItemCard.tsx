@@ -13,7 +13,8 @@ import {
   Sparkles,
   Loader2,
   Lock,
-  Clock
+  Clock,
+  X
 } from 'lucide-react';
 import { marcarCompletadoAction, desmarcarCompletadoAction } from '@/actions/registro.actions';
 import { HabitDetailModal } from '@/components/modals/HabitDetailModal';
@@ -99,21 +100,21 @@ function HabitStatusAction({
   if (isPast) {
     const pastCircleClass = isCompleted
       ? 'bg-emerald-500 text-white shadow-sm'
-      : 'bg-slate-100 dark:bg-slate-800 text-slate-400 ring-1 ring-slate-200 dark:ring-slate-700';
+      : 'bg-rose-50 dark:bg-rose-950/40 text-rose-500 dark:text-rose-400 ring-1 ring-rose-200 dark:ring-rose-800/60';
 
     return (
       <div
-        className={`w-11 h-11 rounded-full flex items-center justify-center opacity-75 cursor-not-allowed ${pastCircleClass}`}
+        className={`w-11 h-11 rounded-full flex items-center justify-center cursor-not-allowed ${pastCircleClass}`}
         title={
           isCompleted
-            ? `Completado el ${selectedDate} (Histórico - solo lectura)`
-            : `No completado el ${selectedDate} (Histórico - solo lectura)`
+            ? `Completado el ${selectedDate} (Histórico)`
+            : `No completado el ${selectedDate} (Histórico)`
         }
       >
         {isCompleted ? (
           <Check className="w-5 h-5 stroke-[2.5]" />
         ) : (
-          <Lock className="w-4 h-4 opacity-50" />
+          <X className="w-5 h-5 stroke-[2.5]" />
         )}
       </div>
     );
@@ -261,8 +262,24 @@ export function HabitItemCard({
 
               {/* Badge indicativo si no es hoy */}
               {isPast && (
-                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                  {isCompleted ? 'Completado' : 'No completado'}
+                <span
+                  className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
+                    isCompleted
+                      ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                      : 'bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50'
+                  }`}
+                >
+                  {isCompleted ? (
+                    <>
+                      <Check className="w-3 h-3 stroke-[3]" />
+                      <span>Completado</span>
+                    </>
+                  ) : (
+                    <>
+                      <X className="w-3 h-3 stroke-[3]" />
+                      <span>No completado</span>
+                    </>
+                  )}
                 </span>
               )}
               {isFuture && (
