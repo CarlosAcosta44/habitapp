@@ -5,6 +5,7 @@ import { loginAction } from '@/actions/auth.actions'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { AuthSplitContainer } from '@/components/auth/AuthSplitContainer'
+import { Eye, EyeOff } from 'lucide-react'
 
 
 // Iconos vectoriales simples
@@ -55,6 +56,7 @@ function OAuthErrorAlert() {
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -118,13 +120,24 @@ export default function LoginPage() {
                 ¿Olvidé mi contraseña?
               </Link>
             </div>
-            <input 
-              type="password" 
-              name="password" 
-              required 
-              className="w-full px-4 py-3.5 rounded-[1.125rem] bg-[#1e2536] border-none text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium tracking-widest placeholder:tracking-normal placeholder:text-slate-500"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                name="password" 
+                required 
+                className="w-full px-4 py-3.5 pr-12 rounded-[1.125rem] bg-[#1e2536] border-none text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium tracking-widest placeholder:tracking-normal placeholder:text-slate-500"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors p-1"
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
 
           <button 
