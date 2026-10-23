@@ -37,7 +37,7 @@ export function AuthSplitContainer({
         // Fallback silencioso si la API no responde
       }
     };
-    fetchUserStats();
+    void fetchUserStats();
     return () => {
       isMounted = false;
     };

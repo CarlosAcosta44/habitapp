@@ -12,7 +12,6 @@ import {
   Heart, 
   Sparkles,
   Loader2,
-  Lock,
   Clock,
   X
 } from 'lucide-react';

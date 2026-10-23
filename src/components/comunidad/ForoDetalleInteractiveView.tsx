@@ -290,7 +290,7 @@ export function ForoDetalleInteractiveView({
   };
 
   // ── Eliminar foro ──
-  const handleDeleteForo = async () => {
+  const handleDeleteForo = () => {
     if (!confirm('¿Estás seguro de que deseas eliminar este foro? Esta acción no se puede deshacer.')) return;
     startTransition(async () => {
       const res = await deleteForoAction(foroId);
@@ -304,7 +304,7 @@ export function ForoDetalleInteractiveView({
   };
 
   // ── Eliminar comentario ──
-  const handleDeleteComment = async (cId: string) => {
+  const handleDeleteComment = (cId: string) => {
     if (!confirm('¿Eliminar este comentario? Esta acción no se puede deshacer.')) return;
     startTransition(async () => {
       const res = await deleteComentarioAction(cId, foroId);
@@ -318,7 +318,7 @@ export function ForoDetalleInteractiveView({
   };
 
   // ── Guardar edición de comentario ──
-  const handleSaveCommentEdit = async (cId: string) => {
+  const handleSaveCommentEdit = (cId: string) => {
     if (!editingContent.trim()) return;
     setIsSavingCommentEdit(true);
     startTransition(async () => {
@@ -362,6 +362,153 @@ export function ForoDetalleInteractiveView({
     : foro?.autor?.nombre
     ? `${foro.autor.nombre || ''} ${foro.autor.apellido || ''}`.trim()
     : 'Miembro de la Comunidad';
+
+  const renderSubRespuesta = (sub: any) => {
+    const sId = sub.idcomentario || sub.idComentario || sub.id || '';
+    const sIsLiked = likedComments[sId] || false;
+    const sLikes = commentLikes[sId] ?? sub.likes_count ?? 3;
+    const subAutorNombre = sub.usuarios
+      ? `${sub.usuarios.nombre || ''} ${sub.usuarios.apellido || ''}`.trim()
+      : sub.autor?.nombre
+      ? `${sub.autor.nombre} ${sub.autor.apellido || ''}`.trim()
+      : 'Miembro';
+    const subAvatar = sub.usuarios?.fotoperfil || sub.autor?.avatarUrl;
+    const subImg = sub.imagen_url || sub.imagenUrl;
+    const canManageSub = Boolean(isAdmin || (currentUser?.id && (sub.idusuario === currentUser.id || sub.usuarios?.idusuario === currentUser.id)));
+
+    return (
+      <div
+        key={sId}
+        className="flex flex-col gap-2 bg-slate-50 dark:bg-slate-800/40 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            {subAvatar ? (
+              <img
+                src={subAvatar}
+                alt={subAutorNombre}
+                className="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700"
+              />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-[11px] shrink-0">
+                {getInitials(sub.usuarios?.nombre || sub.autor?.nombre, sub.usuarios?.apellido || sub.autor?.apellido)}
+              </div>
+            )}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-bold text-xs text-slate-900 dark:text-white">
+                {subAutorNombre}
+              </span>
+              <span className="text-[11px] text-slate-400">
+                • {formatTimeAgo(sub.fechapublicacion || sub.fechaPublicacion || sub.fechacreacion)}
+              </span>
+            </div>
+          </div>
+
+          {canManageSub && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setOpenMenuCommentId(openMenuCommentId === sId ? null : sId)}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                title="Opciones de respuesta"
+              >
+                <MoreVertical className="w-3.5 h-3.5" />
+              </button>
+              {openMenuCommentId === sId && (
+                <div className="absolute right-0 top-8 z-20 w-36 bg-white dark:bg-[#151c2c] rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-800 py-1 animate-in fade-in zoom-in-95 duration-150">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenMenuCommentId(null);
+                      setEditingCommentId(sId);
+                      setEditingContent(sub.contenido || '');
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left"
+                  >
+                    <Edit3 className="w-3 h-3" />
+                    <span>Editar respuesta</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenMenuCommentId(null);
+                      handleDeleteComment(sId);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors text-left border-t border-slate-100 dark:border-slate-800/60"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>Eliminar respuesta</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {editingCommentId === sId ? (
+          <div className="flex flex-col gap-2 pl-9 pt-1">
+            <textarea
+              value={editingContent}
+              onChange={(e) => setEditingContent(e.target.value)}
+              rows={2}
+              className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#572de4] resize-none"
+            />
+            <div className="flex items-center justify-end gap-2">
+              <button
+                type="button"
+                disabled={isSavingCommentEdit}
+                onClick={() => setEditingCommentId(null)}
+                className="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={isSavingCommentEdit || !editingContent.trim()}
+                onClick={() => handleSaveCommentEdit(sId)}
+                className="px-3.5 py-1 rounded-lg bg-[#572de4] hover:bg-[#461ebd] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1 disabled:opacity-50"
+              >
+                {isSavingCommentEdit ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                <span>Guardar</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          sub.contenido && (
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed pl-9">
+              {sub.contenido}
+            </p>
+          )
+        )}
+
+        {subImg && (
+          <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-slate-800 max-h-56 w-full max-w-xs bg-slate-100 dark:bg-slate-900 shadow-sm mt-1 ml-9">
+            <img
+              src={subImg}
+              alt="Imagen adjunta en respuesta"
+              className="w-full h-full object-cover max-h-56"
+            />
+          </div>
+        )}
+
+        <div className="flex items-center gap-3 pl-9 pt-0.5">
+          <button
+            type="button"
+            onClick={() => handleLikeComentario(sId, sub.likes_count ?? 3)}
+            className={`flex items-center gap-1 text-xs font-semibold transition-colors ${
+              sIsLiked
+                ? 'text-rose-600 dark:text-rose-400'
+                : 'text-slate-400 hover:text-rose-600'
+            }`}
+          >
+            <Heart className={`w-3.5 h-3.5 ${sIsLiked ? 'fill-current' : ''}`} />
+            <span>{sLikes}</span>
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col w-full max-w-4xl mx-auto space-y-6 pb-20">
@@ -714,6 +861,7 @@ export function ForoDetalleInteractiveView({
                 : 'Miembro';
               const cAvatar = comentario.usuarios?.fotoperfil || comentario.autor?.avatarUrl;
               const cImg = comentario.imagen_url || comentario.imagenUrl;
+              const canManageParent = Boolean(isAdmin || (currentUser?.id && (comentario.idusuario === currentUser.id || comentario.usuarios?.idusuario === currentUser.id)));
 
               return (
                 <article
@@ -747,7 +895,7 @@ export function ForoDetalleInteractiveView({
                       </div>
                     </div>
 
-                    {Boolean(isAdmin || (currentUser?.id && (comentario.idusuario === currentUser.id || comentario.usuarios?.idusuario === currentUser.id))) && (
+                    {canManageParent && (
                       <div className="relative">
                         <button
                           type="button"
@@ -978,151 +1126,7 @@ export function ForoDetalleInteractiveView({
                   {/* Hilo Anidado de Respuestas */}
                   {!isHidden && subRespuestas.length > 0 && (
                     <div className="flex flex-col gap-3 pl-4 sm:pl-6 ml-2 sm:ml-4 border-l-2 border-slate-200 dark:border-slate-800 pt-1">
-                      {subRespuestas.map((sub) => {
-                        const sId = sub.idcomentario || sub.idComentario || sub.id || '';
-                        const sIsLiked = likedComments[sId] || false;
-                        const sLikes = commentLikes[sId] ?? sub.likes_count ?? 3;
-                        const subAutorNombre = sub.usuarios
-                          ? `${sub.usuarios.nombre || ''} ${sub.usuarios.apellido || ''}`.trim()
-                          : sub.autor?.nombre
-                          ? `${sub.autor.nombre} ${sub.autor.apellido || ''}`.trim()
-                          : 'Miembro';
-                        const subAvatar = sub.usuarios?.fotoperfil || sub.autor?.avatarUrl;
-                        const subImg = sub.imagen_url || sub.imagenUrl;
-
-                        return (
-                          <div
-                            key={sId}
-                            className="flex flex-col gap-2 bg-slate-50 dark:bg-slate-800/40 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2.5">
-                                {subAvatar ? (
-                                  <img
-                                    src={subAvatar}
-                                    alt={subAutorNombre}
-                                    className="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700"
-                                  />
-                                ) : (
-                                  <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-[11px] shrink-0">
-                                    {getInitials(sub.usuarios?.nombre || sub.autor?.nombre, sub.usuarios?.apellido || sub.autor?.apellido)}
-                                  </div>
-                                )}
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="font-bold text-xs text-slate-900 dark:text-white">
-                                    {subAutorNombre}
-                                  </span>
-                                  <span className="text-[11px] text-slate-400">
-                                    • {formatTimeAgo(sub.fechapublicacion || sub.fechaPublicacion || sub.fechacreacion)}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {Boolean(isAdmin || (currentUser?.id && (sub.idusuario === currentUser.id || sub.usuarios?.idusuario === currentUser.id))) && (
-                                <div className="relative">
-                                  <button
-                                    type="button"
-                                    onClick={() => setOpenMenuCommentId(openMenuCommentId === sId ? null : sId)}
-                                    className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                                    title="Opciones de respuesta"
-                                  >
-                                    <MoreVertical className="w-3.5 h-3.5" />
-                                  </button>
-                                  {openMenuCommentId === sId && (
-                                    <div className="absolute right-0 top-8 z-20 w-36 bg-white dark:bg-[#151c2c] rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-800 py-1 animate-in fade-in zoom-in-95 duration-150">
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          setOpenMenuCommentId(null);
-                                          setEditingCommentId(sId);
-                                          setEditingContent(sub.contenido || '');
-                                        }}
-                                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left"
-                                      >
-                                        <Edit3 className="w-3 h-3" />
-                                        <span>Editar respuesta</span>
-                                      </button>
-
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          setOpenMenuCommentId(null);
-                                          handleDeleteComment(sId);
-                                        }}
-                                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors text-left border-t border-slate-100 dark:border-slate-800/60"
-                                      >
-                                        <Trash2 className="w-3 h-3" />
-                                        <span>Eliminar respuesta</span>
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-
-                            {editingCommentId === sId ? (
-                              <div className="flex flex-col gap-2 pl-9 pt-1">
-                                <textarea
-                                  value={editingContent}
-                                  onChange={(e) => setEditingContent(e.target.value)}
-                                  rows={2}
-                                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#572de4] resize-none"
-                                />
-                                <div className="flex items-center justify-end gap-2">
-                                  <button
-                                    type="button"
-                                    disabled={isSavingCommentEdit}
-                                    onClick={() => setEditingCommentId(null)}
-                                    className="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-                                  >
-                                    Cancelar
-                                  </button>
-                                  <button
-                                    type="button"
-                                    disabled={isSavingCommentEdit || !editingContent.trim()}
-                                    onClick={() => handleSaveCommentEdit(sId)}
-                                    className="px-3.5 py-1 rounded-lg bg-[#572de4] hover:bg-[#461ebd] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1 disabled:opacity-50"
-                                  >
-                                    {isSavingCommentEdit ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
-                                    <span>Guardar</span>
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              sub.contenido && (
-                                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed pl-9">
-                                  {sub.contenido}
-                                </p>
-                              )
-                            )}
-
-                            {subImg && (
-                              <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-slate-800 max-h-56 w-full max-w-xs bg-slate-100 dark:bg-slate-900 shadow-sm mt-1 ml-9">
-                                <img
-                                  src={subImg}
-                                  alt="Imagen adjunta en respuesta"
-                                  className="w-full h-full object-cover max-h-56"
-                                />
-                              </div>
-                            )}
-
-                            <div className="flex items-center gap-3 pl-9 pt-0.5">
-                              <button
-                                type="button"
-                                onClick={() => handleLikeComentario(sId, sub.likes_count ?? 3)}
-                                className={`flex items-center gap-1 text-xs font-semibold transition-colors ${
-                                  sIsLiked
-                                    ? 'text-rose-600 dark:text-rose-400'
-                                    : 'text-slate-400 hover:text-rose-600'
-                                }`}
-                              >
-                                <Heart className={`w-3.5 h-3.5 ${sIsLiked ? 'fill-current' : ''}`} />
-                                <span>{sLikes}</span>
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })}
+                      {subRespuestas.map(renderSubRespuesta)}
                     </div>
                   )}
                 </article>

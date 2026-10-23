@@ -416,8 +416,8 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
                     if (val === '') {
                       setMetaDiaria('');
                     } else {
-                      const num = parseInt(val, 10);
-                      if (!isNaN(num)) setMetaDiaria(num);
+                      const num = Number.parseInt(val, 10);
+                      if (!Number.isNaN(num)) setMetaDiaria(num);
                     }
                   }}
                   onBlur={() => {
@@ -467,9 +467,11 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
                         : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
                     }`}
                   >
-                    {reminderEnabled
-                      ? `${reminders.length} ${reminders.length === 1 ? 'activo' : 'activos'}`
-                      : 'Desactivado'}
+                    {(() => {
+                      if (!reminderEnabled) return 'Desactivado';
+                      const sufijo = reminders.length === 1 ? 'activo' : 'activos';
+                      return `${reminders.length} ${sufijo}`;
+                    })()}
                   </span>
 
                   {/* Toggle switch */}

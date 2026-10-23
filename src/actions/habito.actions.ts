@@ -48,6 +48,52 @@ export type ActionState = {
   errors?:  Record<string, string[]>;
 };
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function parseDiasSemana(raw: FormDataEntryValue | null, defaultDays?: number[]): number[] | undefined {
+  if (typeof raw !== "string" || !raw.trim()) return defaultDays;
+  try {
+    const p = JSON.parse(raw);
+    if (Array.isArray(p) && p.length > 0) return p.map(Number);
+  } catch {
+    // fallback
+  }
+  return defaultDays;
+}
+
+function parseRecordatorios(raw: FormDataEntryValue | null): string[] | undefined {
+  if (typeof raw !== "string" || !raw.trim()) return undefined;
+  try {
+    const p = JSON.parse(raw);
+    if (Array.isArray(p)) return p.map(String).filter(Boolean);
+  } catch {
+    // fallback
+  }
+  return undefined;
+}
+
+async function resolveCategoriaId(idCategoria: string): Promise<{ success: true; id: string } | { success: false; message: string }> {
+  if (UUID_REGEX.test(idCategoria)) {
+    return { success: true, id: idCategoria };
+  }
+  const nombreFallback = idCategoria
+    .replace("cat-", "")
+    .replace("-", " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  const categoriasResult = await service.getCategorias();
+  if (!categoriasResult.success) {
+    return { success: false, message: "No se pudo conectar con la base de datos para validar la categoría." };
+  }
+  const match = categoriasResult.data.find(
+    (c) => c.nombre.toLowerCase() === nombreFallback.toLowerCase()
+  );
+  if (!match) {
+    return { success: false, message: `No se encontró la categoría "${nombreFallback}" en la base de datos.` };
+  }
+  return { success: true, id: match.idCategoria };
+}
+
 // ─── createHabitoAction ───────────────────────────────────────────────────────
 export async function createHabitoAction(
   _prevState: ActionState | null,
@@ -55,41 +101,18 @@ export async function createHabitoAction(
 ): Promise<ActionState> {
   const userResult = await requireUser();
   if (!userResult.success) return { success: false, message: userResult.error };
-  const user = userResult.data;
-
-  const diasSemanaRaw = formData.get("diasSemana");
-  let diasSemanaParsed = [1, 2, 3, 4, 5, 6, 7];
-  if (typeof diasSemanaRaw === "string" && diasSemanaRaw.trim()) {
-    try {
-      const p = JSON.parse(diasSemanaRaw);
-      if (Array.isArray(p) && p.length > 0) diasSemanaParsed = p.map(Number);
-    } catch {
-      // fallback
-    }
-  }
-
-  const recordatoriosRaw = formData.get("recordatorios");
-  let recordatoriosParsed: string[] | undefined;
-  if (typeof recordatoriosRaw === "string" && recordatoriosRaw.trim()) {
-    try {
-      const p = JSON.parse(recordatoriosRaw);
-      if (Array.isArray(p)) recordatoriosParsed = p.map(String).filter(Boolean);
-    } catch {
-      // fallback
-    }
-  }
 
   const rawData = {
-    nombre:      formData.get("nombre"),
-    descripcion: formData.get("descripcion"),
-    fechaInicio: formData.get("fechaInicio"),
-    fechaFin:    formData.get("fechaFin") || undefined,
-    puntos:      formData.get("puntos"),
-    idCategoria: formData.get("idCategoria"),
-    metaDiaria:  formData.get("metaDiaria") || 1,
-    unidadMedida:formData.get("unidadMedida") || "veces",
-    diasSemana:  diasSemanaParsed,
-    recordatorios: recordatoriosParsed,
+    nombre:       formData.get("nombre"),
+    descripcion:  formData.get("descripcion"),
+    fechaInicio:  formData.get("fechaInicio"),
+    fechaFin:     formData.get("fechaFin") || undefined,
+    puntos:       formData.get("puntos"),
+    idCategoria:  formData.get("idCategoria"),
+    metaDiaria:   formData.get("metaDiaria") || 1,
+    unidadMedida: formData.get("unidadMedida") || "veces",
+    diasSemana:   parseDiasSemana(formData.get("diasSemana"), [1, 2, 3, 4, 5, 6, 7]),
+    recordatorios: parseRecordatorios(formData.get("recordatorios")),
   };
 
   const validation = CreateHabitoSchema.safeParse(rawData);
@@ -101,37 +124,19 @@ export async function createHabitoAction(
     };
   }
 
-  let idCategoriaFinal = validation.data.idCategoria;
-  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!UUID_REGEX.test(idCategoriaFinal)) {
-    const nombreFallback = idCategoriaFinal
-      .replace("cat-", "")
-      .replace("-", " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
-
-    const categoriasResult = await service.getCategorias();
-    if (categoriasResult.success) {
-      const match = categoriasResult.data.find(
-        (c) => c.nombre.toLowerCase() === nombreFallback.toLowerCase()
-      );
-      if (match) {
-        idCategoriaFinal = match.idCategoria;
-      } else {
-        return { success: false, message: `No se encontró la categoría "${nombreFallback}" en la base de datos.` };
-      }
-    } else {
-      return { success: false, message: "No se pudo conectar con la base de datos para validar la categoría." };
-    }
+  const catResolution = await resolveCategoriaId(validation.data.idCategoria);
+  if (!catResolution.success) {
+    return { success: false, message: catResolution.message };
   }
 
   const result = await service.create({
     ...validation.data,
-    idCategoria: idCategoriaFinal,
-    descripcion: validation.data.descripcion ?? undefined,
-    fechaFin:    validation.data.fechaFin    ?? undefined,
-    metaDiaria:  validation.data.metaDiaria,
-    unidadMedida:validation.data.unidadMedida,
-    diasSemana:  validation.data.diasSemana,
+    idCategoria:  catResolution.id,
+    descripcion:  validation.data.descripcion ?? undefined,
+    fechaFin:     validation.data.fechaFin    ?? undefined,
+    metaDiaria:   validation.data.metaDiaria,
+    unidadMedida: validation.data.unidadMedida,
+    diasSemana:   validation.data.diasSemana,
     recordatorios: validation.data.recordatorios,
   });
 
@@ -155,39 +160,17 @@ export async function updateHabitoAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID del hábito requerido" };
 
-  const diasSemanaRaw = formData.get("diasSemana");
-  let diasSemanaParsed: number[] | undefined;
-  if (typeof diasSemanaRaw === "string" && diasSemanaRaw.trim()) {
-    try {
-      const p = JSON.parse(diasSemanaRaw);
-      if (Array.isArray(p) && p.length > 0) diasSemanaParsed = p.map(Number);
-    } catch {
-      // fallback
-    }
-  }
-
-  const recordatoriosRaw = formData.get("recordatorios");
-  let recordatoriosParsed: string[] | undefined;
-  if (typeof recordatoriosRaw === "string" && recordatoriosRaw.trim()) {
-    try {
-      const p = JSON.parse(recordatoriosRaw);
-      if (Array.isArray(p)) recordatoriosParsed = p.map(String).filter(Boolean);
-    } catch {
-      // fallback
-    }
-  }
-
   const rawData = {
-    nombre:      formData.get("nombre") || undefined,
-    descripcion: formData.get("descripcion") || undefined,
-    fechaFin:    formData.get("fechaFin") || undefined,
-    puntos:      formData.get("puntos") || undefined,
-    idCategoria: formData.get("idCategoria") || undefined,
-    estado:      formData.get("estado") || undefined,
-    metaDiaria:  formData.get("metaDiaria") || undefined,
-    unidadMedida:formData.get("unidadMedida") || undefined,
-    diasSemana:  diasSemanaParsed,
-    recordatorios: recordatoriosParsed,
+    nombre:       formData.get("nombre") || undefined,
+    descripcion:  formData.get("descripcion") || undefined,
+    fechaFin:     formData.get("fechaFin") || undefined,
+    puntos:       formData.get("puntos") || undefined,
+    idCategoria:  formData.get("idCategoria") || undefined,
+    estado:       formData.get("estado") || undefined,
+    metaDiaria:   formData.get("metaDiaria") || undefined,
+    unidadMedida: formData.get("unidadMedida") || undefined,
+    diasSemana:   parseDiasSemana(formData.get("diasSemana")),
+    recordatorios: parseRecordatorios(formData.get("recordatorios")),
   };
 
   const validation = UpdateHabitoSchema.safeParse(rawData);

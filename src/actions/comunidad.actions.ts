@@ -310,12 +310,11 @@ export async function createRetoAction(
 
   const titulo = formData.get("titulo") as string;
   const descripcion = formData.get("descripcion") as string;
-  const puntosRecompensa = parseInt(formData.get("puntosRecompensa") as string, 10) || 50;
   const fechaInicio = formData.get("fechaInicio") as string;
   const fechaFin = formData.get("fechaFin") as string;
   const insigniaRecompensa = formData.get("insigniaRecompensa") as string;
   const icono = formData.get("icono") as string;
-  const diasObjetivo = parseInt(formData.get("diasObjetivo") as string, 10) || 7;
+  const diasObjetivo = Number.parseInt(formData.get("diasObjetivo") as string, 10) || 7;
 
   if (!titulo?.trim() || titulo.trim().length < 5) {
     return { success: false, message: "El título debe tener al menos 5 caracteres" };

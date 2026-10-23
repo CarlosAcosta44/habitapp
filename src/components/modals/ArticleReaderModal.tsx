@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import type { Articulo } from '@/domain/comunidad.types';
 import {
   X,
   BookOpen,
@@ -17,9 +18,9 @@ import {
 } from 'lucide-react';
 
 interface ArticleReaderModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  articulo: any | null;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly articulo: Articulo | null;
 }
 
 const CATEGORIA_COLORS: Record<string, { bg: string; text: string; border: string }> = {
@@ -75,28 +76,35 @@ export function ArticleReaderModal({ isOpen, onClose, articulo }: ArticleReaderM
   const readingTime = Math.max(1, Math.ceil(wordCount / 180));
 
   // Formato de fecha
-  const fechaStr = articulo.fechapublicacion || articulo.fechaPublicacion || 'Reciente';
+  const fechaStr = (articulo as Record<string, any>).fechapublicacion || articulo.fechaPublicacion || 'Reciente';
 
-  // Separar en párrafos legibles
-  const paragraphs = texto
+  // Separar en párrafos legibles con id estable
+  const rawParagraphs = texto
     .split(/\n+/)
     .map((p: string) => p.trim())
     .filter((p: string) => p.length > 0);
 
+  const artId = (articulo as any).idArticulo || (articulo as any).idarticulo || (articulo as any).id || 'art';
+  const paragraphs = rawParagraphs.map((p: string, idx: number) => ({
+    id: `${artId}-p-${idx}-${p.slice(0, 16)}`,
+    text: p,
+    isFirst: idx === 0,
+    isHeading: p.startsWith('#') || (p.length < 50 && p.endsWith(':')),
+  }));
+
   const handleCopyLink = () => {
     if (typeof window !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
+      void navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     }
   };
 
   return createPortal(
-    <div
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      open
       aria-labelledby="article-reader-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200 w-full h-full max-w-none max-h-none m-0 border-0"
     >
       {/* Backdrop click to close */}
       <div
@@ -216,32 +224,32 @@ export function ArticleReaderModal({ isOpen, onClose, articulo }: ArticleReaderM
           {/* Formatted Content */}
           <div className="space-y-5 text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300 font-normal">
             {paragraphs.length > 0 ? (
-              paragraphs.map((p: string, idx: number) => {
-                if (p.startsWith('#') || (p.length < 50 && p.endsWith(':'))) {
+              paragraphs.map((p) => {
+                if (p.isHeading) {
                   return (
                     <h3
-                      key={idx}
+                      key={p.id}
                       className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white pt-2"
                     >
-                      {p.replace(/^#+\s*/, '')}
+                      {p.text.replace(/^#+\s*/, '')}
                     </h3>
                   );
                 }
 
-                if (idx === 0) {
+                if (p.isFirst) {
                   return (
                     <p
-                      key={idx}
+                      key={p.id}
                       className="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-200 leading-relaxed"
                     >
-                      {p}
+                      {p.text}
                     </p>
                   );
                 }
 
                 return (
-                  <p key={idx} className="leading-relaxed">
-                    {p}
+                  <p key={p.id} className="leading-relaxed">
+                    {p.text}
                   </p>
                 );
               })
@@ -310,7 +318,7 @@ export function ArticleReaderModal({ isOpen, onClose, articulo }: ArticleReaderM
           </div>
         </div>
       </div>
-    </div>,
+    </dialog>,
     document.body
   );
 }

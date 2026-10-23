@@ -29,8 +29,8 @@ const categoriaIcono: Record<string, string> = {
 };
 
 interface ArticuloDestacadoProps {
-  articulo: Articulo;
-  onClick?: () => void;
+  readonly articulo: Articulo;
+  readonly onClick?: () => void;
 }
 
 export function ArticuloDestacado({ articulo, onClick }: ArticuloDestacadoProps) {
@@ -49,9 +49,10 @@ export function ArticuloDestacado({ articulo, onClick }: ArticuloDestacadoProps)
     (articulo.contenido.length > 110 ? "…" : "");
 
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      className="group rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 space-y-3 hover:shadow-md transition-shadow cursor-pointer"
+      className="text-left w-full group rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 space-y-3 hover:shadow-md transition-shadow cursor-pointer block"
     >
 
       {/* Header: ícono + categoría + tiempo */}
@@ -78,6 +79,6 @@ export function ArticuloDestacado({ articulo, onClick }: ArticuloDestacadoProps)
       <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
         {extracto}
       </p>
-    </div>
+    </button>
   );
 }

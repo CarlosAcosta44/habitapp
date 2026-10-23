@@ -132,17 +132,16 @@ export function EditForoModal({ isOpen, onClose, foro, onSuccess }: EditForoModa
   };
 
   const modalContent = (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200"
+    <dialog
+      open
+      aria-labelledby="edit-foro-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200 w-full h-full max-w-none max-h-none m-0 border-0"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
-      role="presentation"
     >
       <div
         className="w-full max-w-xl bg-white dark:bg-[#111827] rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh]"
-        role="dialog"
-        aria-modal="true"
       >
         {/* Header */}
         <div className="p-6 pb-4 flex items-start justify-between border-b border-slate-100 dark:border-slate-800">
@@ -151,7 +150,7 @@ export function EditForoModal({ isOpen, onClose, foro, onSuccess }: EditForoModa
               <Edit3 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
+              <h2 id="edit-foro-title" className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
                 Editar Foro
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -205,7 +204,7 @@ export function EditForoModal({ isOpen, onClose, foro, onSuccess }: EditForoModa
           {/* Título */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+              <label htmlFor="edit-foro-input-titulo" className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Título del Foro *
               </label>
               <span className={`text-[11px] font-semibold ${titulo.length > 45 ? 'text-rose-500' : 'text-slate-400'}`}>
@@ -213,6 +212,7 @@ export function EditForoModal({ isOpen, onClose, foro, onSuccess }: EditForoModa
               </span>
             </div>
             <input
+              id="edit-foro-input-titulo"
               type="text"
               value={titulo}
               maxLength={45}
@@ -225,10 +225,11 @@ export function EditForoModal({ isOpen, onClose, foro, onSuccess }: EditForoModa
 
           {/* Descripción */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+            <label htmlFor="edit-foro-input-descripcion" className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
               Contenido de la publicación *
             </label>
             <textarea
+              id="edit-foro-input-descripcion"
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
               placeholder="Escribe tu reflexión, pregunta o experiencia..."
@@ -306,7 +307,7 @@ export function EditForoModal({ isOpen, onClose, foro, onSuccess }: EditForoModa
           </div>
         </form>
       </div>
-    </div>
+    </dialog>
   );
 
   return createPortal(modalContent, document.body);

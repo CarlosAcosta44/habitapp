@@ -106,7 +106,7 @@ function filterHabitosForSelectedDate(
       const effectiveStart = fInicio || fCreacion;
       const existedOnDate =
         record !== undefined ||
-        (Boolean(effectiveStart)
+        (effectiveStart
           ? effectiveStart <= selectedDate
           : !fInicio || fInicio <= selectedDate);
       const notExpired = !fFin || fFin >= selectedDate;

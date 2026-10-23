@@ -4,24 +4,19 @@ import React, { useState, useTransition } from 'react';
 import {
   Trophy,
   X,
-  Sparkles,
   Calendar,
   Star,
   Loader2,
   Award,
-  Flame,
   Zap,
-  Heart,
-  Droplets,
-  BookOpen,
   Target,
 } from 'lucide-react';
 import { createRetoAction } from '@/actions/comunidad.actions';
 
 interface CreateRetoModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess?: () => void;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly onSuccess?: () => void;
 }
 
 const BADGES = ['🏆', '⚡', '🔥', '💪', '🧠', '🥗', '💧', '📚', '🧘'];
@@ -122,10 +117,11 @@ export function CreateRetoModal({ isOpen, onClose, onSuccess }: CreateRetoModalP
 
           {/* Título */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+            <label htmlFor="reto-titulo" className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
               Título del Reto *
             </label>
             <input
+              id="reto-titulo"
               type="text"
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
@@ -137,10 +133,11 @@ export function CreateRetoModal({ isOpen, onClose, onSuccess }: CreateRetoModalP
 
           {/* Descripción */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+            <label htmlFor="reto-descripcion" className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
               Descripción y Reglas *
             </label>
             <textarea
+              id="reto-descripcion"
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
               placeholder="Explica en qué consiste el reto y cómo cumplirlo diariamente..."
@@ -235,10 +232,11 @@ export function CreateRetoModal({ isOpen, onClose, onSuccess }: CreateRetoModalP
           {/* Fechas */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+              <label htmlFor="reto-fecha-inicio" className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Fecha de Inicio
               </label>
               <input
+                id="reto-fecha-inicio"
                 type="date"
                 value={fechaInicio}
                 onChange={(e) => setFechaInicio(e.target.value)}
@@ -246,10 +244,11 @@ export function CreateRetoModal({ isOpen, onClose, onSuccess }: CreateRetoModalP
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+              <label htmlFor="reto-fecha-fin" className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Fecha de Fin (Opcional)
               </label>
               <input
+                id="reto-fecha-fin"
                 type="date"
                 value={fechaFin}
                 onChange={(e) => setFechaFin(e.target.value)}

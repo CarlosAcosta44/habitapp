@@ -57,6 +57,52 @@ const DIAS_SEMANA = [
   { num: 7, label: 'D', name: 'Domingo' },
 ];
 
+function extractHabitDays(habito: any): number[] {
+  if (Array.isArray(habito.diasSemana) && habito.diasSemana.length > 0) {
+    return habito.diasSemana;
+  }
+  if (Array.isArray(habito.dias_semana) && habito.dias_semana.length > 0) {
+    return habito.dias_semana;
+  }
+  return [1, 2, 3, 4, 5, 6, 7];
+}
+
+function determineFrequencyPreset(days: number[]): 'todos' | 'laborales' | 'personalizado' {
+  if (days.length === 7) return 'todos';
+  if (days.length === 5 && [1, 2, 3, 4, 5].every((d: number) => days.includes(d))) {
+    return 'laborales';
+  }
+  return 'personalizado';
+}
+
+function extractHabitReminders(habito: any): string[] {
+  if (!Array.isArray(habito.recordatorios)) return [];
+  return habito.recordatorios
+    .map((r: any) => {
+      if (typeof r === 'string') return r.slice(0, 5);
+      if (r && typeof r.hora === 'string') return r.hora.slice(0, 5);
+      return '';
+    })
+    .filter(Boolean);
+}
+
+function formatSingleReminderTime(r: any): string {
+  if (typeof r === 'string') return r.slice(0, 5);
+  if (r && typeof r.hora === 'string') return r.hora.slice(0, 5);
+  return '08:00';
+}
+
+function formatRecordatoriosLabel(recordatorios: any): string {
+  if (!Array.isArray(recordatorios) || recordatorios.length === 0) {
+    return 'Sin recordatorios programados';
+  }
+  const formatted = recordatorios
+    .map((r: any) => formatSingleReminderTime(r))
+    .filter(Boolean)
+    .join(', ');
+  return `Recordatorios: ${formatted}`;
+}
+
 export function HabitDetailModal({
   isOpen,
   onClose,
@@ -101,50 +147,27 @@ export function HabitDetailModal({
 
   // Sincronizar datos del hábito con el estado de edición y progreso al abrir o recibir props
   useEffect(() => {
-    if (habito) {
-      setEditNombre(habito.nombre || '');
-      setEditDescripcion(habito.descripcion || '');
-      setEditMetaDiaria(habito.metaDiaria ?? habito.meta_diaria ?? 1);
-      setEditUnidadMedida(habito.unidadMedida ?? habito.unidad_medida ?? 'veces');
-      setEditEstado(habito.estado === 'Inactivo' ? 'Inactivo' : 'Activo');
+    if (!habito) return;
 
-      // Días de la semana
-      const days = Array.isArray(habito.diasSemana) && habito.diasSemana.length > 0
-        ? habito.diasSemana
-        : Array.isArray(habito.dias_semana) && habito.dias_semana.length > 0
-          ? habito.dias_semana
-          : [1, 2, 3, 4, 5, 6, 7];
-      setEditSelectedDays(days);
-      if (days.length === 7) {
-        setEditFrequencyPreset('todos');
-      } else if (days.length === 5 && [1, 2, 3, 4, 5].every((d: number) => days.includes(d))) {
-        setEditFrequencyPreset('laborales');
-      } else {
-        setEditFrequencyPreset('personalizado');
-      }
+    setEditNombre(habito.nombre || '');
+    setEditDescripcion(habito.descripcion || '');
+    setEditMetaDiaria(habito.metaDiaria ?? habito.meta_diaria ?? 1);
+    setEditUnidadMedida(habito.unidadMedida ?? habito.unidad_medida ?? 'veces');
+    setEditEstado(habito.estado === 'Inactivo' ? 'Inactivo' : 'Activo');
 
-      // Recordatorios
-      let initialReminders: string[] = [];
-      if (Array.isArray(habito.recordatorios) && habito.recordatorios.length > 0) {
-        initialReminders = habito.recordatorios
-          .map((r: any) => {
-            if (typeof r === 'string') return r.slice(0, 5);
-            if (r && typeof r.hora === 'string') return r.hora.slice(0, 5);
-            return '';
-          })
-          .filter(Boolean);
-      }
-      setEditReminders(initialReminders);
+    const days = extractHabitDays(habito);
+    setEditSelectedDays(days);
+    setEditFrequencyPreset(determineFrequencyPreset(days));
+    setEditReminders(extractHabitReminders(habito));
 
-      setIsEditing(false);
-      setFeedbackError(null);
-      setFeedbackSuccess(null);
+    setIsEditing(false);
+    setFeedbackError(null);
+    setFeedbackSuccess(null);
 
-      const isComp = habito.registroHoy?.completado ?? false;
-      const prog = habito.registroHoy?.progresoActual ?? (isComp ? (habito.metaDiaria ?? habito.meta_diaria ?? 1) : 0);
-      setLocalProgreso(prog);
-      setLocalCompletado(isComp);
-    }
+    const isComp = habito.registroHoy?.completado ?? false;
+    const prog = habito.registroHoy?.progresoActual ?? (isComp ? (habito.metaDiaria ?? habito.meta_diaria ?? 1) : 0);
+    setLocalProgreso(prog);
+    setLocalCompletado(isComp);
   }, [habito, isOpen]);
 
   if (!isOpen || !isMounted || !habito) return null;
@@ -526,11 +549,7 @@ export function HabitDetailModal({
 
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-xs">
                 <Clock className="w-3.5 h-3.5 text-[#572de4] dark:text-indigo-400" />
-                <span>
-                  {Array.isArray(habito.recordatorios) && habito.recordatorios.length > 0
-                    ? `Recordatorios: ${habito.recordatorios.map((r: any) => typeof r === 'string' ? r.slice(0, 5) : (r.hora ? r.hora.slice(0, 5) : '')).filter(Boolean).join(', ')}`
-                    : 'Sin recordatorios programados'}
-                </span>
+                <span>{formatRecordatoriosLabel(habito.recordatorios)}</span>
               </div>
             </div>
           </div>
@@ -670,8 +689,8 @@ export function HabitDetailModal({
                       if (val === '') {
                         setEditMetaDiaria('');
                       } else {
-                        const num = parseInt(val, 10);
-                        if (!isNaN(num)) setEditMetaDiaria(num);
+                        const num = Number.parseInt(val, 10);
+                        if (!Number.isNaN(num)) setEditMetaDiaria(num);
                       }
                     }}
                     onBlur={() => {
@@ -717,9 +736,9 @@ export function HabitDetailModal({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Bell className="w-4 h-4 text-[#572de4] dark:text-indigo-400" />
-                    <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                    <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                       Recordatorios y Notificaciones
-                    </label>
+                    </span>
                   </div>
                   <button
                     type="button"
@@ -1040,20 +1059,19 @@ export function HabitDetailModal({
                         : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
                     }`}
                   >
-                    {Array.isArray(habito.recordatorios) && habito.recordatorios.length > 0
-                      ? `${habito.recordatorios.length} ${habito.recordatorios.length === 1 ? 'activo' : 'activos'}`
-                      : 'Sin recordatorios'}
+                    {(() => {
+                      if (!Array.isArray(habito.recordatorios) || habito.recordatorios.length === 0) {
+                        return 'Sin recordatorios';
+                      }
+                      const sufijo = habito.recordatorios.length === 1 ? 'activo' : 'activos';
+                      return `${habito.recordatorios.length} ${sufijo}`;
+                    })()}
                   </span>
                 </div>
                 {Array.isArray(habito.recordatorios) && habito.recordatorios.length > 0 ? (
                   <div className="flex items-center gap-2 flex-wrap">
                     {habito.recordatorios.map((r: any, idx: number) => {
-                      const timeStr =
-                        typeof r === 'string'
-                          ? r.slice(0, 5)
-                          : r?.hora
-                          ? r.hora.slice(0, 5)
-                          : '08:00';
+                      const timeStr = formatSingleReminderTime(r);
                       return (
                         <span
                           key={idx}
