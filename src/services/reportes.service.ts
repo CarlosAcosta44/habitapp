@@ -23,16 +23,31 @@ export interface ComparativaGraphed {
 
 export interface BackendUserSummary {
   userId: string;
-  nombre: string;
+  nombre?: string;
   puntos_totales: number;
-  habitos_activos: number;
-  completados_hoy: number;
-  tasa_diaria: number;
+  cumplimiento_global?: number;
+  total_esperado?: number;
+  total_cumplido?: number;
+  racha_actual?: number;
+  racha_maxima?: number;
+  mas_constante?: { nombre: string; racha?: number; rate: number } | null;
+  oportunidad_mejora?: { nombre: string; rate: number } | null;
+  volumen_semanal?: number[];
+  consistencia_mes?: { fecha: string; activos: number }[];
+  insight?: string;
+  habitos_activos?: number;
+  completados_hoy?: number;
+  tasa_diaria?: number;
 }
 
 export class ReportesService {
-  async getEstadisticas(userId: string): Promise<Result<BackendUserSummary>> {
-    return reportesRepository.get<BackendUserSummary>(`/reports/user/${userId}`);
+  async getEstadisticas(
+    userId: string,
+    period: 'week' | 'month' | 'year' = 'week',
+  ): Promise<Result<BackendUserSummary>> {
+    return reportesRepository.get<BackendUserSummary>(
+      `/reports/user/${userId}?period=${period}`,
+    );
   }
 
   async getRanking(userId: string): Promise<Result<RankingUsuario[]>> {
