@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useTransition, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import {
   TrendingUp,
   Flame,
@@ -13,11 +12,9 @@ import {
   CheckCircle2,
   AlertCircle,
   Lightbulb,
-  Heart,
   Droplet,
   Zap,
   Target,
-  ArrowUpRight,
 } from 'lucide-react';
 import type { BackendUserSummary, ComparativaGraphed } from '@/services/reportes.service';
 import type { HabitoReporte } from '@/domain/reportes.types';
@@ -26,25 +23,14 @@ interface ReportesInteractiveViewProps {
   stats: BackendUserSummary | null;
   habitos: HabitoReporte[];
   comparativa: ComparativaGraphed;
-  initialPeriod: 'week' | 'month' | 'year';
 }
-
-const PERIODOS: { label: string; value: 'week' | 'month' | 'year' }[] = [
-  { label: 'Semanal', value: 'week' },
-  { label: 'Mensual', value: 'month' },
-  { label: 'Anual', value: 'year' },
-];
 
 export function ReportesInteractiveView({
   stats,
   habitos,
-  comparativa,
-  initialPeriod,
+  comparativa: _comparativa,
 }: ReportesInteractiveViewProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>(initialPeriod);
-  const [hoveredDay, setHoveredDay] = useState<number | null>(null);
+  const [, setHoveredDay] = useState<number | null>(null);
 
   // Valores calculados con fallback elegante si el usuario es nuevo
   const cumplimiento = stats?.cumplimiento_global ?? stats?.tasa_diaria ?? 84;
@@ -81,13 +67,6 @@ export function ReportesInteractiveView({
     rate: 45,
   };
 
-  const handlePeriodChange = (period: 'week' | 'month' | 'year') => {
-    setSelectedPeriod(period);
-    startTransition(() => {
-      router.push(`/reportes?period=${period}`);
-    });
-  };
-
   const handleDownloadPDF = () => {
     if (typeof window !== 'undefined') {
       window.print();
@@ -105,7 +84,7 @@ export function ReportesInteractiveView({
 
   return (
     <div className="w-full space-y-8 pb-16">
-      {/* ── 1. Header con Título, Selector de Período y Descarga ── */}
+      {/* ── 1. Header con Título y Descarga (Diseño Oficial) ── */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -119,42 +98,22 @@ export function ReportesInteractiveView({
             Progreso y Métricas
           </h1>
           <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1">
-            Analítica integral de tus rutinas, consistencia semanal y patrones de bienestar emocional.
+            Analítica integral de tus rutinas, consistencia semanal y cumplimiento general.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* Selector de Período Oficial (US023 / CP-SIS-064) */}
-          <div
-            role="group"
-            aria-label="Selector de período de análisis"
-            className="flex items-center bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-slate-800 p-1 shadow-sm"
-          >
-            {PERIODOS.map((p) => {
-              const active = selectedPeriod === p.value;
-              return (
-                <button
-                  key={p.value}
-                  type="button"
-                  id={`period-toggle-${p.value}`}
-                  onClick={() => handlePeriodChange(p.value)}
-                  className={`px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 ${
-                    active
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                  } ${isPending ? 'opacity-70 cursor-wait' : ''}`}
-                >
-                  {p.label}
-                </button>
-              );
-            })}
+          {/* Indicador de período activo (Diseño Oficial Figma: Últimos 30 días) */}
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold shadow-sm">
+            <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+            <span>Últimos 30 días</span>
           </div>
 
           {/* Botón Descargar Reporte (PDF) */}
           <button
             type="button"
             onClick={handleDownloadPDF}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold shadow-sm transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all active:scale-95"
           >
             <Download className="w-4 h-4" aria-hidden="true" />
             <span>Descargar reporte (PDF)</span>
@@ -518,36 +477,6 @@ export function ReportesInteractiveView({
             </p>
           </div>
 
-          {/* Estado de Ánimo y Energía de la Semana */}
-          <div className="p-5 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 text-pink-500" aria-hidden="true" />
-                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Estado de Ánimo
-                </h2>
-              </div>
-              <span className="text-xs text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                Energía +15%
-              </span>
-            </div>
-
-            <div className="grid grid-cols-7 gap-1 text-center py-1">
-              {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((d, i) => (
-                <div key={i} className="flex flex-col items-center gap-1">
-                  <span className="text-[10px] text-slate-400 font-semibold">{d}</span>
-                  <span className="text-lg hover:scale-125 transition-transform cursor-default">
-                    {['😊', '🔥', '😎', '⚡', '🥰', '💪', '🌿'][i]}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-xs text-slate-500 dark:text-slate-400 italic bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/60">
-              &ldquo;Tus días de mayor cumplimiento coinciden con registros emocionales de alta energía y enfoque.&rdquo;
-            </p>
-          </div>
-
           {/* Desglose de Hábitos Activos */}
           <div className="p-5 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
@@ -557,36 +486,51 @@ export function ReportesInteractiveView({
               <span className="text-xs text-slate-400">{habitos.length} monitoreados</span>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
               {habitos.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-4 italic">
-                  No hay hábitos configurados para este período.
-                </p>
+                <div className="text-center py-6 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-dashed border-slate-200 dark:border-slate-800 space-y-2">
+                  <p className="text-xs text-slate-400 italic">
+                    Aún no tienes hábitos activos para monitorear.
+                  </p>
+                  <a
+                    href="/habitos/nueva"
+                    className="inline-block text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    + Crear mi primer hábito
+                  </a>
+                </div>
               ) : (
-                habitos.slice(0, 4).map((h) => (
+                habitos.map((h) => (
                   <div
                     key={h.idHabito}
-                    className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-800 space-y-2"
+                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-800 space-y-2 hover:bg-slate-100/60 dark:hover:bg-slate-800/70 transition-colors"
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
                         <div
-                          className="w-2.5 h-2.5 rounded-full"
+                          className="w-3 h-3 rounded-full shrink-0 shadow-xs"
                           style={{ backgroundColor: h.color || '#2563EB' }}
                         />
-                        <span className="text-xs font-bold text-slate-900 dark:text-white">
-                          {h.nombre}
-                        </span>
+                        <div className="min-w-0">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
+                            {h.nombre}
+                          </span>
+                          {h.descripcion && (
+                            <span className="text-[10px] text-slate-400 truncate block">
+                              {h.descripcion}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">
+                      <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 shrink-0 ml-2">
                         {h.progreso}%
                       </span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-slate-200 dark:bg-slate-700/80 rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full transition-all duration-500"
+                        className="h-full rounded-full transition-all duration-500 shadow-xs"
                         style={{
-                          width: `${Math.min(100, Math.max(5, h.progreso))}%`,
+                          width: `${Math.min(100, Math.max(4, h.progreso))}%`,
                           backgroundColor: h.color || '#2563EB',
                         }}
                       />

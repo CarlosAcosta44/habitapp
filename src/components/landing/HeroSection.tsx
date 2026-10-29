@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, QrCode, Smartphone, Bell, Medal } from "lucide-react";
 
-export function HeroSection() {
+export function HeroSection({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-24 pb-12 overflow-hidden bg-[#0A0713]">
       {/* Luces de fondo decorativas */}
@@ -48,10 +48,10 @@ export function HeroSection() {
             </Link>
             
             <Link
-              href="/register"
+              href={isAuthenticated ? "/habitos" : "/register"}
               className="group relative flex items-center justify-center gap-2 px-8 py-4 bg-white/5 border border-white/10 text-white font-semibold rounded-full transition-all hover:bg-white/10 hover:scale-[1.02]"
             >
-              Continuar en navegador
+              {isAuthenticated ? "Ir a mi Dashboard" : "Continuar en navegador"}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

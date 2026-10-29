@@ -1,13 +1,30 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
 const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password']
-const PROTECTED_PREFIX = ['/habitos', '/comunidad', '/perfil', '/admin', '/entrenador']
+const PROTECTED_PREFIX = [
+  '/habitos',
+  '/comunidad',
+  '/perfil',
+  '/admin',
+  '/entrenador',
+  '/reportes',
+  '/ranking',
+  '/ajustes',
+  '/notificaciones',
+]
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('access_token')?.value
   const user = !!token
 
   const pathname = request.nextUrl.pathname
+
+  // Si acceden a /dashboard directamente, redirigir a /habitos o /login
+  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) {
+    const url = request.nextUrl.clone()
+    url.pathname = user ? '/habitos' : '/login'
+    return NextResponse.redirect(url)
+  }
 
   const isPublicRoute = PUBLIC_ROUTES.some(r => pathname.startsWith(r))
   const isProtectedRoute = PROTECTED_PREFIX.some(p => pathname.startsWith(p))
@@ -19,7 +36,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Si ya está autenticado e intenta ir a login/register → dashboard
+  // Si ya está autenticado e intenta ir a login/register/onboarding auth → dashboard (/habitos)
   if (user && isPublicRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/habitos'

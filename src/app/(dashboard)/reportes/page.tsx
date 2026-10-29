@@ -52,7 +52,6 @@ export default async function ReportesPage({ searchParams }: ReportesPageProps) 
         stats={stats}
         habitos={habitos}
         comparativa={comparativa}
-        initialPeriod={validPeriod}
       />
     </div>
   );
