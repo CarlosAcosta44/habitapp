@@ -13,6 +13,10 @@ Este documento consolida el inventario formal de **casos de prueba que fallarán
 | **CP-SIS-064** | US023 | Interfaz de Usuario | **P2 (Medio)** | Frontend (`/reportes/page.tsx`) | Selector de períodos muestra "Diario" en vez de "Anual"; bloquea el envío de `period=year` en pruebas UI. | **Bloqueado** | *[Por asignar]* |
 | **CP-INT-012** | US004 | Funcionalidad Incompleta | **P1 (Alto)** | Backend (`AuthController`) | Endpoint `POST /api/v1/auth/refresh` no implementado (retorna 404 Not Found tras desacoplar Supabase Auth). | **Fallará** | *[Por asignar]* |
 | **CP-INT-013** | US004 | Funcionalidad Incompleta | **P1 (Alto)** | Backend (`AuthController`) | Validación de refresh token revocado o expirado inexistente al faltar el endpoint de renovación. | **Fallará** | *[Por asignar]* |
+| **CP-INT-162..164, 188, 189, CP-SIS-117** | US037 | Funcionalidad Incompleta / Seguridad | **P1 (Alto)** | Backend (`AdminController`, `AuthService`) | Endpoint `PATCH /admin/users/:id/status` no existe y falta validación de cuenta suspendida en login y sesión. | **Bloqueado** | *[Por asignar]* |
+| **CP-INT-153, 154, 190, 191, CP-SIS-114** | US037 | Funcionalidad Incompleta | **P2 (Medio)** | Backend (`AdminController`, `UsersService`) | `GET /admin/users` retorna array plano sin query params (`page`, `limit`) ni metadatos de paginación (`meta`). | **Bloqueado** | *[Por asignar]* |
+| **CP-INT-144** | US036 | Validación de Regla de Negocio | **P2 (Medio)** | Backend (`CreateRoutineDto`) | `habits` es `@IsOptional()`; permite crear rutinas vacías respondiendo 201 en vez de rechazar con 400 (mínimo 1 hábito). | **Bloqueado** | *[Por asignar]* |
+| **CP-INT-192** | US036 | Manejo de Excepciones | **P2 (Medio)** | Backend (`CoachRepository`) | Violación de unicidad en `usuario_rutina` lanza `InternalServerErrorException` (500) en lugar de `ConflictException` (409). | **Bloqueado** | *[Por asignar]* |
 
 ---
 
@@ -23,14 +27,26 @@ graph TD
     A[Ciclo de Ejecución QA] --> B[CP-INT-069 / 070: Algoritmo de Racha]
     A --> C[CP-SIS-064: Selector UI Reportes]
     A --> D[CP-INT-012 / 013: Endpoint Refresh Token]
+    A --> E[CP-INT-162..164, 188, 189, CP-SIS-117: Estado de Cuenta y Suspensión]
+    A --> F[CP-INT-153, 154, 190, 191, CP-SIS-114: Paginación Admin Users]
+    A --> G[CP-INT-144: Validación Mínimo 1 Hábito Rutina]
+    A --> H[CP-INT-192: Error 409 Reasignación Rutina]
 
     B --> B1[Defecto P0 Backend: RecordsRepository.calcularRacha]
     C --> C1[Defecto P2 Frontend: reportes/page.tsx]
     D --> D1[Defecto P1 Backend: auth.controller.ts 404]
+    E --> E1[Defecto P1 Backend: admin.controller.ts status y auth/me]
+    F --> F1[Defecto P2 Backend: admin.controller.ts paginación]
+    G --> G1[Defecto P2 Backend: create-routine.dto.ts]
+    H --> H1[Defecto P2 Backend: coach.repository.ts 500 a 409]
 
-    B1 --> E[Corrección en Sprint Dev]
-    C1 --> E
-    D1 --> E
+    B1 --> Z[Corrección en Sprint Dev]
+    C1 --> Z
+    D1 --> Z
+    E1 --> Z
+    F1 --> Z
+    G1 --> Z
+    H1 --> Z
 ```
 
 ---
@@ -169,6 +185,129 @@ Actualmente:
 
 ---
 
+### Defecto 4: Ausencia de Endpoint para Cambio de Estado de Cuenta (`status`) y Verificación de Cuentas Suspendidas
+* **Casos de Prueba:** `CP-INT-162`, `CP-INT-163`, `CP-INT-164`, `CP-INT-188`, `CP-INT-189`, `CP-SIS-117`
+* **Historia de Usuario:** [US037](file:///workspaces/habitapp-workspace/habitapp/.docs/5-calidad-qa/historias_usuario_definitivas.md#L59) — Panel de administración, gestión de usuarios y roles (Riesgo: 6 - Alto)
+* **Severidad:** **P1 — Alto (Control de Acceso y Funcionalidad Administrativa)**
+* **Componente Afectado:** `AdminController` (`src/modules/admin/controllers/admin.controller.ts`), `AuthService` (`src/modules/auth/services/auth.service.ts`), `UsersService` (`src/modules/users/services/users.service.ts`) (`habitapp-api`)
+
+#### Descripción del Problema
+1. En `AdminController`, solo existe la ruta `PATCH users/:id/role`. No existe un endpoint para actualizar el estado de cuenta de los usuarios (`PATCH /api/v1/admin/users/:id/status`), impidiendo suspender, activar o poner en pendiente las cuentas desde la interfaz administrativa (`CP-INT-162`, `CP-SIS-117`).
+2. No existe validación de catálogo para el campo `estado_cuenta` (`'Pendiente' | 'Activo' | 'Suspendido'`). Si se enviase un valor no contemplado como `"Baneado"`, debe ser rechazado con HTTP `400 Bad Request` por `ValidationPipe` (`CP-INT-188`).
+3. En la autenticación e inicio de sesión (`POST /api/v1/auth/login`), no se evalúa si el usuario que intenta autenticarse posee `estado_cuenta === 'Suspendido'`. Debería rechazarse inmediatamente con HTTP `403 Forbidden` (`CP-INT-163`).
+4. En las peticiones autenticadas subsiguientes (`GET /api/v1/users/me`), un usuario cuya cuenta haya sido suspendida en BD con sesión aún activa debe ser forzado a cerrar sesión y recibir HTTP `403 Forbidden` (`CP-INT-164`).
+
+#### Comportamiento Esperado
+* `PATCH /api/v1/admin/users/:id/status` accesible solo para administradores (`Roles(UserRole.ADMIN)`), validando con DTO que `estado_cuenta` pertenezca al enum permitido y retornando `200 OK` con el perfil actualizado. Usuarios no admin reciben `403 Forbidden` (`CP-INT-189`).
+* `POST /api/v1/auth/login` rechaza con `403 Forbidden` y el mensaje `"Tu cuenta se encuentra suspendida. Contacta al administrador."` si `estado_cuenta === 'Suspendido'`.
+* El guard o servicio de usuario valida en cada petición sensible o consulta de `/users/me` que el usuario no esté suspendido.
+
+#### Plan de Corrección
+1. Crear `UpdateUserStatusDto` con `@IsEnum(UserAccountStatus)` y mensaje descriptivo de validación.
+2. Agregar endpoint `PATCH users/:id/status` en `AdminController` delegando a `usersService.updateUserStatus`.
+3. En `AuthService.login` y `UsersService.getProfile`, verificar `estado_cuenta` y lanzar `ForbiddenException` con el mensaje correspondiente ante estado suspendido.
+
+---
+
+### Defecto 5: Ausencia de Paginación y Metadatos en Listado de Usuarios (`/admin/users`)
+* **Casos de Prueba:** `CP-INT-153`, `CP-INT-154`, `CP-INT-190`, `CP-INT-191`, `CP-SIS-114`
+* **Historia de Usuario:** [US037](file:///workspaces/habitapp-workspace/habitapp/.docs/5-calidad-qa/historias_usuario_definitivas.md#L59) — Panel de administración, gestión de usuarios y roles (Riesgo: 6 - Alto)
+* **Severidad:** **P2 — Medio (Escalabilidad y Contrato de API Incompleto)**
+* **Componente Afectado:** `AdminController.listUsers` (`src/modules/admin/controllers/admin.controller.ts`), `UsersService` y `UsersRepository` (`habitapp-api`)
+
+#### Descripción del Problema
+El endpoint `GET /api/v1/admin/users` consume directamente `usersService.listProfiles()`, el cual ejecuta una consulta `select('*')` sin parámetros de paginación ni ordenamiento. Retorna un array plano `[UserProfileDto]` con todos los usuarios existentes en la base de datos.
+
+Consecuencias:
+1. Ignora los query parameters canónicos `?page=1&limit=10` exigidos por la especificación de arquitectura y los casos `CP-INT-153`, `154`, `190` y `CP-SIS-114`.
+2. No entrega la envoltura de metadatos `meta: { total, page, limit, totalPages }`, rompiendo el contrato estándar de APIs paginadas y bloqueando el funcionamiento de los controles de paginación en la tabla web `/admin`.
+3. No valida parámetros `<= 0` (ej. `page=0` o `limit=0`), omitiendo el código HTTP `400 Bad Request` esperado en `CP-INT-191`.
+
+#### Comportamiento Esperado
+* `GET /api/v1/admin/users?page=1&limit=10` debe retornar un objeto estructurado:
+  ```json
+  {
+    "data": [ ... ],
+    "meta": {
+      "total": 24,
+      "page": 1,
+      "limit": 10,
+      "totalPages": 3
+    }
+  }
+  ```
+* Si se solicita una página superior a `totalPages` (ej. `page=99`), retorna `200 OK` con `data: []` y los metadatos correspondientes (`CP-INT-154`).
+* Si se envían `page=0` o `limit=0`, `ValidationPipe` rechaza la petición con `400 Bad Request` (`CP-INT-191`).
+
+#### Plan de Corrección
+1. Crear o reutilizar `PaginationQueryDto` con `@Type(() => Number)`, `@IsInt()`, `@Min(1)`.
+2. Actualizar `AdminController.listUsers(@Query() query: PaginationQueryDto)`.
+3. Actualizar `UsersRepository.listProfilesPaginated(page, limit)` usando `.range((page - 1) * limit, page * limit - 1)` y `{ count: 'exact' }` en Supabase.
+
+---
+
+### Defecto 6: Omisión de Restricción de Mínimo 1 Hábito en Creación de Rutinas
+* **Caso de Prueba:** `CP-INT-144`
+* **Historia de Usuario:** [US036](file:///workspaces/habitapp-workspace/habitapp/.docs/5-calidad-qa/historias_usuario_definitivas.md#L58) — Creación y asignación de rutinas maestras por entrenador (Riesgo: 6 - Alto)
+* **Severidad:** **P2 — Medio (Regla de Negocio en DTO)**
+* **Componente Afectado:** `CreateRoutineDto` (`src/modules/coach/dto/create-routine.dto.ts`) (`habitapp-api`)
+
+#### Descripción del Problema
+En `CreateRoutineDto`, la propiedad `habits` está decorada como `@IsOptional()`. Esto permite que una petición `POST /api/v1/coach/routines` con cuerpo `{ "name": "Rutina Vacía", "habits": [] }` o sin la propiedad `habits` sea aceptada y registrada en la base de datos con respuesta HTTP `201 Created`.
+
+#### Comportamiento Esperado (Criterio US036.1 / CP-INT-144)
+Una rutina modelo debe contener obligatoriamente al menos **1 hábito**. Si el arreglo de hábitos viene vacío (`[]`) o ausente, la API debe rechazar la solicitud con HTTP `400 Bad Request` y un mensaje descriptivo de validación.
+
+#### Plan de Corrección
+1. En `create-routine.dto.ts`, reemplazar `@IsOptional()` por:
+   ```typescript
+   @ApiProperty({
+     description: 'Hábitos incluidos en la rutina (mínimo 1)',
+     type: [CreateRoutineHabitDto],
+   })
+   @IsArray()
+   @ArrayMinSize(1, { message: 'La rutina debe contener al menos un hábito.' })
+   @ValidateNested({ each: true })
+   @Type(() => CreateRoutineHabitDto)
+   habits: CreateRoutineHabitDto[];
+   ```
+
+---
+
+### Defecto 7: Error 500 en Lugar de 409 Conflict al Asignar Rutina Duplicada a un Cliente
+* **Caso de Prueba:** `CP-INT-192`
+* **Historia de Usuario:** [US036](file:///workspaces/habitapp-workspace/habitapp/.docs/5-calidad-qa/historias_usuario_definitivas.md#L58) — Creación y asignación de rutinas maestras por entrenador (Riesgo: 6 - Alto)
+* **Severidad:** **P2 — Medio (Mapeo de Errores y Manejo de Excepciones)**
+* **Componente Afectado:** `CoachRepository.assignRoutineToClient` (`src/modules/coach/repositories/coach.repository.ts`) (`habitapp-api`)
+
+#### Descripción del Problema
+La base de datos cuenta con una restricción de unicidad en la tabla `seguimiento.usuario_rutina`. Cuando un entrenador intenta asignar por segunda vez una rutina que el cliente ya tiene asignada:
+1. PostgreSQL rechaza la inserción arrojando el código de error `23505` (`unique_violation`).
+2. En `CoachRepository.assignRoutineToClient`:
+   ```typescript
+   if (error) {
+     throw new InternalServerErrorException(`Failed to assign routine to client: ${error.message}`);
+   }
+   ```
+3. El backend responde con HTTP `500 Internal Server Error`, lo cual enmascara una condición esperada de negocio y vulnera el principio de que los errores de entrada/conflicto del cliente deben mapearse en la familia `4xx`.
+
+#### Comportamiento Esperado (Criterio US036.2 / CP-INT-192)
+La API debe interceptar el conflicto de asignación duplicada y devolver HTTP `409 Conflict` (o alternativamente `400 Bad Request`) con el mensaje:
+`"El cliente ya tiene asignada esta rutina actualmente."`, impidiendo la duplicación sin fallar internamente.
+
+#### Plan de Corrección
+1. En `coach.repository.ts`, evaluar el código de error de Supabase/PostgreSQL:
+   ```typescript
+   if (error) {
+     if (error.code === '23505') {
+       throw new ConflictException('El cliente ya tiene asignada esta rutina actualmente.');
+     }
+     throw new InternalServerErrorException(`Failed to assign routine to client: ${error.message}`);
+   }
+   ```
+
+---
+
 ## 3. Matriz de Priorización para el Sprint de Corrección
 
 ```
@@ -177,19 +316,27 @@ Actualmente:
       P0 │  [CP-INT-069, CP-INT-070]
          │  (Rachas en hábitos L-M-V)
          │
-      P1 │  [CP-INT-012, CP-INT-013]
-         │  (Endpoint POST /auth/refresh)
+      P1 │  [CP-INT-012, CP-INT-013]    [CP-INT-162..164, 188, 189, CP-SIS-117]
+         │  (POST /auth/refresh)        (Estado de cuenta y suspensión)
          │
-      P2 │  [CP-SIS-064]
-         │  (Selector Anual en Reportes)
-         └────────────────────────────────► Esfuerzo de Corrección
-             Bajo           Medio         Alto
+      P2 │  [CP-SIS-064]                [CP-INT-144]   [CP-INT-192]   [CP-INT-153..154, 190, 191, CP-SIS-114]
+         │  (Selector en Reportes)      (Mín 1 hábito) (Error 409)    (Paginación /admin/users)
+         └─────────────────────────────────────────────────────────────────────────────► Esfuerzo de Corrección
+             Bajo                       Medio                         Alto
 ```
 
 ### Orden de Ejecución Sugerido:
-1. **Inmediato (Fix Frontend P2):** Corregir el selector en `src/app/(dashboard)/reportes/page.tsx` (Esfuerzo: < 30 min). Desbloquea `CP-SIS-064`.
-2. **Prioridad 1 (Backend P1):** Implementar `POST /api/v1/auth/refresh` en `AuthController` y `AuthService` (Esfuerzo: ~2 horas). Habilita `CP-INT-012` y `CP-INT-013`.
-3. **Prioridad 0 (Backend P0):** Refactorizar el algoritmo en `RecordsRepository.calcularRacha` integrando el salto de días según `dias_semana` (Esfuerzo: ~3 horas). Resuelve `CP-INT-069` y `CP-INT-070`.
+1. **Inmediato (Fixes Frontend y DTOs P2 - Esfuerzo < 1 hora):**
+   - Corregir el selector en `src/app/(dashboard)/reportes/page.tsx` (`CP-SIS-064`).
+   - Agregar `@ArrayMinSize(1)` en `CreateRoutineDto` (`CP-INT-144`).
+   - Mapear error `23505` a `ConflictException` (409) en `CoachRepository.assignRoutineToClient` (`CP-INT-192`).
+2. **Prioridad 1 (Backend P1 - Esfuerzo ~3 horas):**
+   - Implementar `POST /api/v1/auth/refresh` en `AuthController` y `AuthService` (`CP-INT-012`, `CP-INT-013`).
+   - Implementar `PATCH /api/v1/admin/users/:id/status` y verificación de `estado_cuenta === 'Suspendido'` en login y sesión (`CP-INT-162..164, 188, 189, CP-SIS-117`).
+3. **Prioridad 2 (Backend P2 - Esfuerzo ~2 horas):**
+   - Implementar paginación con metadatos `meta` en `AdminController.listUsers` (`CP-INT-153, 154, 190, 191, CP-SIS-114`).
+4. **Prioridad 0 (Lógica Core P0 - Esfuerzo ~3 horas):**
+   - Refactorizar el algoritmo en `RecordsRepository.calcularRacha` integrando el salto de días según `dias_semana` (`CP-INT-069`, `CP-INT-070`).
 
 ---
 
