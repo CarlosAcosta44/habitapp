@@ -25,13 +25,13 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Run ESLint
         run: npm run lint
 
       - name: Run TypeScript type checking
-        run: npx tsc --noEmit
+        run: npx --no-install tsc --noEmit
 
       - name: Build production package
         run: npm run build
