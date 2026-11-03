@@ -7,6 +7,7 @@
 
 import { requireUserStrict as requireUser } from "@/lib/auth/require-user";
 import { ReportesService } from "@/services/reportes.service";
+import { HabitoService } from "@/services/habito.service";
 import { ReportesInteractiveView } from "@/components/reportes/ReportesInteractiveView";
 
 export const metadata = {
@@ -15,10 +16,13 @@ export const metadata = {
 };
 
 const reportesService = new ReportesService();
+const habitoService = new HabitoService();
 
 interface ReportesPageProps {
   searchParams?: Promise<{ period?: string }> | { period?: string };
 }
+
+const DEFAULT_COLORS = ['#2563EB', '#7C3AED', '#059669', '#EA580C', '#EC4899', '#0284C7'];
 
 export default async function ReportesPage({ searchParams }: ReportesPageProps) {
   const user = await requireUser();
@@ -28,14 +32,35 @@ export default async function ReportesPage({ searchParams }: ReportesPageProps) 
   const validPeriod: 'week' | 'month' | 'year' =
     rawPeriod === 'month' || rawPeriod === 'year' ? rawPeriod : 'week';
 
-  const [statsResult, habitosResult, comparativaResult] = await Promise.all([
+  const [statsResult, habitosResult, comparativaResult, activeHabitsResult] = await Promise.all([
     reportesService.getEstadisticas(user.id, validPeriod),
     reportesService.getHabitosReporte(user.id),
     reportesService.getComparativaSemanal(user.id),
+    habitoService.getAll("Activo"),
   ]);
 
   const stats = statsResult.success ? statsResult.data : null;
-  const habitos = habitosResult.success ? habitosResult.data : [];
+
+  // Fallback a los hábitos activos del usuario en caso de que el reporte de 30 días venga vacío o falle
+  const fallbackHabitos =
+    activeHabitsResult.success && Array.isArray(activeHabitsResult.data)
+      ? activeHabitsResult.data.map((h: any, idx: number) => ({
+          idHabito: h.idHabito || h.idhabito,
+          nombre: h.nombre,
+          descripcion:
+            h.descripcion ||
+            (h.metaDiaria ? `Meta: ${h.metaDiaria} al día` : 'Hábito activo'),
+          progreso: typeof h.progreso === 'number' ? h.progreso : 0,
+          porcentajeCambio: `${typeof h.progreso === 'number' ? h.progreso : 0}%`,
+          color: h.color || DEFAULT_COLORS[idx % DEFAULT_COLORS.length],
+        }))
+      : [];
+
+  const habitos =
+    habitosResult.success && Array.isArray(habitosResult.data) && habitosResult.data.length > 0
+      ? habitosResult.data
+      : fallbackHabitos;
+
   const comparativa = comparativaResult.success
     ? comparativaResult.data
     : {
@@ -47,12 +72,10 @@ export default async function ReportesPage({ searchParams }: ReportesPageProps) 
       };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-      <ReportesInteractiveView
-        stats={stats}
-        habitos={habitos}
-        comparativa={comparativa}
-      />
-    </div>
+    <ReportesInteractiveView
+      stats={stats}
+      habitos={habitos}
+      comparativa={comparativa}
+    />
   );
 }

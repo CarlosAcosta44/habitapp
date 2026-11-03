@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   TrendingUp,
   Flame,
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 import type { BackendUserSummary, ComparativaGraphed } from '@/services/reportes.service';
 import type { HabitoReporte } from '@/domain/reportes.types';
+import { NewHabitModal } from '@/components/modals/NewHabitModal';
 
 interface ReportesInteractiveViewProps {
   stats: BackendUserSummary | null;
@@ -30,6 +32,8 @@ export function ReportesInteractiveView({
   habitos,
   comparativa: _comparativa,
 }: ReportesInteractiveViewProps) {
+  const router = useRouter();
+  const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
   const [, setHoveredDay] = useState<number | null>(null);
 
   // Valores calculados con fallback elegante si el usuario es nuevo
@@ -83,7 +87,7 @@ export function ReportesInteractiveView({
   };
 
   return (
-    <div className="w-full space-y-8 pb-16">
+    <div className="flex flex-col w-full max-w-7xl mx-auto space-y-8 pb-16">
       {/* ── 1. Header con Título y Descarga (Diseño Oficial) ── */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
         <div>
@@ -225,10 +229,6 @@ export function ReportesInteractiveView({
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
               Puntos Acumulados
-            </span>
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
-              <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
-              Nivel Pro
             </span>
           </div>
           <div className="flex items-baseline justify-between mt-4">
@@ -492,12 +492,13 @@ export function ReportesInteractiveView({
                   <p className="text-xs text-slate-400 italic">
                     Aún no tienes hábitos activos para monitorear.
                   </p>
-                  <a
-                    href="/habitos/nueva"
-                    className="inline-block text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                  <button
+                    type="button"
+                    onClick={() => setIsNewHabitModalOpen(true)}
+                    className="inline-block text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                   >
                     + Crear mi primer hábito
-                  </a>
+                  </button>
                 </div>
               ) : (
                 habitos.map((h) => (
@@ -542,6 +543,12 @@ export function ReportesInteractiveView({
           </div>
         </div>
       </div>
+
+      <NewHabitModal
+        isOpen={isNewHabitModalOpen}
+        onClose={() => setIsNewHabitModalOpen(false)}
+        onHabitCreated={() => router.refresh()}
+      />
     </div>
   );
 }
