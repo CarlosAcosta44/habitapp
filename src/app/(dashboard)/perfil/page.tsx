@@ -6,20 +6,23 @@
 
 import { requireUserStrict as requireUser } from "@/lib/auth/require-user";
 import { UsuarioService } from "@/services/usuario.service";
-import { PerfilHeader } from "@/components/perfil/PerfilHeader";
-import { PerfilSidebar } from "@/components/perfil/PerfilSidebar";
-import { PerfilTabs } from "@/components/perfil/PerfilTabs";
-import { ActividadTab } from "@/components/perfil/ActividadTab";
-import { AmigosTab } from "@/components/perfil/AmigosTab";
-import { LogrosTab } from "@/components/perfil/LogrosTab";
+import { HabitoService } from "@/services/habito.service";
+import { PerfilInteractiveView } from "@/components/perfil/PerfilInteractiveView";
 
-export const metadata = { title: "Perfil | HabitApp" };
+export const metadata = {
+  title: "Perfil de Usuario | HabitApp",
+  description: "Gestiona tu identidad, revisa tus logros de bienestar y conecta con tu comunidad de hábitos diarios.",
+};
 
 export default async function PerfilPage() {
-  const user = await requireUser();
+  await requireUser();
   const perfilService = new UsuarioService();
+  const habitoService = new HabitoService();
 
-  const result = await perfilService.getPerfilDashboardData();
+  const [result, habitosRes] = await Promise.all([
+    perfilService.getPerfilDashboardData(),
+    habitoService.getAll("Activo"),
+  ]);
 
   if (!result.success) {
     return (
@@ -29,43 +32,13 @@ export default async function PerfilPage() {
     );
   }
 
-  const data = result.data;
+  const activeHabitsCount =
+    habitosRes.success && Array.isArray(habitosRes.data) ? habitosRes.data.length : 6;
 
-  return (
-    <div className="max-w-5xl mx-auto pb-12">
-      {/* Header del perfil */}
-      <PerfilHeader perfil={data.perfil} rachaGlobal={data.rachaGlobal} />
+  const data = {
+    ...result.data,
+    totalHabitosActivos: activeHabitsCount,
+  };
 
-      {/* Contenido con tabs + sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main content con tabs */}
-        <div className="lg:col-span-2">
-          <PerfilTabs tabs={["Actividad", "Amigos", "Logros"]}>
-            {/* Tab: Actividad */}
-            <ActividadTab actividad={data.actividad} />
-
-            {/* Tab: Amigos */}
-            <AmigosTab amigos={data.amigos} sugerenciasAmigos={data.sugerenciasAmigos} />
-
-            {/* Tab: Logros */}
-            <LogrosTab
-              logros={data.logros}
-              logroDestacado={data.logroDestacado}
-              proximoObjetivo={data.proximoObjetivo}
-              porcentajeObj={data.porcentajeObj}
-            />
-          </PerfilTabs>
-        </div>
-
-        {/* Sidebar derecho */}
-        <PerfilSidebar
-          diasActivosMensuales={data.diasActivosMensuales}
-          diasEnElMes={data.diasEnElMes}
-          eficienciaMensual={data.eficienciaMensual}
-          proximoObjetivo={data.proximoObjetivo}
-          amigos={data.amigos}
-        />
-      </div>
-    </div>
-  );
+  return <PerfilInteractiveView data={data} />;
 }

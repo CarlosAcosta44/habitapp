@@ -1,23 +1,573 @@
 "use client";
 
-import { useActionState, useState, useRef, useEffect } from "react";
-import { updatePerfilBasicoAction, updateAvatarAction } from "@/actions/perfil.actions";
-import type { ProfileForEdit } from "@/domain/perfil.types";
+import React, { useActionState, useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { updatePerfilBasicoAction, updateAvatarAction } from "@/actions/perfil.actions";
+import { updatePasswordAction } from "@/actions/seguridad.actions";
+import type { ProfileForEdit } from "@/domain/perfil.types";
+import {
+  Camera,
+  Flame,
+  Badge,
+  Lock,
+  Calendar,
+  Shield,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+  Circle,
+  Info,
+  Check,
+  Loader2,
+  ChevronDown,
+} from "lucide-react";
 
-interface Props {
-  profile: ProfileForEdit;
-  userId: string;
+interface EditProfileFormProps {
+  readonly profile: ProfileForEdit;
+  readonly email?: string;
+  readonly racha?: number;
 }
 
-export function EditProfileForm({ profile, userId }: Props) {
+function getAvatarErrorMessage(message?: string): string {
+  if (message?.includes("Bucket")) {
+    return "El almacenamiento de avatares está en mantenimiento.";
+  }
+  return message || "Error al subir la imagen";
+}
+
+function getSubmitButtonContent(isPending: boolean, isSuccess: boolean | undefined) {
+  if (isPending) {
+    return (
+      <>
+        <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+        <span>Guardando...</span>
+      </>
+    );
+  }
+  if (isSuccess) {
+    return (
+      <>
+        <Check className="w-4 h-4" aria-hidden="true" />
+        <span>¡Guardado con éxito!</span>
+      </>
+    );
+  }
+  return (
+    <>
+      <Check className="w-4 h-4" aria-hidden="true" />
+      <span>Guardar Cambios</span>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   1. Subcomponente: ProfileHeaderCard
+───────────────────────────────────────────────────────────── */
+interface ProfileHeaderCardProps {
+  readonly displayName: string;
+  readonly initials: string;
+  readonly userEmail: string;
+  readonly racha: number;
+  readonly avatarPreview: string | null;
+  readonly avatarMessage: { type: "success" | "error"; text: string } | null;
+  readonly onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+function ProfileHeaderCard({
+  displayName,
+  initials,
+  userEmail,
+  racha,
+  avatarPreview,
+  avatarMessage,
+  onAvatarChange,
+}: Readonly<ProfileHeaderCardProps>) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <section className="bg-white dark:bg-[#111827] rounded-3xl p-6 sm:p-7 shadow-xs border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-6">
+      {/* Interactive Avatar */}
+      <div className="relative group cursor-pointer shrink-0" title="Haz clic para cambiar foto de perfil">
+        <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-400 p-1 shadow-lg shadow-blue-500/20">
+          <div className="w-full h-full rounded-full bg-white dark:bg-[#111827] flex items-center justify-center overflow-hidden relative">
+            {avatarPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatarPreview} alt={displayName} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-3xl font-extrabold text-blue-600 dark:text-blue-400 select-none">
+                {initials}
+              </span>
+            )}
+
+            {/* Hover overlay */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white gap-1 cursor-pointer"
+            >
+              <Camera className="w-6 h-6 text-white" aria-hidden="true" />
+              <span className="text-[10px] uppercase font-bold tracking-wider">Cambiar</span>
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md hover:bg-blue-700 transition-transform group-hover:scale-105 cursor-pointer ring-2 ring-white dark:ring-[#111827]"
+          aria-label="Subir foto de perfil"
+        >
+          <Camera className="w-4 h-4" aria-hidden="true" />
+        </button>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/png, image/jpeg, image/webp"
+          onChange={onAvatarChange}
+          className="hidden"
+        />
+      </div>
+
+      {/* Identity Info & Streak */}
+      <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-1.5 flex-1">
+        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+            {displayName}
+          </h2>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-bold border border-amber-200/80 dark:border-amber-800/40">
+            <Flame className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 fill-amber-500" aria-hidden="true" />
+            <span>{racha} días de racha activa</span>
+          </div>
+        </div>
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          {userEmail}
+        </p>
+        <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+          Haz clic directamente sobre la foto para actualizarla en cualquier momento (máx. 5MB).
+        </p>
+
+        {avatarMessage && (
+          <div
+            className={`mt-2 px-3 py-1.5 rounded-xl text-xs font-semibold ${
+              avatarMessage.type === "success"
+                ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
+                : "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400"
+            }`}
+          >
+            {avatarMessage.text}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   2. Subcomponente: PersonalInfoSection
+───────────────────────────────────────────────────────────── */
+interface PersonalInfoSectionProps {
+  readonly profile: ProfileForEdit;
+  readonly userEmail: string;
+  readonly errors?: Record<string, string[]>;
+}
+
+function PersonalInfoSection({ profile, userEmail, errors }: Readonly<PersonalInfoSectionProps>) {
+  return (
+    <section className="bg-white dark:bg-[#111827] rounded-3xl p-6 sm:p-7 shadow-xs border border-slate-200/80 dark:border-slate-800 flex flex-col gap-6">
+      <div className="flex items-center gap-3.5 pb-1">
+        <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0 border border-blue-100 dark:border-blue-800/40">
+          <Badge className="w-5 h-5" aria-hidden="true" />
+        </div>
+        <div className="flex flex-col">
+          <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+            Información Personal
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Detalles esenciales de tu identidad y contacto en la plataforma
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+        {/* Nombre */}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="nombre" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            Nombre
+          </label>
+          <input
+            id="nombre"
+            name="nombre"
+            type="text"
+            defaultValue={profile.nombre}
+            className="w-full h-11 px-4 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-xs sm:text-sm rounded-xl border border-slate-200/80 dark:border-slate-800 focus:bg-white dark:focus:bg-[#111827] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
+            required
+          />
+          {errors?.nombre && (
+            <p className="text-[11px] text-rose-500 font-medium pl-1">{errors.nombre[0]}</p>
+          )}
+        </div>
+
+        {/* Apellido */}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="apellido" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            Apellido
+          </label>
+          <input
+            id="apellido"
+            name="apellido"
+            type="text"
+            defaultValue={profile.apellido}
+            className="w-full h-11 px-4 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-xs sm:text-sm rounded-xl border border-slate-200/80 dark:border-slate-800 focus:bg-white dark:focus:bg-[#111827] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
+            required
+          />
+          {errors?.apellido && (
+            <p className="text-[11px] text-rose-500 font-medium pl-1">{errors.apellido[0]}</p>
+          )}
+        </div>
+
+        {/* Teléfono móvil */}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="telefono" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            Teléfono móvil
+          </label>
+          <input
+            id="telefono"
+            name="telefono"
+            type="tel"
+            defaultValue={profile.telefono || ""}
+            placeholder="+34 612 345 678"
+            className="w-full h-11 px-4 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-xs sm:text-sm rounded-xl border border-slate-200/80 dark:border-slate-800 focus:bg-white dark:focus:bg-[#111827] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
+          />
+        </div>
+
+        {/* Género */}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="genero" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            Género
+          </label>
+          <div className="relative flex items-center">
+            <select
+              id="genero"
+              name="genero"
+              defaultValue={profile.genero || ""}
+              className="w-full h-11 px-4 pr-10 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-xs sm:text-sm rounded-xl border border-slate-200/80 dark:border-slate-800 focus:bg-white dark:focus:bg-[#111827] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition appearance-none cursor-pointer"
+            >
+              <option value="">Prefiero no responder</option>
+              <option value="Femenino">Femenino</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Otro">No binario / Otro</option>
+            </select>
+            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 pointer-events-none" aria-hidden="true" />
+          </div>
+        </div>
+
+        {/* Fecha de nacimiento */}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="fechanacimiento" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            Fecha de nacimiento
+          </label>
+          <div className="relative flex items-center">
+            <input
+              id="fechanacimiento"
+              name="fechanacimiento"
+              type="date"
+              defaultValue={profile.fechanacimiento || ""}
+              className="w-full h-11 px-4 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-xs sm:text-sm rounded-xl border border-slate-200/80 dark:border-slate-800 focus:bg-white dark:focus:bg-[#111827] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
+            />
+            <Calendar className="w-4 h-4 text-slate-400 absolute right-3 pointer-events-none" aria-hidden="true" />
+          </div>
+        </div>
+
+        {/* Correo Electrónico (Solo Lectura) */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between">
+            <label htmlFor="email" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+              Correo Electrónico Vinculado
+            </label>
+            <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-400">
+              Solo lectura
+            </span>
+          </div>
+          <div className="relative flex items-center">
+            <input
+              id="email"
+              type="email"
+              value={userEmail}
+              readOnly
+              className="w-full h-11 px-4 pr-10 bg-slate-100 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 text-xs sm:text-sm rounded-xl border border-slate-200/60 dark:border-slate-800 outline-none cursor-not-allowed select-all"
+            />
+            <Lock className="w-4 h-4 text-slate-400 absolute right-3 pointer-events-none" aria-hidden="true" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   3. Subcomponente: SecuritySection
+───────────────────────────────────────────────────────────── */
+function SecuritySection() {
+  const [showCurrPass, setShowCurrPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
+
+  const [currPasswordVal, setCurrPasswordVal] = useState("");
+  const [newPasswordVal, setNewPasswordVal] = useState("");
+  const [confirmPasswordVal, setConfirmPasswordVal] = useState("");
+
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
+  const [bioLockEnabled, setBioLockEnabled] = useState(false);
+
+  const [passState, setPassState] = useState<{ success?: string; error?: string } | null>(null);
+  const [isSavingPass, setIsSavingPass] = useState(false);
+
+  const hasMinLength = newPasswordVal.length >= 6;
+  const hasNumberOrSymbol = /[\d\W]/.test(newPasswordVal);
+
+  const handlePasswordSubmit = async () => {
+    if (!newPasswordVal) return;
+    if (newPasswordVal.length < 6) {
+      setPassState({ error: "La nueva contraseña debe tener al menos 6 caracteres." });
+      return;
+    }
+    if (newPasswordVal !== confirmPasswordVal) {
+      setPassState({ error: "Las contraseñas nuevas no coinciden." });
+      return;
+    }
+
+    setIsSavingPass(true);
+    setPassState(null);
+
+    const formData = new FormData();
+    formData.append("currentPassword", currPasswordVal);
+    formData.append("newPassword", newPasswordVal);
+    formData.append("confirmPassword", confirmPasswordVal);
+
+    try {
+      const res = await updatePasswordAction(null, formData);
+      setIsSavingPass(false);
+      if (res.error) {
+        setPassState({ error: res.error });
+      } else {
+        setPassState({ success: "Contraseña actualizada exitosamente." });
+        setCurrPasswordVal("");
+        setNewPasswordVal("");
+        setConfirmPasswordVal("");
+      }
+    } catch {
+      setIsSavingPass(false);
+      setPassState({ error: "Error al actualizar la contraseña." });
+    }
+  };
+
+  return (
+    <section className="bg-white dark:bg-[#111827] rounded-3xl p-6 sm:p-7 shadow-xs border border-slate-200/80 dark:border-slate-800 flex flex-col gap-6">
+      <div className="flex items-center gap-3.5 pb-1">
+        <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 border border-indigo-100 dark:border-indigo-800/40">
+          <Shield className="w-5 h-5" aria-hidden="true" />
+        </div>
+        <div className="flex flex-col">
+          <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+            Acceso y Seguridad
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Administra tus credenciales de inicio de sesión y autenticación en dos factores
+          </p>
+        </div>
+      </div>
+
+      {/* Formulario de contraseña */}
+      <div className="flex flex-col gap-4">
+        {/* Contraseña Actual */}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="currentPassword" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            Contraseña Actual
+          </label>
+          <div className="relative flex items-center">
+            <input
+              id="currentPassword"
+              type={showCurrPass ? "text" : "password"}
+              value={currPasswordVal}
+              onChange={(e) => setCurrPasswordVal(e.target.value)}
+              placeholder="••••••••••••"
+              className="w-full h-11 px-4 pr-11 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-xs sm:text-sm rounded-xl border border-slate-200/80 dark:border-slate-800 focus:bg-white dark:focus:bg-[#111827] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
+            />
+            <button
+              type="button"
+              onClick={() => setShowCurrPass(!showCurrPass)}
+              className="absolute right-3 p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+              aria-label={showCurrPass ? "Ocultar contraseña actual" : "Mostrar contraseña actual"}
+            >
+              {showCurrPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Nueva Contraseña y Confirmar */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="newPassword" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+              Nueva Contraseña
+            </label>
+            <div className="relative flex items-center">
+              <input
+                id="newPassword"
+                type={showNewPass ? "text" : "password"}
+                value={newPasswordVal}
+                onChange={(e) => setNewPasswordVal(e.target.value)}
+                placeholder="Al menos 6 caracteres"
+                className="w-full h-11 px-4 pr-11 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-xs sm:text-sm rounded-xl border border-slate-200/80 dark:border-slate-800 focus:bg-white dark:focus:bg-[#111827] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPass(!showNewPass)}
+                className="absolute right-3 p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                aria-label={showNewPass ? "Ocultar nueva contraseña" : "Mostrar nueva contraseña"}
+              >
+                {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="confirmPassword" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+              Confirmar Nueva Contraseña
+            </label>
+            <div className="relative flex items-center">
+              <input
+                id="confirmPassword"
+                type={showConfirmPass ? "text" : "password"}
+                value={confirmPasswordVal}
+                onChange={(e) => setConfirmPasswordVal(e.target.value)}
+                placeholder="Repite la contraseña"
+                className="w-full h-11 px-4 pr-11 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-xs sm:text-sm rounded-xl border border-slate-200/80 dark:border-slate-800 focus:bg-white dark:focus:bg-[#111827] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPass(!showConfirmPass)}
+                className="absolute right-3 p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                aria-label={showConfirmPass ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
+              >
+                {showConfirmPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Checklist de requisitos de seguridad */}
+        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              {hasMinLength ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" aria-hidden="true" />
+              ) : (
+                <Circle className="w-4 h-4 text-slate-400" aria-hidden="true" />
+              )}
+              <span className={hasMinLength ? "text-emerald-700 dark:text-emerald-400 font-semibold" : "text-slate-500"}>
+                Mínimo 6 caracteres
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              {hasNumberOrSymbol ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" aria-hidden="true" />
+              ) : (
+                <Circle className="w-4 h-4 text-slate-400" aria-hidden="true" />
+              )}
+              <span className={hasNumberOrSymbol ? "text-emerald-700 dark:text-emerald-400 font-semibold" : "text-slate-500"}>
+                Incluye números o símbolos
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handlePasswordSubmit}
+            disabled={!newPasswordVal || isSavingPass}
+            className="self-end sm:self-center px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold hover:bg-slate-800 dark:hover:bg-slate-100 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
+          >
+            {isSavingPass ? "Actualizando..." : "Actualizar Contraseña"}
+          </button>
+        </div>
+
+        {passState && (
+          <div
+            className={`p-3 rounded-xl text-xs font-semibold ${
+              passState.success
+                ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
+                : "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400"
+            }`}
+          >
+            {passState.success || passState.error}
+          </div>
+        )}
+      </div>
+
+      {/* Security Switches con labels accesibles */}
+      <div className="flex flex-col gap-4 divide-y divide-slate-100 dark:divide-slate-800">
+        {/* 2FA Switch */}
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+              Autenticación en dos pasos (2FA)
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Añade un código adicional vía SMS o App de autenticación al iniciar sesión.
+            </span>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer ml-4 shrink-0">
+            <span className="sr-only">Activar autenticación en dos pasos (2FA)</span>
+            <input
+              type="checkbox"
+              aria-label="Activar autenticación en dos pasos (2FA)"
+              checked={twoFactorEnabled}
+              onChange={(e) => setTwoFactorEnabled(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-12 h-7 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all after:shadow-xs peer-checked:bg-blue-600" />
+          </label>
+        </div>
+
+        {/* Biometric Switch */}
+        <div className="flex items-center justify-between pt-4">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+              Bloqueo biométrico rápido
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Permite autorizar cambios confidenciales usando Touch ID o Face ID en dispositivos compatibles.
+            </span>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer ml-4 shrink-0">
+            <span className="sr-only">Activar bloqueo biométrico rápido</span>
+            <input
+              type="checkbox"
+              aria-label="Activar bloqueo biométrico rápido"
+              checked={bioLockEnabled}
+              onChange={(e) => setBioLockEnabled(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-12 h-7 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all after:shadow-xs peer-checked:bg-blue-600" />
+          </label>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   4. Componente Principal: EditProfileForm
+───────────────────────────────────────────────────────────── */
+export function EditProfileForm({ profile, email, racha = 24 }: Readonly<EditProfileFormProps>) {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState(updatePerfilBasicoAction, null);
-  
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [avatarPreview, setAvatarPreview] = useState<string | null>(profile.fotoperfil);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
-  const [avatarMessage, setAvatarMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [avatarMessage, setAvatarMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   // Redirigir cuando el perfil básico es exitoso
   useEffect(() => {
@@ -32,11 +582,9 @@ export function EditProfileForm({ profile, userId }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Crear preview local instantáneo
     const previewUrl = URL.createObjectURL(file);
     setAvatarPreview(previewUrl);
 
-    // Iniciar carga al servidor
     setIsUploadingAvatar(true);
     setAvatarMessage(null);
 
@@ -45,198 +593,96 @@ export function EditProfileForm({ profile, userId }: Props) {
 
     try {
       const result = await updateAvatarAction(formData);
-      
       setIsUploadingAvatar(false);
-      
+
       if (result.success) {
-        setAvatarMessage({ type: 'success', text: result.message });
-        setAvatarPreview(result.data); // URL pública real
+        setAvatarMessage({ type: "success", text: result.message || "Foto actualizada" });
+        setAvatarPreview(result.data);
       } else {
-        // Manejo específico del bucket
-        if (result.message?.includes('Bucket not found') || (result as any).error?.includes('Bucket not found') || result.message?.includes('Storage')) {
-          setAvatarMessage({ type: 'error', text: "La subida de imágenes está en mantenimiento." });
-        } else {
-          setAvatarMessage({ type: 'error', text: result.message || "Error al subir la imagen" });
-        }
-        setAvatarPreview(profile.fotoperfil); // Revertir si falla
+        setAvatarMessage({
+          type: "error",
+          text: getAvatarErrorMessage(result.message),
+        });
+        setAvatarPreview(profile.fotoperfil);
       }
-    } catch (error) {
+    } catch {
       setIsUploadingAvatar(false);
-      setAvatarMessage({ type: 'error', text: "La subida de imágenes está en mantenimiento." });
-      setAvatarPreview(profile.fotoperfil); // Revertir si falla
+      setAvatarMessage({ type: "error", text: "Error inesperado al subir la imagen." });
+      setAvatarPreview(profile.fotoperfil);
     }
   };
 
+  const displayName = `${profile.nombre} ${profile.apellido}`.trim() || "Usuario HabitApp";
+  const initials = `${profile.nombre.charAt(0)}${profile.apellido.charAt(0)}`.toUpperCase() || "HA";
+  const userEmail = email || "usuario@ejemplo.com";
+
   return (
-    <div className="space-y-8">
-      {/* ── SECCIÓN DE AVATAR ── */}
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-        <div className="relative">
-          <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-indigo-500/30 bg-slate-800 flex items-center justify-center shrink-0">
-            {avatarPreview ? (
-              <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-4xl font-bold text-slate-400">
-                {profile.nombre.charAt(0)}{profile.apellido.charAt(0)}
-              </span>
-            )}
-            
-            {isUploadingAvatar && (
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
-                <svg aria-hidden="true" className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </div>
-            )}
-          </div>
-        </div>
-        
-        <div className="flex-1 text-center sm:text-left">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Foto de Perfil</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-sm">
-            Sube una imagen en formato JPG, PNG o WebP. Tamaño máximo recomendado: 5MB.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <button 
-              type="button" 
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploadingAvatar}
-              className="px-5 py-2.5 bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 font-semibold text-sm rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all disabled:opacity-50 flex items-center gap-2"
-            >
-              <svg aria-hidden="true" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-              </svg>
-              Cambiar Foto
-            </button>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleAvatarChange} 
-              accept="image/*" 
-              className="hidden" 
-            />
-          </div>
-          {avatarMessage && (
-            <div className={`mt-3 px-3 py-2 rounded-lg inline-block text-sm font-medium ${avatarMessage.type === 'success' ? 'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400' : 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'}`}>
-              {avatarMessage.text}
-            </div>
-          )}
-        </div>
-      </div>
+    <form action={formAction} className="flex flex-col gap-7">
+      {/* 1. Header con Avatar y Racha */}
+      <ProfileHeaderCard
+        displayName={displayName}
+        initials={initials}
+        userEmail={userEmail}
+        racha={racha}
+        avatarPreview={avatarPreview}
+        avatarMessage={avatarMessage}
+        onAvatarChange={handleAvatarChange}
+      />
 
-      <hr className="border-slate-200 dark:border-slate-800" />
+      {/* 2. Información Personal */}
+      <PersonalInfoSection
+        profile={profile}
+        userEmail={userEmail}
+        errors={state?.errors}
+      />
 
-      {/* ── FORMULARIO BÁSICO ── */}
-      <form action={formAction} className="space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label htmlFor="nombre" className="text-sm font-bold text-slate-700 dark:text-slate-300">Nombre</label>
-            <input 
-              id="nombre"
-              name="nombre"
-              type="text"
-              defaultValue={profile.nombre}
-              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-            />
-            {state?.errors?.nombre && (
-              <p className="text-xs text-red-500 font-medium pl-1">{state.errors.nombre[0]}</p>
-            )}
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="apellido" className="text-sm font-bold text-slate-700 dark:text-slate-300">Apellido</label>
-            <input 
-              id="apellido"
-              name="apellido"
-              type="text"
-              defaultValue={profile.apellido}
-              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-            />
-            {state?.errors?.apellido && (
-              <p className="text-xs text-red-500 font-medium pl-1">{state.errors.apellido[0]}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="telefono" className="text-sm font-bold text-slate-700 dark:text-slate-300">Teléfono</label>
-            <input 
-              id="telefono"
-              name="telefono"
-              type="text"
-              defaultValue={profile.telefono || ""}
-              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-            />
-            {state?.errors?.telefono && (
-              <p className="text-xs text-red-500 font-medium pl-1">{state.errors.telefono[0]}</p>
-            )}
-          </div>
+      {/* 3. Seguridad y Contraseña */}
+      <SecuritySection />
 
-          <div className="space-y-2">
-            <label htmlFor="genero" className="text-sm font-bold text-slate-700 dark:text-slate-300">Género</label>
-            <select
-              id="genero"
-              name="genero"
-              defaultValue={profile.genero || ""}
-              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition appearance-none"
-            >
-              <option value="">Prefiero no decirlo</option>
-              <option value="Masculino">Masculino</option>
-              <option value="Femenino">Femenino</option>
-              <option value="Otro">Otro</option>
-            </select>
-            {state?.errors?.genero && (
-              <p className="text-xs text-red-500 font-medium pl-1">{state.errors.genero[0]}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="fechanacimiento" className="text-sm font-bold text-slate-700 dark:text-slate-300">Fecha de Nacimiento</label>
-            <input 
-              id="fechanacimiento"
-              name="fechanacimiento"
-              type="date"
-              defaultValue={profile.fechanacimiento || ""}
-              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-            />
-            {state?.errors?.fechanacimiento && (
-              <p className="text-xs text-red-500 font-medium pl-1">{state.errors.fechanacimiento[0]}</p>
-            )}
-          </div>
+      {/* 4. Action Bar & Botón Guardar */}
+      <section className="bg-white dark:bg-[#111827] rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 max-w-md">
+          <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" aria-hidden="true" />
+          <span className="text-xs">
+            Los cambios tendrán efecto inmediato en todos tus dispositivos sincronizados.
+          </span>
         </div>
 
-        {/* Mensaje Global */}
-        {state?.message && (
-          <div className={`p-4 rounded-xl text-sm font-medium flex items-center gap-3 ${state.success ? 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400' : 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400'}`}>
-            <svg aria-hidden="true" className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              {state.success ? (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              )}
-            </svg>
-            {state.message}
-          </div>
-        )}
-
-        {/* Submit */}
-        <div className="flex justify-end pt-2">
-          <button 
-            type="submit" 
-            disabled={isPending || isUploadingAvatar}
-            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center min-w-[160px] disabled:opacity-70 disabled:shadow-none"
+        <div className="flex items-center gap-3 ml-auto">
+          <Link
+            href="/perfil"
+            className="px-5 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold transition-all active:scale-95 cursor-pointer"
           >
-            {isPending ? (
-              <span className="flex items-center gap-2">
-                <svg aria-hidden="true" className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Guardando...
-              </span>
-            ) : "Guardar Cambios"}
+            Descartar cambios
+          </Link>
+
+          <button
+            type="submit"
+            disabled={isPending || isUploadingAvatar}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all active:scale-95 disabled:opacity-60 cursor-pointer"
+          >
+            {getSubmitButtonContent(isPending, state?.success)}
           </button>
         </div>
-      </form>
-    </div>
+      </section>
+
+      {/* Mensaje Global de estado */}
+      {state?.message && (
+        <div
+          className={`p-4 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-3 ${
+            state.success
+              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/40"
+              : "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/40"
+          }`}
+        >
+          {state.success ? (
+            <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-500" aria-hidden="true" />
+          ) : (
+            <Info className="w-5 h-5 shrink-0 text-rose-500" aria-hidden="true" />
+          )}
+          <span>{state.message}</span>
+        </div>
+      )}
+    </form>
   );
 }

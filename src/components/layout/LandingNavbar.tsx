@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-export function LandingNavbar() {
+export function LandingNavbar({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
   const scrollTo = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -39,10 +39,10 @@ export function LandingNavbar() {
       </div>
 
       <Link
-        href="/login"
+        href={isAuthenticated ? "/habitos" : "/login"}
         className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
       >
-        INICIAR SESIÓN
+        {isAuthenticated ? "IR AL DASHBOARD" : "INICIAR SESIÓN"}
       </Link>
     </motion.nav>
   );
