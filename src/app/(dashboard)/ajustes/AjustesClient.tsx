@@ -43,7 +43,7 @@ interface AjustesClientProps {
   user?: AjustesUser;
 }
 
-export function AjustesClient({ user }: AjustesClientProps) {
+export function AjustesClient({ user }: Readonly<AjustesClientProps>) {
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">("light");
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [selectedSound, setSelectedSound] = useState<"campanas" | "naturaleza" | "silencio">("campanas");
@@ -134,7 +134,7 @@ export function AjustesClient({ user }: AjustesClientProps) {
   const handleShare = () => {
     if (typeof window === "undefined") return;
     const url = window.location.origin;
-    navigator.clipboard.writeText(url);
+    void navigator.clipboard.writeText(url).catch(() => {});
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
   };
@@ -334,8 +334,10 @@ export function AjustesClient({ user }: AjustesClientProps) {
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                <span className="sr-only">Activar notificaciones</span>
                 <input
                   type="checkbox"
+                  aria-label="Activar notificaciones"
                   checked={notificationsEnabled}
                   onChange={(e) => setNotificationsEnabled(e.target.checked)}
                   className="sr-only peer"
@@ -523,8 +525,10 @@ export function AjustesClient({ user }: AjustesClientProps) {
                   </div>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                  <span className="sr-only">Sincronizar Apple Health o Google Fit</span>
                   <input
                     type="checkbox"
+                    aria-label="Sincronizar Apple Health o Google Fit"
                     checked={healthSync}
                     onChange={(e) => setHealthSync(e.target.checked)}
                     className="sr-only peer"
@@ -551,8 +555,10 @@ export function AjustesClient({ user }: AjustesClientProps) {
                   </div>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                  <span className="sr-only">Modo Privado en Comunidad</span>
                   <input
                     type="checkbox"
+                    aria-label="Modo Privado en Comunidad"
                     checked={privateCommunity}
                     onChange={(e) => setPrivateCommunity(e.target.checked)}
                     className="sr-only peer"
@@ -663,7 +669,9 @@ export function AjustesClient({ user }: AjustesClientProps) {
               <button
                 type="button"
                 onClick={() => {
-                  navigator.clipboard.writeText("https://meet.habitapp.io/sesion-mindfulness-ev724");
+                  void navigator.clipboard
+                    .writeText("https://meet.habitapp.io/sesion-mindfulness-ev724")
+                    .catch(() => {});
                   setVideoModalOpen(false);
                 }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 hover:bg-blue-700 transition cursor-pointer"

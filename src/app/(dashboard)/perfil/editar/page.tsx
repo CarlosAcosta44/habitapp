@@ -98,7 +98,6 @@ export default async function EditarPerfilPage() {
       {/* ── Formulario Completo ── */}
       <EditProfileForm
         profile={profile}
-        userId={user.id}
         email={user.email}
         racha={racha > 0 ? racha : 24}
       />

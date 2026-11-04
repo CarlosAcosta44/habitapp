@@ -27,14 +27,22 @@ interface ReportesInteractiveViewProps {
   comparativa: ComparativaGraphed;
 }
 
+function getDefaultActivos(i: number): number {
+  const isWeekend = i % 7 === 5 || i % 7 === 6;
+  if (isWeekend) {
+    return i % 2 === 0 ? 2 : 0;
+  }
+  return ((i * 3 + 2) % 6) + 4;
+}
+
 export function ReportesInteractiveView({
   stats,
   habitos,
   comparativa: _comparativa,
-}: ReportesInteractiveViewProps) {
+}: Readonly<ReportesInteractiveViewProps>) {
   const router = useRouter();
   const [isNewHabitModalOpen, setIsNewHabitModalOpen] = useState(false);
-  const [, setHoveredDay] = useState<number | null>(null);
+  const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
   // Valores calculados con fallback elegante si el usuario es nuevo
   const cumplimiento = stats?.cumplimiento_global ?? stats?.tasa_diaria ?? 84;
@@ -45,7 +53,7 @@ export function ReportesInteractiveView({
   const puntosTotales = stats?.puntos_totales ?? 1420;
 
   // Volumen semanal: [L, M, X, J, V, S, D]
-  const volumen = stats?.volumen_semanal && stats.volumen_semanal.length === 7
+  const volumen = stats?.volumen_semanal?.length === 7
     ? stats.volumen_semanal
     : [6, 5, 9, 7, 6, 4, 5];
   const maxVolumen = Math.max(...volumen, 1);
@@ -58,7 +66,7 @@ export function ReportesInteractiveView({
     ? stats.consistencia_mes
     : Array.from({ length: 30 }, (_, i) => ({
         fecha: `Día ${i + 1}`,
-        activos: (i % 7 === 5 || i % 7 === 6) ? (i % 2 === 0 ? 2 : 0) : ((i * 3 + 2) % 6) + 4,
+        activos: getDefaultActivos(i),
       }));
 
   // Más constante y oportunidad de mejora
@@ -279,7 +287,7 @@ export function ReportesInteractiveView({
 
                   return (
                     <div
-                      key={idx}
+                      key={diasNombres[idx]}
                       onMouseEnter={() => setHoveredDay(idx)}
                       onMouseLeave={() => setHoveredDay(null)}
                       className="flex flex-col items-center gap-1.5 h-full justify-end group cursor-pointer"
@@ -372,7 +380,7 @@ export function ReportesInteractiveView({
                   const dayNum = index + 1;
                   return (
                     <div
-                      key={index}
+                      key={d.fecha || `heatmap-day-${dayNum}`}
                       title={`Día ${dayNum}: ${d.activos} hábitos cumplidos`}
                       className={`aspect-square rounded-xl flex flex-col items-center justify-center text-xs font-semibold cursor-pointer transition-transform duration-200 hover:scale-105 ${getIntensityClass(
                         d.activos,

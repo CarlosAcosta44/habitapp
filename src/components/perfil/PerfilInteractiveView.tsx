@@ -12,13 +12,18 @@ import {
   Sun,
   Droplet,
   Sparkles,
-  Award,
   UserPlus,
   Check,
   Search,
-  CheckCircle2,
 } from "lucide-react";
 import { AddFriendForm } from "./AddFriendForm";
+
+function getFriendColor(idx: number): string {
+  const remainder = idx % 3;
+  if (remainder === 0) return "bg-blue-100 text-blue-700";
+  if (remainder === 1) return "bg-purple-100 text-purple-700";
+  return "bg-emerald-100 text-emerald-700";
+}
 
 interface PerfilData {
   perfil: any;
@@ -40,7 +45,7 @@ interface PerfilInteractiveViewProps {
   data: PerfilData;
 }
 
-export function PerfilInteractiveView({ data }: PerfilInteractiveViewProps) {
+export function PerfilInteractiveView({ data }: Readonly<PerfilInteractiveViewProps>) {
   const [copied, setCopied] = useState(false);
   const [saludos, setSaludos] = useState<Record<string, boolean>>({});
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
@@ -57,7 +62,7 @@ export function PerfilInteractiveView({ data }: PerfilInteractiveViewProps) {
 
   const handleShare = () => {
     if (typeof window === "undefined") return;
-    navigator.clipboard.writeText(window.location.href);
+    void navigator.clipboard.writeText(window.location.href).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -146,7 +151,7 @@ export function PerfilInteractiveView({ data }: PerfilInteractiveViewProps) {
           nombre: `${a.nombre || "Amigo"} ${a.apellido || ""}`.trim(),
           subtitulo: a.racha ? `${a.racha} días en racha` : "Compañero de hábitos",
           isRacha: !!a.racha,
-          color: idx % 3 === 0 ? "bg-blue-100 text-blue-700" : idx % 3 === 1 ? "bg-purple-100 text-purple-700" : "bg-emerald-100 text-emerald-700",
+          color: getFriendColor(idx),
           initials: `${a.nombre?.charAt(0) || "A"}${a.apellido?.charAt(0) || ""}`.toUpperCase(),
         }))
       : fallbackAmigos;

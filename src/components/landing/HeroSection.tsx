@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, QrCode, Smartphone, Bell, Medal } from "lucide-react";
 
-export function HeroSection({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
+export function HeroSection({ isAuthenticated = false }: Readonly<{ isAuthenticated?: boolean }>) {
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-24 pb-12 overflow-hidden bg-[#0A0713]">
       {/* Luces de fondo decorativas */}

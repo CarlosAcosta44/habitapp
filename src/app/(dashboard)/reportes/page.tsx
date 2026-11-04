@@ -24,7 +24,7 @@ interface ReportesPageProps {
 
 const DEFAULT_COLORS = ['#2563EB', '#7C3AED', '#059669', '#EA580C', '#EC4899', '#0284C7'];
 
-export default async function ReportesPage({ searchParams }: ReportesPageProps) {
+export default async function ReportesPage({ searchParams }: Readonly<ReportesPageProps>) {
   const user = await requireUser();
   const resolvedParams = searchParams ? await searchParams : {};
   const rawPeriod = resolvedParams.period;

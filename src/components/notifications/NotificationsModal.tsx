@@ -19,7 +19,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { useNotifications } from './NotificationsContext';
-import type { Notification, NotificationType } from '@/domain/notification.types';
+import type { NotificationType } from '@/domain/notification.types';
 
 export function NotificationsModal() {
   const {
@@ -139,16 +139,19 @@ export function NotificationsModal() {
   };
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/65 backdrop-blur-sm animate-in fade-in duration-200"
-      onClick={closeNotifications}
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      open
       aria-labelledby="notifications-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/65 backdrop-blur-sm border-none w-screen h-screen max-w-none max-h-none m-0 overflow-y-auto"
     >
+      <button
+        type="button"
+        aria-label="Cerrar modal de notificaciones"
+        onClick={closeNotifications}
+        className="fixed inset-0 bg-transparent w-full h-full cursor-default -z-10 border-none p-0"
+      />
       <div
-        className="relative w-full max-w-xl bg-white dark:bg-[#111827] rounded-3xl shadow-[0_20px_60px_rgba(15,23,42,0.25)] border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[88vh] animate-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-xl bg-white dark:bg-[#111827] rounded-3xl shadow-[0_20px_60px_rgba(15,23,42,0.25)] border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[88vh] animate-in zoom-in-95 duration-200 z-10"
       >
         {/* ── HEADER DEL MODAL ── */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100 dark:border-slate-800/80">
@@ -301,14 +304,15 @@ export function NotificationsModal() {
                 const Icon = config.icon;
 
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={n.id}
                     onClick={() => {
                       if (!n.isRead) {
                         markAsRead(n.id);
                       }
                     }}
-                    className={`group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer ${
+                    className={`w-full text-left group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer ${
                       n.isRead
                         ? 'bg-slate-50/50 dark:bg-slate-900/30 border-slate-200/60 dark:border-slate-800/40 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
                         : 'bg-white dark:bg-[#151c2e] border-indigo-200 dark:border-indigo-500/30 shadow-sm hover:shadow-md hover:border-[#572de4]/40'
@@ -350,22 +354,17 @@ export function NotificationsModal() {
                       </div>
                     </div>
 
-                    {/* Botón marcar leída individual */}
+                    {/* Indicador de acción rápida si no está leída */}
                     {!n.isRead && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          markAsRead(n.id);
-                        }}
+                      <span
                         title="Marcar como leída"
                         aria-label="Marcar como leída"
-                        className="self-center p-1.5 rounded-lg text-slate-400 hover:text-[#572de4] dark:hover:text-indigo-400 hover:bg-[#572de4]/10 dark:hover:bg-indigo-950/60 transition-colors flex-shrink-0 cursor-pointer"
+                        className="self-center p-1.5 rounded-lg text-slate-400 group-hover:text-[#572de4] dark:group-hover:text-indigo-400 group-hover:bg-[#572de4]/10 dark:group-hover:bg-indigo-950/60 transition-colors flex-shrink-0"
                       >
                         <Check className="w-4 h-4" />
-                      </button>
+                      </span>
                     )}
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -392,7 +391,7 @@ export function NotificationsModal() {
           </button>
         </div>
       </div>
-    </div>,
+    </dialog>,
     document.body
   );
 }

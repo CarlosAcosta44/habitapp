@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   getNotificationsAction, 
   marcarComoLeidaAction, 
@@ -23,7 +23,7 @@ interface NotificationsContextValue {
 
 const NotificationsContext = createContext<NotificationsContextValue | undefined>(undefined);
 
-export function NotificationsProvider({ children }: { children: React.ReactNode }) {
+export function NotificationsProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
@@ -106,21 +106,35 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
+  const contextValue = useMemo<NotificationsContextValue>(
+    () => ({
+      isOpen,
+      openNotifications,
+      closeNotifications,
+      unreadCount,
+      notifications,
+      loading,
+      error,
+      refresh,
+      markAsRead,
+      markAllAsRead,
+    }),
+    [
+      isOpen,
+      openNotifications,
+      closeNotifications,
+      unreadCount,
+      notifications,
+      loading,
+      error,
+      refresh,
+      markAsRead,
+      markAllAsRead,
+    ]
+  );
+
   return (
-    <NotificationsContext.Provider
-      value={{
-        isOpen,
-        openNotifications,
-        closeNotifications,
-        unreadCount,
-        notifications,
-        loading,
-        error,
-        refresh,
-        markAsRead,
-        markAllAsRead,
-      }}
-    >
+    <NotificationsContext.Provider value={contextValue}>
       {children}
     </NotificationsContext.Provider>
   );
