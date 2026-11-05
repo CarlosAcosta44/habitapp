@@ -35,7 +35,7 @@ export default defineConfig({
   projects: [
     {
       name: 'setup',
-      testMatch: /.*\.setup\.ts/,
+      testMatch: /\.setup\.ts$/,
     },
     {
       name: 'chromium',

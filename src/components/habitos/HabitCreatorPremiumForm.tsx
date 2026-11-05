@@ -49,8 +49,9 @@ export function HabitCreatorPremiumForm({ categorias }: HabitCreatorPremiumFormP
 
           <section className="mb-8">
             <h2 className="text-sm font-bold tracking-[0.2em] text-[#9DA8FF] uppercase mb-4">01 Informacion basica</h2>
-            <label className="block text-sm text-slate-400 mb-3">Como se llama tu nuevo habito?</label>
+            <label htmlFor="premium-habit-name" className="block text-sm text-slate-400 mb-3">Como se llama tu nuevo habito?</label>
             <input
+              id="premium-habit-name"
               type="text"
               value={state.habitName}
               onChange={(e) => actions.setHabitName(e.target.value)}

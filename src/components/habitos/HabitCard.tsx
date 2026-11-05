@@ -40,7 +40,15 @@ export function HabitCard({ habito, rachaActual }: HabitCardProps) {
   return (
     <>
       <div
+        role="button"
+        tabIndex={0}
         onClick={() => setIsModalOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsModalOpen(true);
+          }
+        }}
         className={`
           cursor-pointer
           relative p-4 rounded-3xl border transition-all duration-200 hover:shadow-md

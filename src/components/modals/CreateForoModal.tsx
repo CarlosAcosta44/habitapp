@@ -179,7 +179,7 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
 
           {/* Categoría / Hashtag libre */}
           <div className="flex flex-col gap-2.5">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+            <label htmlFor="foro-categoria" className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <Tag className="w-3.5 h-3.5 text-[#572de4]" />
                 <span>Categoría o Hashtag</span>
@@ -194,6 +194,7 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
                 #
               </span>
               <input
+                id="foro-categoria"
                 type="text"
                 value={categoria.replace(/^#/, '')}
                 onChange={(e) => {
@@ -237,10 +238,11 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
 
           {/* Título */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            <label htmlFor="foro-titulo" className="text-xs font-bold text-slate-700 dark:text-slate-300">
               Título de la conversación (máx. 45 caracteres)
             </label>
             <input
+              id="foro-titulo"
               type="text"
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
@@ -256,10 +258,11 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
 
           {/* Descripción / Reflexión */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            <label htmlFor="foro-descripcion" className="text-xs font-bold text-slate-700 dark:text-slate-300">
               Tu mensaje o reflexión
             </label>
             <textarea
+              id="foro-descripcion"
               rows={4}
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
@@ -275,7 +278,7 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
 
           {/* Imagen adjunta desde explorador de archivos */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+            <label htmlFor="foro-file-input" className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <ImageIcon className="w-3.5 h-3.5 text-[#572de4]" />
                 <span>Imagen adjunta (opcional)</span>
@@ -283,6 +286,7 @@ export function CreateForoModal({ isOpen, onClose }: CreateForoModalProps) {
             </label>
 
             <input
+              id="foro-file-input"
               ref={fileInputRef}
               type="file"
               accept="image/*"

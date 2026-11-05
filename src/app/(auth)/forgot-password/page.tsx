@@ -61,10 +61,11 @@ export default function ForgotPasswordPage() {
             )}
 
             <div className="space-y-1.5 flex flex-col">
-              <label className="text-[13px] italic text-slate-400">
+              <label htmlFor="forgot-email" className="text-[13px] italic text-slate-400">
                 Correo electrónico asociado
               </label>
               <input 
+                id="forgot-email"
                 type="email" 
                 name="email" 
                 required 

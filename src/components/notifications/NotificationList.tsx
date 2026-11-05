@@ -174,7 +174,17 @@ export function NotificationList() {
           return (
             <div
               key={n.id}
-              onClick={() => !n.isRead && handleMarkAsRead(n.id)}
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                if (!n.isRead) void handleMarkAsRead(n.id);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  if (!n.isRead) void handleMarkAsRead(n.id);
+                }
+              }}
               className={`group flex items-start gap-4 p-5 rounded-3xl border transition-all cursor-pointer ${
                 n.isRead
                   ? 'bg-white dark:bg-[#111827]/40 border-slate-200 dark:border-slate-800/40 text-slate-700 dark:text-slate-400 opacity-75 hover:opacity-100'
@@ -208,9 +218,10 @@ export function NotificationList() {
               {/* Botón de acción rápida si no está leída */}
               {!n.isRead && (
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleMarkAsRead(n.id);
+                    void handleMarkAsRead(n.id);
                   }}
                   title="Marcar como leída"
                   className="self-center p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all focus:opacity-100"

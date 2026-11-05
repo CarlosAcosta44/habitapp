@@ -24,7 +24,7 @@ export function AdminUsersList() {
   };
 
   useEffect(() => {
-    loadUsers();
+    void loadUsers();
   }, []);
 
   const handleChangeRole = async (userId: string, currentRoleName: string, newRoleName: string) => {

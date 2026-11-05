@@ -214,13 +214,14 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200"
-      onClick={onClose}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
       role="dialog"
       aria-modal="true"
     >
       <div
         className="relative w-full max-w-2xl bg-white dark:bg-[#111827] rounded-3xl shadow-[0_20px_50px_rgba(87,45,228,0.2)] border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()}
       >
         {/* ── Header del Modal ── */}
         <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-slate-100 dark:border-slate-800">
@@ -263,10 +264,11 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
 
           {/* 1. Nombre del hábito */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+            <label htmlFor="new-habit-nombre" className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
               Nombre del hábito *
             </label>
             <input
+              id="new-habit-nombre"
               type="text"
               required
               value={nombre}
@@ -278,9 +280,9 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
 
           {/* 2. Icono y Categoría */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+            <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
               Icono y Categoría
-            </label>
+            </span>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
               {CATEGORIAS_CONFIG.map((cat) => {
                 const Icon = cat.icon;
@@ -314,10 +316,11 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
 
           {/* 3. Propósito y motivación */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+            <label htmlFor="new-habit-descripcion" className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
               Propósito y motivación
             </label>
             <textarea
+              id="new-habit-descripcion"
               rows={2}
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
@@ -329,9 +332,9 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
           {/* 4. Frecuencia y Días */}
           <div className="flex flex-col gap-2.5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+              <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                 Frecuencia y Días
-              </label>
+              </span>
 
               {/* Segmented Controller de Frecuencia */}
               <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200/60 dark:border-slate-700/40 w-full sm:w-auto">
@@ -402,11 +405,12 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Meta diaria */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+              <label htmlFor="new-habit-meta" className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                 Meta diaria
               </label>
               <div className="flex items-center gap-2">
                 <input
+                  id="new-habit-meta"
                   type="number"
                   min={1}
                   max={9999}
@@ -456,9 +460,9 @@ export function NewHabitModal({ isOpen, onClose, onHabitCreated }: NewHabitModal
             {/* Recordatorios */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                   Recordatorios
-                </label>
+                </span>
                 <div className="flex items-center gap-2">
                   <span
                     className={`text-xs font-semibold px-2 py-0.5 rounded-full ${

@@ -39,7 +39,7 @@ export default function AdminUsersPage() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    void fetchUsers();
   }, []);
 
   const handleRoleChange = async (userId: string, currentRole: string, newRole: string) => {

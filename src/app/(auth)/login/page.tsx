@@ -99,10 +99,11 @@ export default function LoginPage() {
           )}
 
           <div className="space-y-1.5 flex flex-col">
-            <label className="text-[13px] italic text-slate-400">
+            <label htmlFor="login-email" className="text-[13px] italic text-slate-400">
               Correo electrónico
             </label>
             <input 
+              id="login-email"
               type="email" 
               name="email" 
               required 
@@ -113,7 +114,7 @@ export default function LoginPage() {
 
           <div className="space-y-1.5 flex flex-col relative">
             <div className="flex justify-between items-center w-full">
-              <label className="text-[13px] italic text-slate-400">
+              <label htmlFor="login-password" className="text-[13px] italic text-slate-400">
                 Contraseña
               </label>
               <Link href="/forgot-password" className="text-[13px] text-slate-400 hover:text-indigo-400 transition-colors">
@@ -122,6 +123,7 @@ export default function LoginPage() {
             </div>
             <div className="relative">
               <input 
+                id="login-password"
                 type={showPassword ? 'text' : 'password'} 
                 name="password" 
                 required 
