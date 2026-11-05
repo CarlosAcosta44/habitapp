@@ -468,13 +468,14 @@ export function HabitDetailModal({
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200"
-      onClick={onClose}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
       role="dialog"
       aria-modal="true"
     >
       <div
         className="relative w-full max-w-2xl bg-white dark:bg-[#111827] rounded-3xl shadow-[0_20px_50px_rgba(87,45,228,0.2)] border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()}
       >
         {/* ── Encabezado del Modal ── */}
         <div className="relative px-5 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-slate-100 dark:border-slate-800 flex flex-col gap-3">
@@ -577,10 +578,11 @@ export function HabitDetailModal({
             /* ═══════════ MODO EDICIÓN ═══════════ */
             <form id="edit-habit-form" onSubmit={handleSaveEdit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                <label htmlFor="edit-habit-nombre" className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                   Nombre del hábito *
                 </label>
                 <input
+                  id="edit-habit-nombre"
                   type="text"
                   required
                   value={editNombre}
@@ -590,10 +592,11 @@ export function HabitDetailModal({
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                <label htmlFor="edit-habit-descripcion" className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                   Propósito y motivación
                 </label>
                 <textarea
+                  id="edit-habit-descripcion"
                   rows={2}
                   value={editDescripcion}
                   onChange={(e) => setEditDescripcion(e.target.value)}
@@ -605,9 +608,9 @@ export function HabitDetailModal({
               {/* Frecuencia y Días */}
               <div className="flex flex-col gap-2.5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                  <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                     Frecuencia y Días
-                  </label>
+                  </span>
 
                   {/* Segmented Controller de Frecuencia */}
                   <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200/60 dark:border-slate-700/40 w-full sm:w-auto">
@@ -785,9 +788,9 @@ export function HabitDetailModal({
 
               {/* Estado del hábito */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                   Estado del hábito
-                </label>
+                </span>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"

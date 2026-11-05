@@ -198,8 +198,9 @@ export function CoachDashboardClient({ initialClients, initialRoutines }: { init
             </h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Nombre</label>
+                <label htmlFor="coach-routine-name" className="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Nombre</label>
                 <input 
+                  id="coach-routine-name"
                   type="text" 
                   value={routineForm.name}
                   onChange={(e) => setRoutineForm({...routineForm, name: e.target.value})}
@@ -208,8 +209,9 @@ export function CoachDashboardClient({ initialClients, initialRoutines }: { init
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Descripción</label>
+                <label htmlFor="coach-routine-desc" className="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Descripción</label>
                 <textarea 
+                  id="coach-routine-desc"
                   value={routineForm.description}
                   onChange={(e) => setRoutineForm({...routineForm, description: e.target.value})}
                   className="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 h-24"

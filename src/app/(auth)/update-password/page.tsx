@@ -49,11 +49,12 @@ export default function UpdatePasswordPage() {
           )}
 
           <div className="space-y-1.5 flex flex-col">
-            <label className="text-[13px] italic text-slate-400">
+            <label htmlFor="update-password" className="text-[13px] italic text-slate-400">
               Nueva contraseña
             </label>
             <div className="relative">
               <input 
+                id="update-password"
                 type={showPassword ? 'text' : 'password'} 
                 name="password" 
                 required 
@@ -73,11 +74,12 @@ export default function UpdatePasswordPage() {
           </div>
 
           <div className="space-y-1.5 flex flex-col">
-            <label className="text-[13px] italic text-slate-400">
+            <label htmlFor="update-confirm-password" className="text-[13px] italic text-slate-400">
               Confirmar nueva contraseña
             </label>
             <div className="relative">
               <input 
+                id="update-confirm-password"
                 type={showConfirmPassword ? 'text' : 'password'} 
                 name="confirm_password" 
                 required 
