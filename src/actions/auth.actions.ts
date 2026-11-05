@@ -88,7 +88,7 @@ export async function loginAction(formData: FormData) {
     return { error: result.error || 'Correo o contraseña inválidos.' }
   }
 
-  const { access_token, user } = result.data
+  const { access_token, refresh_token, user } = result.data
   if (access_token) {
     const cookieStore = await cookies()
     cookieStore.set('access_token', access_token, {
@@ -98,6 +98,16 @@ export async function loginAction(formData: FormData) {
       path: '/',
       maxAge: 60 * 60 * 24 * 7 // 7 days
     })
+
+    if (refresh_token) {
+      cookieStore.set('refresh_token', refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7 // 7 days
+      })
+    }
     
     if (user?.idrol) {
        cookieStore.set('user_role', user.idrol.toString(), { path: '/' })
@@ -161,7 +171,7 @@ export async function registerAction(
     return { error: result.error || 'Error al registrar usuario.' }
   }
 
-  const { access_token, user } = result.data
+  const { access_token, refresh_token, user } = result.data
 
   if (access_token) {
     const cookieStore = await cookies()
@@ -172,6 +182,16 @@ export async function registerAction(
       path: '/',
       maxAge: 60 * 60 * 24 * 7
     })
+
+    if (refresh_token) {
+      cookieStore.set('refresh_token', refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7
+      })
+    }
     
     if (user?.idrol) {
        cookieStore.set('user_role', user.idrol.toString(), { path: '/' })
@@ -193,6 +213,7 @@ export async function logoutAction() {
   }
   
   cookieStore.delete('access_token')
+  cookieStore.delete('refresh_token')
   cookieStore.delete('user_role')
   
   revalidatePath('/', 'layout')

@@ -9,8 +9,8 @@ import type { Result } from "@/lib/result";
 
 export class AuthService {
   // ─── Login ──────────────────────────────────────────────────────────────────
-  async login(credentials: { email: string; password: string }): Promise<Result<{ access_token: string, user: any }>> {
-    return authRepository.post<{ access_token: string, user: any }>('/auth/login', credentials);
+  async login(credentials: { email: string; password: string }): Promise<Result<{ access_token: string; refresh_token?: string; user: any }>> {
+    return authRepository.post<{ access_token: string; refresh_token?: string; user: any }>('/auth/login', credentials);
   }
 
   // ─── Registro ───────────────────────────────────────────────────────────────
@@ -21,8 +21,15 @@ export class AuthService {
     apellido: string;
     fechanacimiento?: string;
     genero: string;
-  }): Promise<Result<{ access_token: string, user: any }>> {
-    return authRepository.post<{ access_token: string, user: any }>('/auth/register', payload);
+  }): Promise<Result<{ access_token: string; refresh_token?: string; user: any }>> {
+    return authRepository.post<{ access_token: string; refresh_token?: string; user: any }>('/auth/register', payload);
+  }
+
+  // ─── Refrescar Token ────────────────────────────────────────────────────────
+  async refreshToken(refreshToken: string): Promise<Result<{ access_token: string; refresh_token?: string; user: any }>> {
+    return authRepository.post<{ access_token: string; refresh_token?: string; user: any }>('/auth/refresh', {
+      refreshToken,
+    });
   }
 
   // ─── Logout ─────────────────────────────────────────────────────────────────

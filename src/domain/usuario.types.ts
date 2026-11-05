@@ -26,6 +26,19 @@ export interface UserProfileDto {
   puntostotales: number;
   idrol: string;
   nombrerol: string;
+  estado_cuenta?: string;
+}
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PaginatedUsersResponse {
+  data: UserProfileDto[];
+  meta: PaginationMeta;
 }
 
 export interface UpdateUserProfileDto {

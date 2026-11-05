@@ -13,10 +13,17 @@ import {
 import { getUsersAction } from '@/actions/admin.actions';
 
 export default async function AdminDashboardPage() {
-  const usersResult = await getUsersAction();
-  const allUsers = usersResult.success ? (usersResult.data || []) : [];
+  const usersResult = await getUsersAction(1, 50);
+  const usersData = usersResult.success && usersResult.data ? usersResult.data : null;
+  const allUsers = usersData
+    ? Array.isArray(usersData)
+      ? usersData
+      : (usersData.data ?? [])
+    : [];
   
-  const totalUsers = allUsers.length;
+  const totalUsers = usersData && !Array.isArray(usersData) && usersData.meta
+    ? usersData.meta.total
+    : allUsers.length;
   const totalCoaches = allUsers.filter((u: any) => u.nombrerol === 'Entrenador' || u.nombrerol === 'ENTRENADOR' || u.idrol?.toUpperCase() === 'ENTRENADOR').length;
 
   const stats = [

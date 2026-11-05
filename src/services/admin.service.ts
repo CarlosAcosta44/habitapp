@@ -1,14 +1,34 @@
 import { adminRepository } from "@/repositories/admin.repository";
 import type { Result } from '@/lib/result';
-import type { UserProfileDto, UserRole } from '@/domain/usuario.types';
+import type { UserProfileDto, UserRole, PaginatedUsersResponse } from '@/domain/usuario.types';
 
 export const adminService = {
   /**
-   * Obtiene la lista completa de usuarios para el panel de administración.
-   * Llama a GET /admin/users
+   * Obtiene la lista de usuarios para el panel de administración, con paginación opcional.
+   * Llama a GET /admin/users?page={page}&limit={limit}
    */
-  async getUsers(): Promise<Result<UserProfileDto[]>> {
-    return adminRepository.get<UserProfileDto[]>('admin/users');
+  async getUsers(page: number = 1, limit: number = 10): Promise<Result<PaginatedUsersResponse>> {
+    const endpoint = `admin/users?page=${page}&limit=${limit}`;
+    const result = await adminRepository.get<any>(endpoint);
+    if (!result.success) {
+      return result;
+    }
+    // Si la respuesta es un array plano (retrocompatibilidad) o paginada { data, meta }
+    if (Array.isArray(result.data)) {
+      return {
+        success: true,
+        data: {
+          data: result.data,
+          meta: {
+            total: result.data.length,
+            page: 1,
+            limit: result.data.length,
+            totalPages: 1,
+          },
+        },
+      };
+    }
+    return result as Result<PaginatedUsersResponse>;
   },
 
   /**
@@ -17,6 +37,14 @@ export const adminService = {
    */
   async updateUserRole(userId: string, newRole: UserRole | string): Promise<Result<any>> {
     return adminRepository.patch(`admin/users/${userId}/role`, { role: newRole });
+  },
+
+  /**
+   * Actualiza el estado de cuenta de un usuario (Activo, Suspendido, Pendiente).
+   * Llama a PATCH /admin/users/:id/status
+   */
+  async updateUserStatus(userId: string, newStatus: string): Promise<Result<any>> {
+    return adminRepository.patch(`admin/users/${userId}/status`, { estado: newStatus });
   },
 
   /**

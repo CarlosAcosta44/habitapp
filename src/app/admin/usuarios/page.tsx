@@ -28,10 +28,11 @@ export default function AdminUsersPage() {
   const fetchUsers = async () => {
     setIsLoading(true);
     setError(null);
-    const result = await getUsersAction();
+    const result = await getUsersAction(1, 50);
     
     if (result.success) {
-      setUsers(result.data);
+      const usersList = Array.isArray(result.data) ? result.data : (result.data.data ?? []);
+      setUsers(usersList);
     } else {
       setError(result.error || "No se pudieron cargar los usuarios.");
     }

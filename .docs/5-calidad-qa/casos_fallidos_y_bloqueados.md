@@ -6,17 +6,17 @@ Este documento consolida el inventario formal de **casos de prueba que fallarán
 
 ## 1. Resumen Ejecutivo de Casos Afectados
 
-| Código Caso | HU Asociada | Tipo de Defecto | Severidad | Módulo / Capa | Causa Resumida | Estado QA | Azure DevOps ID |
+| Código Caso | HU Asociada | Tipo de Defecto | Severidad | Módulo / Capa | Causa Resumida | Estado QA / Resolución Acordada | Azure DevOps ID |
 |:---:|:---:|:---|:---:|:---|:---|:---:|:---:|
-| **CP-INT-069** | US020 | Lógica de Negocio | **P0 (Crítico)** | Backend (`RecordsRepository`) | Racha rota en hábitos no diarios (compara con ayer calendario consecutivo y no con el día programado anterior). | **Fallará** | *[Por asignar]* |
-| **CP-INT-070** | US020 | Lógica de Negocio | **P0 (Crítico)** | Backend (`RecordsRepository`) | Racha máxima distorsionada al saltar días de descanso programados. | **Fallará** | *[Por asignar]* |
-| **CP-SIS-064** | US023 | Interfaz de Usuario | **P2 (Medio)** | Frontend (`/reportes/page.tsx`) | Selector de períodos muestra "Diario" en vez de "Anual"; bloquea el envío de `period=year` en pruebas UI. | **Bloqueado** | *[Por asignar]* |
-| **CP-INT-012** | US004 | Funcionalidad Incompleta | **P1 (Alto)** | Backend (`AuthController`) | Endpoint `POST /api/v1/auth/refresh` no implementado (retorna 404 Not Found tras desacoplar Supabase Auth). | **Fallará** | *[Por asignar]* |
-| **CP-INT-013** | US004 | Funcionalidad Incompleta | **P1 (Alto)** | Backend (`AuthController`) | Validación de refresh token revocado o expirado inexistente al faltar el endpoint de renovación. | **Fallará** | *[Por asignar]* |
-| **CP-INT-162..164, 188, 189, CP-SIS-117** | US037 | Funcionalidad Incompleta / Seguridad | **P1 (Alto)** | Backend (`AdminController`, `AuthService`) | Endpoint `PATCH /admin/users/:id/status` no existe y falta validación de cuenta suspendida en login y sesión. | **Bloqueado** | *[Por asignar]* |
-| **CP-INT-153, 154, 190, 191, CP-SIS-114** | US037 | Funcionalidad Incompleta | **P2 (Medio)** | Backend (`AdminController`, `UsersService`) | `GET /admin/users` retorna array plano sin query params (`page`, `limit`) ni metadatos de paginación (`meta`). | **Bloqueado** | *[Por asignar]* |
-| **CP-INT-144** | US036 | Validación de Regla de Negocio | **P2 (Medio)** | Backend (`CreateRoutineDto`) | `habits` es `@IsOptional()`; permite crear rutinas vacías respondiendo 201 en vez de rechazar con 400 (mínimo 1 hábito). | **Bloqueado** | *[Por asignar]* |
-| **CP-INT-192** | US036 | Manejo de Excepciones | **P2 (Medio)** | Backend (`CoachRepository`) | Violación de unicidad en `usuario_rutina` lanza `InternalServerErrorException` (500) en lugar de `ConflictException` (409). | **Bloqueado** | *[Por asignar]* |
+| **CP-INT-069** | US020 | Lógica de Negocio | **P0 (Crítico)** | Backend (`RecordsRepository`) | Racha rota en hábitos no diarios (compara con ayer calendario consecutivo). | **Por Corregir** (Regla: días de descanso congelan racha hasta prox. día programado) | *[Por asignar]* |
+| **CP-INT-070** | US020 | Lógica de Negocio | **P0 (Crítico)** | Backend (`RecordsRepository`) | Racha máxima distorsionada al saltar días de descanso programados. | **Por Corregir** (Secuencia basada en `dias_semana`) | *[Por asignar]* |
+| **CP-SIS-064** | US023 | Definición de Producto | **P2 (Informativo)** | Frontend (`/reportes`) | Requerimiento original pedía selector de períodos con pantalla anual. | **Cerrado / Resuelto por Diseño (As Designed)**: Pantalla unificada consolidada a 30 días con exportación PDF. | *[Cerrado]* |
+| **CP-INT-012** | US004 | Funcionalidad Incompleta / Persistencia | **P1 (Alto)** | Backend y Web (`AuthController`, `auth.actions.ts`) | Desincronización en ciclo de vida de tokens: access token dura 15m y el frontend no guardaba refresh token ni renovaba sesión. | **Por Corregir** (Almacenar refresh token en cookies HTTP-only y auto-renovación) | *[Por asignar]* |
+| **CP-INT-013** | US004 | Funcionalidad Incompleta | **P1 (Alto)** | Backend (`AuthController`, `AuthService`) | Validación de refresh token revocado o expirado con respuesta 401 Unauthorized. | **Por Corregir** (Validación en `AuthService.refreshToken`) | *[Por asignar]* |
+| **CP-INT-162..164, 188, 189, CP-SIS-117** | US037 | Funcionalidad Incompleta / Seguridad / UI | **P1 (Alto)** | Backend (`AdminController`) y Frontend (`AdminUsersList.tsx`) | Falta endpoint `PATCH /admin/users/:id/status`, bloqueo de login a suspendidos y controles UI en tabla de admin. | **Por Corregir** (Full-stack: Backend DTO + AuthGuard 403 + UI con acción de suspender/activar) | *[Por asignar]* |
+| **CP-INT-153, 154, 190, 191, CP-SIS-114** | US037 | Funcionalidad Incompleta / UI | **P2 (Medio)** | Backend (`AdminController`) y Frontend (`AdminUsersList.tsx`) | `GET /admin/users` retorna array plano sin query params (`page`, `limit`) ni metadatos `meta`, y la UI no tiene paginador. | **Por Corregir** (Full-stack: Backend con `PaginationQueryDto` y `meta` + UI con botones Anterior/Siguiente) | *[Por asignar]* |
+| **CP-INT-144** | US036 | Validación de Regla de Negocio | **P2 (Medio)** | Backend (`CreateRoutineDto`) | `habits` es `@IsOptional()`; permite crear rutinas vacías. | **Por Corregir** (Rechazar con 400 si `habits` está vacío con `@ArrayMinSize(1)`) | *[Por asignar]* |
+| **CP-INT-192** | US036 | Manejo de Excepciones | **P2 (Medio)** | Backend (`CoachRepository`) | Violación de unicidad en `usuario_rutina` lanza 500 en lugar de 409 Conflict. | **Por Corregir** (Mapear error 23505 a `ConflictException` 409) | *[Por asignar]* |
 
 ---
 
@@ -103,85 +103,40 @@ Para hábitos con `dias_semana` definidos (ej. `[1, 3, 5]` para Lun-Mié-Vie), l
 
 ---
 
-### Defecto 2: Selector de Período en Reportes Desalineado con la API
+### Defecto 2: Alineación de la Pantalla de Reportes y Cierre de CP-SIS-064
 * **Caso de Prueba:** `CP-SIS-064`
 * **Historia de Usuario:** [US023](file:///home/kairos/Proyectos/habitapp/.docs/5-calidad-qa/historias_usuario_definitivas.md#L45) — Análisis editorial y reportes de progreso (`/reportes`) (Riesgo: 4 - Medio)
-* **Severidad:** **P2 — Medio (Bloqueo de Prueba de Interfaz de Usuario)**
-* **Componente Afectado:** [`src/app/(dashboard)/reportes/page.tsx`](file:///home/kairos/Proyectos/habitapp/src/app/(dashboard)/reportes/page.tsx#L51-L64) (`habitapp`)
+* **Severidad:** **P2 — Informativo / Definición de Producto**
+* **Componente Evaluado:** [`src/app/(dashboard)/reportes/page.tsx`](file:///home/kairos/Proyectos/habitapp/src/app/(dashboard)/reportes/page.tsx) y [`ReportesInteractiveView.tsx`](file:///home/kairos/Proyectos/habitapp/src/components/reportes/ReportesInteractiveView.tsx) (`habitapp-web`)
+* **Estado Final QA:** **Cerrado / Como fue Diseñado (*As Designed / Won't Fix*)**
 
-#### Descripción del Problema
-La API del Backend en el módulo de reportes (`GET /api/v1/users/reports`) admite los parámetros canónicos `period = week | month | year` (por defecto `week`). Sin embargo, el componente frontend renderiza un toggle estático con las etiquetas `["Diario", "Semanal", "Mensual"]`.
-
-Consecuencias:
-1. No existe botón ni opción en la UI para seleccionar el período **Anual** (`year`), bloqueando la ejecución del caso de prueba de sistema `CP-SIS-064`.
-2. La opción *"Diario"* no tiene soporte en el controlador del backend para el reporte editorial acumulativo.
-
-#### Fragmento de Código con Causa Raíz
-```tsx
-// habitapp/src/app/(dashboard)/reportes/page.tsx líneas 51-64:
-<div className="flex items-center bg-white dark:bg-[#111827] rounded-xl border border-slate-200 dark:border-slate-800 p-1 shadow-sm">
-  {["Diario", "Semanal", "Mensual"].map((p, i) => (
-    <button
-      key={p}
-      className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
-        i === 1
-          ? "bg-indigo-600 text-white shadow-lg"
-          : "text-slate-400 hover:text-slate-200"
-      }`}
-    >
-      {p}
-    </button>
-  ))}
-</div>
-```
-
-#### Comportamiento Esperado
-* El selector de vista debe renderizar las opciones: `Semanal`, `Mensual` y `Anual`.
-* Cada botón debe disparar de forma reactiva la recarga de datos pasando el query parameter correspondiente: `?period=week`, `?period=month`, `?period=year`.
-
-#### Plan de Corrección
-1. Modificar el arreglo de opciones en `page.tsx` (o su client component subordinado) a:
-   ```typescript
-   const periodos = [
-     { label: 'Semanal', value: 'week' },
-     { label: 'Mensual', value: 'month' },
-     { label: 'Anual',   value: 'year' },
-   ];
-   ```
-2. Vincular el estado activo y disparar la llamada al Server Action / API con el parámetro `value`.
+#### Resolución y Decisión de Producto Acordada
+Durante el diseño final de la experiencia de usuario (UX) del MVP de HabitApp, se definió estratégicamente **unificar la analítica en una única pantalla integral de alto impacto**, descartando la fragmentación en pestañas o selectores anuales/semanales que recargarían innecesariamente la interfaz con períodos sin densidad de datos:
+1. **Vista Unificada:** Combina los KPIs clave de desempeño global, el gráfico de volumen de la semana en curso (L-D) y el heatmap de consistencia de los **últimos 30 días**, junto a la exportación ejecutiva en PDF (`Descargar reporte (PDF)`).
+2. **Cierre de Caso:** El caso `CP-SIS-064` (que requería forzar un selector con la opción Anual `?period=year`) queda formalmente **Cerrado como Descartado por Definición de Producto**. La interfaz actual se mantiene intacta, limpia y fiel al diseño oficial de Figma sin requerir selector de períodos.
 
 ---
 
-### Defecto 3: Ausencia de Endpoint para Renovación de Tokens JWT
+### Defecto 3: Desincronización del Ciclo de Vida de Tokens y Persistencia de Sesión
 * **Casos de Prueba:** `CP-INT-012` y `CP-INT-013`
 * **Historia de Usuario:** [US004](file:///home/kairos/Proyectos/habitapp/.docs/5-calidad-qa/historias_usuario_definitivas.md#L25) — Persistencia de sesión con auto-refresh de JWT (Riesgo: 6 - Alto)
-* **Severidad:** **P1 — Alto (Funcionalidad Pendiente / Contrato Incompleto)**
-* **Componente Afectado:** [`AuthController`](file:///home/kairos/Proyectos/habitapp-api/src/modules/auth/controllers/auth.controller.ts) (`habitapp-api`)
+* **Severidad:** **P1 — Alto (Persistencia de Sesión / Contrato Incompleto)**
+* **Componentes Afectados:** [`AuthController`](file:///home/kairos/Proyectos/habitapp-api/src/modules/auth/controllers/auth.controller.ts) (`habitapp-api`) y [`auth.actions.ts`](file:///home/kairos/Proyectos/habitapp/src/actions/auth.actions.ts) (`habitapp-web`)
 
-#### Descripción del Problema
-Durante la migración arquitectónica donde se desacopló Supabase Auth para centralizar el flujo en la API propia de NestJS, se implementaron `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `POST /auth/google`, `POST /auth/facebook`, pero quedó pendiente el endpoint de refresco de credenciales `POST /api/v1/auth/refresh`.
+#### Diagnóstico Técnico y Causa Raíz
+Se identificaron tres causas concurrentes que originaban la pérdida involuntaria de sesión (el usuario debía volver a loguearse tras apagar/encender el servidor o pasar más de 15 minutos):
+1. **Expiración de Access Token en 15 minutos:** En NestJS (`AuthService.login`), el `access_token` se firma con vigencia corta de 15 minutos (`expiresIn: '15m'`), mientras que el `refresh_token` se firma a 7 días (`expiresIn: '7d'`).
+2. **Omisión de Almacenamiento del Refresh Token en Frontend:** En el Server Action `loginAction` de Next.js, únicamente se guardaba en cookies el `access_token`. El `refresh_token` devuelto por el backend era ignorado, imposibilitando la renovación silenciosa ante vencimientos.
+3. **Consistencia de `JWT_SECRET` en Backend:** El archivo `.env` del backend debe declarar de forma fija y explícita la variable `JWT_SECRET` para garantizar que la firma no varíe entre reinicios del proceso Node.js.
 
-Actualmente:
-* La sesión web funciona apoyándose en una cookie de larga duración (7 días), pero cuando un cliente (especialmente la aplicación móvil Flutter o un cliente API que requiera rotación periódica) intenta solicitar la renovación del JWT con su refresh token, recibe una respuesta HTTP `404 Not Found`.
-* `CP-INT-012` (renovación exitosa con refresh token válido) y `CP-INT-013` (rechazo de renovación con token revocado/expirado) fallarán de forma inmediata en pruebas de integración.
-
-#### Comportamiento Esperado
-* `POST /api/v1/auth/refresh` debe recibir el refresh token (por cookie HTTP-only o en el cuerpo `{ refreshToken }`).
-* Si el token es válido y no ha sido revocado en base de datos/lista negra, devolver un nuevo JWT con vigencia renovada (`200 OK`).
-* Si el token es inválido o expiró, devolver `401 Unauthorized` obligando al reautenticado limpio.
-
-#### Plan de Corrección
-1. Agregar el endpoint en `AuthController`:
-   ```typescript
-   @Post('refresh')
-   @HttpCode(HttpStatus.OK)
-   @ApiOperation({ summary: 'Renovar access token JWT' })
-   async refresh(@Req() req: any, @Body('refreshToken') bodyToken?: string) {
-     const token = req.cookies?.refresh_token || bodyToken;
-     return this.authService.refreshToken(token);
-   }
-   ```
-2. Implementar la validación y emisión en `AuthService` y `JwtService`.
+#### Plan de Corrección Acordado
+1. **Backend (`habitapp-api`):**
+   - Asegurar que `POST /api/v1/auth/refresh` esté habilitado y devuelva `{ access_token, refresh_token, expires_in }` al recibir el token vía cookie o payload body (`CP-INT-012`).
+   - Rechazar con `401 Unauthorized` si el refresh token expiró, no es válido o ha sido revocado (`CP-INT-013`).
+   - Asegurar que `.env` cargue `JWT_SECRET` de manera persistente.
+2. **Frontend (`habitapp-web`):**
+   - En `loginAction` y en las acciones de autenticación, guardar tanto `access_token` como `refresh_token` en cookies HTTP-only de 7 días.
+   - En el cliente/servidor de Next.js (`requireUserStrict` / `apiClient`), detectar respuestas 401 para reintentar la solicitud renovando el token vía `POST /auth/refresh` antes de expulsar al usuario.
 
 ---
 
@@ -189,7 +144,7 @@ Actualmente:
 * **Casos de Prueba:** `CP-INT-162`, `CP-INT-163`, `CP-INT-164`, `CP-INT-188`, `CP-INT-189`, `CP-SIS-117`
 * **Historia de Usuario:** [US037](file:///workspaces/habitapp-workspace/habitapp/.docs/5-calidad-qa/historias_usuario_definitivas.md#L59) — Panel de administración, gestión de usuarios y roles (Riesgo: 6 - Alto)
 * **Severidad:** **P1 — Alto (Control de Acceso y Funcionalidad Administrativa)**
-* **Componente Afectado:** `AdminController` (`src/modules/admin/controllers/admin.controller.ts`), `AuthService` (`src/modules/auth/services/auth.service.ts`), `UsersService` (`src/modules/users/services/users.service.ts`) (`habitapp-api`)
+* **Componentes Afectados:** `AdminController`, `AuthService`, `UsersService` (`habitapp-api`) y `AdminUsersList.tsx` (`habitapp-web`)
 
 #### Descripción del Problema
 1. En `AdminController`, solo existe la ruta `PATCH users/:id/role`. No existe un endpoint para actualizar el estado de cuenta de los usuarios (`PATCH /api/v1/admin/users/:id/status`), impidiendo suspender, activar o poner en pendiente las cuentas desde la interfaz administrativa (`CP-INT-162`, `CP-SIS-117`).
@@ -200,12 +155,16 @@ Actualmente:
 #### Comportamiento Esperado
 * `PATCH /api/v1/admin/users/:id/status` accesible solo para administradores (`Roles(UserRole.ADMIN)`), validando con DTO que `estado_cuenta` pertenezca al enum permitido y retornando `200 OK` con el perfil actualizado. Usuarios no admin reciben `403 Forbidden` (`CP-INT-189`).
 * `POST /api/v1/auth/login` rechaza con `403 Forbidden` y el mensaje `"Tu cuenta se encuentra suspendida. Contacta al administrador."` si `estado_cuenta === 'Suspendido'`.
-* El guard o servicio de usuario valida en cada petición sensible o consulta de `/users/me` que el usuario no esté suspendido.
+* La interfaz web `/admin/usuarios` incluye controles para suspender y reactivar cuentas con confirmación y badge visual de estado.
 
-#### Plan de Corrección
-1. Crear `UpdateUserStatusDto` con `@IsEnum(UserAccountStatus)` y mensaje descriptivo de validación.
-2. Agregar endpoint `PATCH users/:id/status` en `AdminController` delegando a `usersService.updateUserStatus`.
-3. En `AuthService.login` y `UsersService.getProfile`, verificar `estado_cuenta` y lanzar `ForbiddenException` con el mensaje correspondiente ante estado suspendido.
+#### Plan de Corrección Acordado (Full-Stack)
+1. **Backend (`habitapp-api`):**
+   - Crear `UpdateUserStatusDto` con `@IsEnum(UserAccountStatus)` y mensaje descriptivo de validación.
+   - Agregar endpoint `PATCH users/:id/status` en `AdminController` delegando a `usersService.updateUserStatus`.
+   - En `AuthService.login` y `UsersService.getProfile`, verificar `estado_cuenta` y lanzar `ForbiddenException` con mensaje ante estado suspendido.
+2. **Frontend (`habitapp-web`):**
+   - Agregar Server Action `updateUserStatusAction(userId, status)`.
+   - En `AdminUsersList.tsx`, renderizar columna de estado con badge y botón/menú para alternar entre `Activo` y `Suspendido`.
 
 ---
 
@@ -213,7 +172,7 @@ Actualmente:
 * **Casos de Prueba:** `CP-INT-153`, `CP-INT-154`, `CP-INT-190`, `CP-INT-191`, `CP-SIS-114`
 * **Historia de Usuario:** [US037](file:///workspaces/habitapp-workspace/habitapp/.docs/5-calidad-qa/historias_usuario_definitivas.md#L59) — Panel de administración, gestión de usuarios y roles (Riesgo: 6 - Alto)
 * **Severidad:** **P2 — Medio (Escalabilidad y Contrato de API Incompleto)**
-* **Componente Afectado:** `AdminController.listUsers` (`src/modules/admin/controllers/admin.controller.ts`), `UsersService` y `UsersRepository` (`habitapp-api`)
+* **Componentes Afectados:** `AdminController.listUsers` (`habitapp-api`) y `AdminUsersList.tsx` (`habitapp-web`)
 
 #### Descripción del Problema
 El endpoint `GET /api/v1/admin/users` consume directamente `usersService.listProfiles()`, el cual ejecuta una consulta `select('*')` sin parámetros de paginación ni ordenamiento. Retorna un array plano `[UserProfileDto]` con todos los usuarios existentes en la base de datos.
@@ -239,10 +198,14 @@ Consecuencias:
 * Si se solicita una página superior a `totalPages` (ej. `page=99`), retorna `200 OK` con `data: []` y los metadatos correspondientes (`CP-INT-154`).
 * Si se envían `page=0` o `limit=0`, `ValidationPipe` rechaza la petición con `400 Bad Request` (`CP-INT-191`).
 
-#### Plan de Corrección
-1. Crear o reutilizar `PaginationQueryDto` con `@Type(() => Number)`, `@IsInt()`, `@Min(1)`.
-2. Actualizar `AdminController.listUsers(@Query() query: PaginationQueryDto)`.
-3. Actualizar `UsersRepository.listProfilesPaginated(page, limit)` usando `.range((page - 1) * limit, page * limit - 1)` y `{ count: 'exact' }` en Supabase.
+#### Plan de Corrección Acordado (Full-Stack)
+1. **Backend (`habitapp-api`):**
+   - Implementar `PaginationQueryDto` con `@Type(() => Number)`, `@IsInt()`, `@Min(1)`.
+   - Actualizar `AdminController.listUsers(@Query() query: PaginationQueryDto)`.
+   - Actualizar `UsersRepository.listProfilesPaginated(page, limit)` usando `.range((page - 1) * limit, page * limit - 1)` y `{ count: 'exact' }` en Supabase.
+2. **Frontend (`habitapp-web`):**
+   - Actualizar `getUsersAction(page, limit)` para soportar la respuesta paginada `{ data, meta }`.
+   - En `AdminUsersList.tsx`, incorporar controles de paginación (botones "Anterior", "Siguiente", número de página actual y total de registros).
 
 ---
 
