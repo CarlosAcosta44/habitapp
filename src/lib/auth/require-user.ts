@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { apiClient } from "@/lib/api/client";
 import { ok, err, Result } from "@/lib/result";
 import { redirect } from "next/navigation";
+import { setSessionCookies } from "./session-cookies";
 
 export interface AppUser {
   id: string;
@@ -43,22 +44,13 @@ export async function requireUser(options?: { redirectToLogin?: boolean }): Prom
 
     if (refreshResult.success && refreshResult.data?.access_token) {
       token = refreshResult.data.access_token as string;
-      cookieStore.set("access_token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
-      });
-
-      if (refreshResult.data.refresh_token) {
-        cookieStore.set("refresh_token", refreshResult.data.refresh_token as string, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          path: "/",
-          maxAge: 60 * 60 * 24 * 7,
+      try {
+        await setSessionCookies({
+          accessToken: token,
+          refreshToken: refreshResult.data.refresh_token as string | undefined,
         });
+      } catch {
+        // Ignore cookie mutation errors when requireUser runs inside a Server Component render
       }
 
       // Reintentamos /users/me con el token recién emitido

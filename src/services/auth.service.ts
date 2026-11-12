@@ -7,10 +7,19 @@
 import { authRepository } from "@/repositories/auth.repository";
 import type { Result } from "@/lib/result";
 
+export interface AuthSessionResponse {
+  access_token: string;
+  refresh_token?: string;
+  user?: {
+    idrol?: string | number;
+    [key: string]: unknown;
+  };
+}
+
 export class AuthService {
   // ─── Login ──────────────────────────────────────────────────────────────────
-  async login(credentials: { email: string; password: string }): Promise<Result<{ access_token: string; refresh_token?: string; user: any }>> {
-    return authRepository.post<{ access_token: string; refresh_token?: string; user: any }>('/auth/login', credentials);
+  async login(credentials: { email: string; password: string }): Promise<Result<AuthSessionResponse>> {
+    return authRepository.post<AuthSessionResponse>('/auth/login', credentials);
   }
 
   // ─── Registro ───────────────────────────────────────────────────────────────
@@ -21,13 +30,13 @@ export class AuthService {
     apellido: string;
     fechanacimiento?: string;
     genero: string;
-  }): Promise<Result<{ access_token: string; refresh_token?: string; user: any }>> {
-    return authRepository.post<{ access_token: string; refresh_token?: string; user: any }>('/auth/register', payload);
+  }): Promise<Result<AuthSessionResponse>> {
+    return authRepository.post<AuthSessionResponse>('/auth/register', payload);
   }
 
   // ─── Refrescar Token ────────────────────────────────────────────────────────
-  async refreshToken(refreshToken: string): Promise<Result<{ access_token: string; refresh_token?: string; user: any }>> {
-    return authRepository.post<{ access_token: string; refresh_token?: string; user: any }>('/auth/refresh', {
+  async refreshToken(refreshToken: string): Promise<Result<AuthSessionResponse>> {
+    return authRepository.post<AuthSessionResponse>('/auth/refresh', {
       refreshToken,
     });
   }
